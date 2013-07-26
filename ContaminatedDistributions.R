@@ -36,8 +36,16 @@ Rs<-ruarsCont(n,rangle,kappa,p,S,Scont)
 plot(Rs,center=id.SO3,col=2)
 plot(Rs,center=median(Rs),show_estimates=c("proj.mean","proj.median"),col=2)
 
+#Chang method
+plot(Rs,center=median(Rs),show_estimates=c("proj.mean","proj.median"),col=1,
+		 mean_regions='chang',median_regions='chang',alp=.05)
+
 plot(Rs,center=median(Rs),show_estimates=c("proj.mean","proj.median"),col=2,
 		 mean_regions='chang',median_regions='chang',alp=.1)
 
+plot(Rs,center=median(Rs),show_estimates=c("proj.mean","proj.median"),col=3,
+		 mean_regions='chang',median_regions='chang',alp=.1)
+
+#Zhang method
 plot(Rs,center=median(Rs),show_estimates=c("proj.mean","proj.median"),col=2,
 		 mean_regions='zhang',median_regions='zhang',alp=.1)
