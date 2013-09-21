@@ -30,7 +30,7 @@ C=d_R (\ProjMean, \ProjMean^{i})
 \]
 where $\ProjMean$ is the $L_2$ extrinsic estimator.
 
-<<dstat, fig.width=4, fig.height=4, out.width='.4\\linewidth',include=FALSE>>=
+<<dstat, fig.width=4, fig.height=4, out.width='.4\\linewidth',echo=FALSE>>=
 #This is my SO(3) interpretation of the test statistics proposed in Collett
 #(1980) to identify "surprising values" on the circle
 
