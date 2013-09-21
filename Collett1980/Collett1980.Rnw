@@ -52,36 +52,41 @@ plot(Rs,label_points=round(dstat(Rs),3))
 
 
 <<dmat,include=FALSE>>=
-#The D-statistic is the arc lengths between successive observations.  Unfortunatlely that means we need to be able to order our data somehow.  For now, compute n-by-n matrix of arc-lengths
+#The D-statistic is the arc lengths between successive observations.  Unfortunatlely that means we need to be able to order our data somehow.  The spherical interpretation of this statistic is due to Fisher, Lewis and Willcox (1981) and it centers the data around the mean, orders the data according to their arc-lengths from that center and computes G_n=(pi-theta_n)/(theta_n-theta_{n-1})
 
-dmat<-function(Rs){
-  n<-nrow(Rs)
-  rmat<-matrix(0,n,n)
-  for(i in 1:(n-1)){
-    Ri<-as.SO3(Rs[i,])
-    
-    for(j in (i+1):n){
-      Rj<-as.SO3(Rs[j,])
-      rmat[i,j]<-dist(Ri,Rj,method='intrinsic')
-    }
-  }
-  return(rmat)
-}
-
-dmat(Rs)
-plot(Rs,label_points=round(dmat(Rs)[,20],3))
-
-#Order them by distance from S-hat
 resids<-dist(Rs,mean(Rs),method='intrinsic')
-Rs<-as.SO3(Rs[order(resids),])
+thetaN<-max(resids)
+thetaNm1<-max(resids[-which.max(resids)])
+Gn<-(thetaN)/(thetaN-thetaNm1)
 
-plot(Rs,label_points=1:20,col=3)
-
-n<-nrow(Rs)
-Ti<-rep(0,n-1)
-for(i in 1:(n-1)){
-  Ti[i]<-dist(as.SO3(Rs[i,]),as.SO3(Rs[(i+1),]))
-}
+# dmat<-function(Rs){
+#   n<-nrow(Rs)
+#   rmat<-matrix(0,n,n)
+#   for(i in 1:(n-1)){
+#     Ri<-as.SO3(Rs[i,])
+#     
+#     for(j in (i+1):n){
+#       Rj<-as.SO3(Rs[j,])
+#       rmat[i,j]<-dist(Ri,Rj,method='intrinsic')
+#     }
+#   }
+#   return(rmat)
+# }
+# 
+# dmat(Rs)
+# plot(Rs,label_points=round(dmat(Rs)[,20],3))
+# 
+# #Order them by distance from S-hat
+# resids<-dist(Rs,mean(Rs),method='intrinsic')
+# Rs<-as.SO3(Rs[order(resids),])
+# 
+# plot(Rs,label_points=1:20,col=3)
+# 
+# n<-nrow(Rs)
+# Ti<-rep(0,n-1)
+# for(i in 1:(n-1)){
+#   Ti[i]<-dist(as.SO3(Rs[i,]),as.SO3(Rs[(i+1),]))
+# }
 @
 
 \end{document}
