@@ -61,13 +61,13 @@
 \Large{\bf Outlier Detection for Circular and Spherical Data}
 \end{center}
 \normalsize
-In this document I summarize the work done for outlier detection for circular, sphereical and related data types
+In this document I summarize the work done for outlier detection for circular, spherical and related data types
 
 \section{Circular Data}
 
-In \cite{collett1980}, four statistics to identify outliers in ciruclar data are defined.  Only the von Mises distribution on the circle is considered in the simulation study, but three of the statistics are general and could be applied to any circule distribution. 
+In \cite{collett1980}, four statistics to identify outliers in circular data are defined.  Only the von Mises distribution on the circle is considered in the simulation study, but three of the statistics are general and could be applied to any circular distribution. 
 
-The $L$-statistic is the likelihood ratio test statistic that tests the null hypothesis that all observtions are from a single von Mises($\mu,\kappa$) versus the alternative that one observation comes from a von Mises distribution with a different mean direction.  This is sometimes called the location-slippage alternative hypothesis.  The test-statistic in the context of the von Mises distribution for the observation $\theta_k$ is
+The $L$-statistic is the likelihood ratio test statistic that tests the null hypothesis that all observations are from a single von Mises($\mu,\kappa$) versus the alternative that one observation comes from a von Mises distribution with a different mean direction.  This is sometimes called the location-slippage alternative hypothesis.  The test-statistic in the context of the von Mises distribution for the observation $\theta_k$ is
 \[
 L=(R_k+1)\hat{\kappa}_k-\hat{\kappa}R-n\log\left[\frac{I_0(\hat{\kappa}_k)}{I_0(\hat{\kappa})}\right]
 \]
@@ -83,7 +83,7 @@ The $D$-statistic is the ratio of the arcs on either side of the observation.  T
 \[
 T_i=\theta_{(i+1)}-\theta_{(i)}\hspace{1em}\text{ and }\hspace{1em}T_n=2\pi-\theta_{(n)}+\theta_{(i)}.
 \]
- Also set $T_{0}=T_{n}$ then for $i=1,\dots,n$, $D_i=T_i/T_{i-1}$ is the ratio of the arc-lengths on either side of the $i$th obseration.  Finally let $\theta_k$ be the observation that visually appears to be an outlier and define $D=\text{min}(D_k,D_{k}^{-1})$ then $D\in(0,1)$ and is unambigious.
+ Also set $T_{0}=T_{n}$ then for $i=1,\dots,n$, $D_i=T_i/T_{i-1}$ is the ratio of the arc-lengths on either side of the $i$th observation.  Finally let $\theta_k$ be the observation that visually appears to be an outlier and define $D=\text{min}(D_k,D_{k}^{-1})$ then $D\in(0,1)$ and is unambiguous.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
@@ -101,13 +101,43 @@ T_i=\theta_{(i+1)}-\theta_{(i)}\hspace{1em}\text{ and }\hspace{1em}T_n=2\pi-\the
 
 
 
-Finally, the $M$-statistic was originally suggested by \cite{mardia1975} and is simiar in spirit to the $C$-stastic, namely
+Finally, the $M$-statistic was originally suggested by Mardia (1975) \cite{mardia1975} and is similar in spirit to the $C$-statistic, namely
 \[
 M=\min_i\left(\frac{n-1-R_i}{n-R}\right)
 \]
-where $R$ is mean resultant length based on the entire sample of size $n$ and $R_i$ is the mean resultant length after the $i$th obervation is deleted.  To put this on the same scale as the other statistics discussed \cite{collett1980} considers $1-M$.
+where $R$ is mean resultant length based on the entire sample of size $n$ and $R_i$ is the mean resultant length after the $i$th observation is deleted.  To put this on the same scale as the other statistics discussed in \cite{collett1980} consider $1-M$.
 
 In a simulation study they determine the $C$ and $D$ statistics are the best choices.  Because $D$ is easier to compute it comes the most highly recommended.
+
+According to Mardia et al. (2009) \cite{mardia2009},  Best \& Fisher (1986) \cite{best1986} and Bagchi \& Guttman \cite{bagchi1990} consider other ways to identify outliers but I can't get a hold of either of these articles to read.
+
+\section{Spherical Data}
+
+Fisher, Lewis \& Willcox (1981) \cite{fisher1981} extend the statistics of \cite{collett1980} to spherical data and also add a few of their own.  Several outliers in a single sample are also considered.  They focus on Fisher's distribution on the sphere.
+
+The spherical analog of Collett's $C$-statistic is
+\[
+C_n=\frac{\bar{R}_n^{(i)}-\bar{R}_n}{\bar{R}_n}.
+\]
+
+Using the approximations coth$(\kappa)\approx 1$ and $\log(\text{sinh}\kappa)\approx\kappa-\log 2$ the spherical analogs of Collett's $M$ (and for $\kappa>2.5$ Collett's $L$) is 
+\[
+E_n=(n-2)\frac{1+R_{n-1}^{(i)}-R_n}{n-1-R_{n-1}^{(i)}}.
+\]
+$E_n$ is based on a generalised likelihood-ratio test statistic testing the alternative location-slippage hypothesis.
+
+Alternative, one can test the alternative hypothesis that the mean directions are the same, but the concentration parameters are different.  This leads to the generalised likelihood-ratio test-statistic
+\[
+D_n=(n-1)f(\bar{R}_{n-1}^{(i)})+f(\bar{R}_1^{(i)})-nf(\bar{R}_n)
+\]
+where $f(\bar{r})=\log\hat\kappa(\bar{r})+(\bar{r}-1)\hat\kappa(\bar{r})$ and $\kappa(\bar{r})$ is the concentration parameter estiamte based on the sample mean resultant length $\bar{r}$.
+
+Let $l_i$, $m_i$ and $n_i$ be the direction cosines for $(\theta_i,\phi_i)$, $1\leq i\leq n$ and let $l_i'$, $m_i'$ and $n_i'$ be the direction cosines after they've been centered around a pole.  Define $\theta_i'=\cos^{-1}(n_i')$ and $c_i=1-n_i'$ then order them $\theat_{(i)}'$ and $c_{(i)}$.  The gap test for an outlying observation can be based on
+\[
+G_n=\frac{\pi-\theta_{(n)}'}{\theta_{(n)}'-\theta_{(n-1)}'}.
+\]
+
+The test statistic Ea 1 of Barnett and Lewis ()
 \bibliographystyle{plain}
 \bibliography{RobustRefs}
 
