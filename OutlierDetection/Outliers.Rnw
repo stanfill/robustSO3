@@ -1,0 +1,112 @@
+\documentclass{article}
+\usepackage{amsmath,amsfonts,bm,fullpage}
+\usepackage{natbib}
+\newcommand{\ProjMean}{{\widehat{\bm S}_{2}}}
+\begin{document}
+
+<<setup, include=FALSE>>=
+library(knitr)
+library(rotations)
+# set global chunk options
+opts_chunk$set(fig.path='Figure/', fig.align='center', fig.show='hold',dev='png')
+options(replace.assign=TRUE,width=50)
+@
+
+\begin{center}
+\Large{\bf Outlier Detection for Circular and Spherical Data}
+\end{center}
+\normalsize
+In this document I summarize the work done for outlier detection for circular, sphereical and related data types
+
+\section{Circular Data}
+
+In \cite{collett1980}, four statistics to identify outliers in ciruclar data are defined.  Only the von Mises distribution on the circle is considered in the simulation study, but three of the statistics are general and could be applied to any circule distribution. 
+
+The $L$-statistic is the likelihood ratio test statistic that tests the null hypothesis that all observtions are from a single von Mises($\mu,\kappa$) versus the alternative that one observation comes from a von Mises distribution with a different mean direction.  This is sometimes called the location-slippage alternative hypothesis.  The test-statistic in the context of the von Mises distribution for the observation $\theta_k$ is
+\[
+L=(R_k+1)\hat{\kappa}_k-\hat{\kappa}R-n\log\left[\frac{I_0(\hat{\kappa}_k)}{I_0(\hat{\kappa})}\right]
+\]
+where $R_k$ and $\hat\kappa_k$ are the estimated mean resultant lengths and concentration parameter with $\theta_k$ removed and $I_0(x)$ is the modified Bessel function of the first kind with order zero.
+
+The $C$-Statistic is more general.  It is interpreted as the relative increase in the sample mean resultant length after omitting the queried value.  It is given by
+\[
+C=\text{max}_i\left\{\frac{\bar{R}_i-\bar{R}}{\bar{R}}\right\}=\frac{R_k-R}{R}
+\]
+where $\bar{R}$ is the sample mean resultant length and $\bar{R}_i$ is the mean resultant length with the $i$th observation removed.  
+
+The $D$-statistic is the ratio of the arcs on either side of the observation.  That is, let $\theta_{(i)}$ denote the $i$th ordered observation and define
+\[
+T_i=\theta_{(i+1)}-\theta_{(i)}\hspace{1em}\text{ and }\hspace{1em}T_n=2\pi-\theta_{(n)}+\theta_{(i)}.
+\]
+ Also set $T_{0}=T_{n}$ then for $i=1,\dots,n$, $D_i=T_i/T_{i-1}$ is the ratio of the arc-lengths on either side of the $i$th obseration.  Finally let $\theta_k$ be the observation that visually appears to be an outlier and define $D=\text{min}(D_k,D_{k}^{-1})$ then $D\in(0,1)$ and is unambigious.
+
+<<dstat, fig.width=4, fig.height=4, out.width='.4\\linewidth',echo=FALSE>>=
+#This is my SO(3) interpretation of the test statistics proposed in Collett
+#(1980) to identify "surprising values" on the circle
+
+dstat<-function(Rs){
+  Shat<-mean(Rs)
+  n<-nrow(Rs)
+  ds<-rep(0,n)
+  for(i in 1:n){
+    Rsi<-as.SO3(Rs[-i,])
+    Shati<-mean(Rsi)
+    ds[i]<-dist(Shat,Shati,method='intrinsic')
+  }
+  return(ds)
+}
+
+Rs<-ruars(20,rcayley,kappa=50)
+plot(Rs,label_points=round(dstat(Rs),3))
+@
+
+
+<<dmat,include=FALSE>>=
+#The D-statistic is the arc lengths between successive observations.  Unfortunatlely that means we need to be able to order our data somehow.  The spherical interpretation of this statistic is due to Fisher, Lewis and Willcox (1981) and it centers the data around the mean, orders the data according to their arc-lengths from that center and computes G_n=(pi-theta_n)/(theta_n-theta_{n-1})
+
+resids<-dist(Rs,mean(Rs),method='intrinsic')
+thetaN<-max(resids)
+thetaNm1<-max(resids[-which.max(resids)])
+Gn<-(thetaN)/(thetaN-thetaNm1)
+
+# dmat<-function(Rs){
+#   n<-nrow(Rs)
+#   rmat<-matrix(0,n,n)
+#   for(i in 1:(n-1)){
+#     Ri<-as.SO3(Rs[i,])
+#     
+#     for(j in (i+1):n){
+#       Rj<-as.SO3(Rs[j,])
+#       rmat[i,j]<-dist(Ri,Rj,method='intrinsic')
+#     }
+#   }
+#   return(rmat)
+# }
+# 
+# dmat(Rs)
+# plot(Rs,label_points=round(dmat(Rs)[,20],3))
+# 
+# #Order them by distance from S-hat
+# resids<-dist(Rs,mean(Rs),method='intrinsic')
+# Rs<-as.SO3(Rs[order(resids),])
+# 
+# plot(Rs,label_points=1:20,col=3)
+# 
+# n<-nrow(Rs)
+# Ti<-rep(0,n-1)
+# for(i in 1:(n-1)){
+#   Ti[i]<-dist(as.SO3(Rs[i,]),as.SO3(Rs[(i+1),]))
+# }
+@
+
+Finally, the $M$-statistic was originally suggested by \cite{mardia1975} and is simiar in spirit to the $C$-stastic, namely
+\[
+M=\min_i\left(\frac{n-1-R_i}{n-R}\right)
+\]
+where $R$ is mean resultant length based on the entire sample of size $n$ and $R_i$ is the mean resultant length after the $i$th obervation is deleted.  To put this on the same scale as the other statistics discussed \cite{collett1980} considers $1-M$.
+
+In a simulation study they determine the $C$ and $D$ statistics are the best choices.  Because $D$ is easier to compute it comes the most highly recommended.
+\bibliographystyle{plain}
+\bibliography{RobustRefs}
+
+\end{document}
