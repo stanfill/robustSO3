@@ -2,6 +2,7 @@
 \usepackage{amsmath,amsfonts,bm,fullpage}
 \usepackage{natbib}
 \newcommand{\ProjMean}{{\widehat{\bm S}_{2}}}
+\newcommand{\R}{{\mathbb{R}}}
 \begin{document}
 
 <<setup, include=FALSE>>=
@@ -18,7 +19,9 @@ options(replace.assign=TRUE,width=50)
 \normalsize
 In this document I summarize the work done for outlier detection for circular, spherical and related data types
 
-\section{Circular Data}
+\section{Circular Data}\label{sec:circle}
+
+For data on the circle each observation is an angle $\theta_i$ which correspond to the vector $\bm P_i\in \R^2$ according to $\bm P_i'=(x_i,y_i,z_i)=(\cos\theta_i,\sin\theta_i)$.  Define $S_x=\sum_{i=1}^nx_i$ and $S_y=\sum_{i=1}^ny_i$ then the resultant length is given by $R$ satisfying $R^2=S_x^2+S_y^2+S_z^2$, which has direction $\hat\theta_n$.  Also, $\bar{R}_n=R/n$.
 
 In \cite{collett1980}, four statistics to identify outliers in circular data are defined.  Only the von Mises distribution on the circle is considered in the simulation study, but three of the statistics are general and could be applied to any circular distribution. 
 
@@ -40,7 +43,7 @@ T_i=\theta_{(i+1)}-\theta_{(i)}\hspace{1em}\text{ and }\hspace{1em}T_n=2\pi-\the
 \]
  Also set $T_{0}=T_{n}$ then for $i=1,\dots,n$, $D_i=T_i/T_{i-1}$ is the ratio of the arc-lengths on either side of the $i$th observation.  Finally let $\theta_k$ be the observation that visually appears to be an outlier and define $D=\text{min}(D_k,D_{k}^{-1})$ then $D\in(0,1)$ and is unambiguous.
 
-<<dstat, fig.width=4, fig.height=4, out.width='.4\\linewidth',echo=FALSE>>=
+<<dstat, fig.width=4, fig.height=4, out.width='.4\\linewidth',echo=FALSE,eval=FALSE>>=
 #This is my SO(3) interpretation of the test statistics proposed in Collett
 #(1980) to identify "surprising values" on the circle
 
@@ -61,7 +64,7 @@ plot(Rs,label_points=round(dstat(Rs),3))
 @
 
 
-<<dmat,include=FALSE>>=
+<<dmat,include=FALSE,eval=FALSE>>=
 #The D-statistic is the arc lengths between successive observations.  Unfortunatlely that means we need to be able to order our data somehow.  The spherical interpretation of this statistic is due to Fisher, Lewis and Willcox (1981) and it centers the data around the mean, orders the data according to their arc-lengths from that center and computes G_n=(pi-theta_n)/(theta_n-theta_{n-1})
 
 resids<-dist(Rs,mean(Rs),method='intrinsic')
@@ -105,11 +108,15 @@ M=\min_i\left(\frac{n-1-R_i}{n-R}\right)
 \]
 where $R$ is mean resultant length based on the entire sample of size $n$ and $R_i$ is the mean resultant length after the $i$th observation is deleted.  To put this on the same scale as the other statistics discussed in \cite{collett1980} consider $1-M$.
 
-In a simulation study they determine the $C$ and $D$ statistics are the best choices.  Because $D$ is easier to compute it comes the most highly recommended.
+In a simulation study they determine that the statistics with distributions that rely on $\kappa$, namely $C$ and $D$, are the best choices.  Because $D$ is easier to compute it comes the most highly recommended.
 
-According to Mardia et al. (2009) \cite{mardia2009},  Best \& Fisher (1986) \cite{best1986} and Bagchi \& Guttman \cite{bagchi1990} consider other ways to identify outliers but I can't get a hold of either of these articles to read.
+According to Mardia et al. (2009) \cite{mardia2009},  Best \& Fisher (1986) \cite{best1986} and Bagchi \& Guttman \cite{bagchi1990} consider other ways to identify outliers but I can't get a hold of either of these articles to read.  Wehrly and Shine (1981) \cite{wehrly1981} compare the circular mean and median based on influence functions.  Lenth (1981) \cite{lenth1981} and Ducharme \& Milasevic (1987) \cite{ducharme1987} both investigate estimators that perform well with outliers.  Barnett \& Lewis \cite{barnett1994} gives a nice summary of these results (Chapter 11).
 
-\section{Spherical Data}
+
+\section{Spherical Data}\label{sec:sphere}
+
+For data on the sphere each observation consists of an angle pair $(\theta_i,\phi_i)$ which correspond to the vector $\bm P_i\in \R^3$ according to $\bm P_i'=(x_i,y_i,z_i)=(\sin\theta_i\cos\phi_i,\sin\theta_i\sin\phi_i,\cos\theta_i)$.  Define $S_x=\sum_{i=1}^nx_i$, $S_y=\sum_{i=1}^ny_i$ and $S_z=\sum_{i=1}^nz_i$ then the resultant length is given by $R$ satisfying $R^2=S_x^2+S_y^2+S_z^2$, which has direction $(\hat\theta_n,\hat\phi_n)$.  Also, $\bar{R}_n=R/n$.
+
 
 Fisher, Lewis \& Willcox (1981) \cite{fisher1981} extend the statistics of \cite{collett1980} to spherical data and also add a few of their own.  Several outliers in a single sample are also considered.  They focus on Fisher's distribution on the sphere.
 
@@ -122,20 +129,52 @@ Using the approximations coth$(\kappa)\approx 1$ and $\log(\text{sinh}\kappa)\ap
 \[
 E_n=(n-2)\frac{1+R_{n-1}^{(i)}-R_n}{n-1-R_{n-1}^{(i)}}.
 \]
-$E_n$ is based on a generalised likelihood-ratio test statistic testing the alternative location-slippage hypothesis.
+$E_n$ is based on a generalized likelihood-ratio test statistic testing the alternative location-slippage hypothesis.
 
-Alternative, one can test the alternative hypothesis that the mean directions are the same, but the concentration parameters are different.  This leads to the generalised likelihood-ratio test-statistic
+Alternative, one can test the alternative hypothesis that the mean directions are the same, but the concentration parameters are different.  This leads to the generalized likelihood-ratio test-statistic
 \[
 D_n=(n-1)f(\bar{R}_{n-1}^{(i)})+f(\bar{R}_1^{(i)})-nf(\bar{R}_n)
 \]
-where $f(\bar{r})=\log\hat\kappa(\bar{r})+(\bar{r}-1)\hat\kappa(\bar{r})$ and $\kappa(\bar{r})$ is the concentration parameter estiamte based on the sample mean resultant length $\bar{r}$.
+where $f(\bar{r})=\log\hat\kappa(\bar{r})+(\bar{r}-1)\hat\kappa(\bar{r})$ and $\kappa(\bar{r})$ is the concentration parameter estimate based on the sample mean resultant length $\bar{r}$.
 
 Let $l_i$, $m_i$ and $n_i$ be the direction cosines for $(\theta_i,\phi_i)$, $1\leq i\leq n$ and let $l_i'$, $m_i'$ and $n_i'$ be the direction cosines after they've been centered around a pole.  Define $\theta_i'=\cos^{-1}(n_i')$ and $c_i=1-n_i'$ then order them $\theat_{(i)}'$ and $c_{(i)}$.  The gap test for an outlying observation can be based on
 \[
 G_n=\frac{\pi-\theta_{(n)}'}{\theta_{(n)}'-\theta_{(n-1)}'}.
 \]
 
-The test statistic Ea 1 of Barnett and Lewis ()
+Under certain situations the $c_i$ values from the $G_n$ statistic have a nice limiting distribution.  Therefore, another test statistic for discordancy is the test statistic Ea 1 of Barnett and Lewis (1994, page 197) \cite{barnett1994} given by
+\[
+X_n=\frac{c_{(n)}}{\sum_{i=1}^nc_i}.
+\]
+
+Under the same assumptions of $X_n$, Barnett and Lewis (1994 page 198) propose the final estimator
+\[
+Y_n=\frac{c_{(n)}-c_{(n-1)}}{c_{(n)}}.
+\]
+
+In a simulation study they come to a conclusion similar to Collett (1980), in that the statistics with distributions that depend on $\kappa$ perform the best.  More specifically, $C_n$ is the best when $\kappa$ is known, $E_n$ is best when the data are concentrated ($\hat{\kappa}\geq 10$) and $X_n$ otherwise.
+
+A special type of spherical data is axial data (undirected lines).  These are related to quaternions because for axial data there is no difference between $\bm X$ and $-\bm X$, as is true with quaternions.  In Section 6.3.2(iii) Fisher et al. (1987) \cite{fisher1987} proposed the following test of discordance for the sample of undirected lines corresponding to rows in the $n\times 3$ matrix $\bm X$.  Let $T_n=\bm X'\bm X$ with ordered eigenvalues $\hat\tau_1,\hat\tau_2,\hat\tau_3$ and $T_{n-1}$ is the same with the $n$th observation deleted.  If the statistic
+\[
+H_n=(n-2)\frac{1+\hat\tau_{3,n-1}-\hat\hat_3}{n-1-\hat\tau_{3,n-1}.
+\]
+is large than the deleted observation is considered discordant.  I think this will translate nicely into quaternions.
+
+For graphical methods see Lewis and Fisher (1982) \cite{lewis1982}.  For testing several possible outliers at once, sometimes called {\it en bloc}, FLW \cite{fisher1981} consider a generalized version of $E_n$.  Kimber (1985) \cite{kimber1985} also looks at en bloc testing.  Fisher (1982) \cite{fisher1982} considers robust estimation of the concentration parameter $\kappa$.  Rivest (1989) \cite{rivest1989} looks at outliers in the spherical regression case.  Best \& Fisher (1986) \cite{best1986} and Fisher, Lewis \& Embleton (1993) \cite{fisher1987} look more at axial data.
+
+{\bf ADD TESTS FOR UNIFORMITY}
+
+\section{Other Leads}
+
+\section{$SO(3)$ Ideas}
+
+The tree assumptions being made when using a UARS model are $r_i$ is distributed according to some circular distribution centered at $0$, $\bm U_i$ is distributed uniformly on the unit sphere, $r_i$ and $\bm U_i$ are independent.  The following are ideas on how to test these assumptions given an unexpected pattern in the data.
+\begin{enumerate}
+\item $r_i\sim C(r|\kappa)$: Use one of the many statistics from Section \ref{sec:circle}
+\item $\bm U_i$ uniformly distributed on the sphere:  use one of the many tests of uniformity available for spherical data from Section \ref{sec:sphere}\\
+\item $r_i$ indep. $\bm U_i$: nothing exists for this.  Come up with a likelihood ratio test comparing the UARS and PARS models.  Will need some kind of limiting distribution.
+\end{enumerate}
+
 \bibliographystyle{plain}
 \bibliography{RobustRefs}
 
