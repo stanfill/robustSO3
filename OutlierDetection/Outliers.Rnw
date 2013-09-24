@@ -137,7 +137,7 @@ D_n=(n-1)f(\bar{R}_{n-1}^{(i)})+f(\bar{R}_1^{(i)})-nf(\bar{R}_n)
 \]
 where $f(\bar{r})=\log\hat\kappa(\bar{r})+(\bar{r}-1)\hat\kappa(\bar{r})$ and $\kappa(\bar{r})$ is the concentration parameter estimate based on the sample mean resultant length $\bar{r}$.
 
-Let $l_i$, $m_i$ and $n_i$ be the direction cosines for $(\theta_i,\phi_i)$, $1\leq i\leq n$ and let $l_i'$, $m_i'$ and $n_i'$ be the direction cosines after they've been centered around a pole.  Define $\theta_i'=\cos^{-1}(n_i')$ and $c_i=1-n_i'$ then order them $\theat_{(i)}'$ and $c_{(i)}$.  The gap test for an outlying observation can be based on
+Let $l_i$, $m_i$ and $n_i$ be the direction cosines for $(\theta_i,\phi_i)$, $1\leq i\leq n$ and let $l_i'$, $m_i'$ and $n_i'$ be the direction cosines after they've been centered around a pole.  Define $\theta_i'=\cos^{-1}(n_i')$ and $c_i=1-n_i'$ then order them $\theta_{(i)}'$ and $c_{(i)}$.  The gap test for an outlying observation can be based on
 \[
 G_n=\frac{\pi-\theta_{(n)}'}{\theta_{(n)}'-\theta_{(n-1)}'}.
 \]
@@ -154,13 +154,47 @@ Y_n=\frac{c_{(n)}-c_{(n-1)}}{c_{(n)}}.
 
 In a simulation study they come to a conclusion similar to Collett (1980), in that the statistics with distributions that depend on $\kappa$ perform the best.  More specifically, $C_n$ is the best when $\kappa$ is known, $E_n$ is best when the data are concentrated ($\hat{\kappa}\geq 10$) and $X_n$ otherwise.
 
-A special type of spherical data is axial data (undirected lines).  These are related to quaternions because for axial data there is no difference between $\bm X$ and $-\bm X$, as is true with quaternions.  In Section 6.3.2(iii) Fisher et al. (1987) \cite{fisher1987} proposed the following test of discordance for the sample of undirected lines corresponding to rows in the $n\times 3$ matrix $\bm X$.  Let $T_n=\bm X'\bm X$ with ordered eigenvalues $\hat\tau_1,\hat\tau_2,\hat\tau_3$ and $T_{n-1}$ is the same with the $n$th observation deleted.  If the statistic
+A special type of spherical data is axial data (undirected lines).  These are related to quaternions because for axial data there is no difference between $\bm X$ and $-\bm X$, as is true with quaternions.  In Best and Fisher (1986) \cite{best1986} and Section 6.3.2(iii) Fisher et al. (1987) \cite{fisher1987} proposed the following test of discordance for the sample of undirected lines corresponding to rows in the $n\times 3$ matrix $\bm X$.  Let $T_n=\bm X'\bm X$ with ordered eigenvalues $\hat\tau_1,\hat\tau_2,\hat\tau_3$ and $T_{n-1}$ is the same with the $n$th observation deleted.  If the statistic
 \[
-H_n=(n-2)\frac{1+\hat\tau_{3,n-1}-\hat\hat_3}{n-1-\hat\tau_{3,n-1}.
+H_n=(n-2)\frac{1+\hat\tau_{3,n-1}-\hat\tau_3}{n-1-\hat\tau_{3,n-1}}.
 \]
-is large than the deleted observation is considered discordant.  I think this will translate nicely into quaternions.
+is large than the deleted observation is considered discordant.  More specifically, for large $\kappa$ and for $\bm X_i\in \R^p$ from the Bipolar Watson distribution, $H_n$ has a limiting $F_{p-1,(n-2)(p-1)}$ distribution.  This statistic is adapted to en bloc testing of outliers by Figueiredo \& Gomes (2005) \cite{figueiredo2005}.  In Figueiredo (2007) \cite{figueiredo2007} a likelihood ratio statistic for testing one or en bloc outliers is shown to be well behaved.  I think this will translate nicely into quaternions.
 
-For graphical methods see Lewis and Fisher (1982) \cite{lewis1982}.  For testing several possible outliers at once, sometimes called {\it en bloc}, FLW \cite{fisher1981} consider a generalized version of $E_n$.  Kimber (1985) \cite{kimber1985} also looks at en bloc testing.  Fisher (1982) \cite{fisher1982} considers robust estimation of the concentration parameter $\kappa$.  Rivest (1989) \cite{rivest1989} looks at outliers in the spherical regression case.  Best \& Fisher (1986) \cite{best1986} and Fisher, Lewis \& Embleton (1993) \cite{fisher1987} look more at axial data.
+<<quatHn,include=FALSE,eval=FALSE>>=
+Rs<-ruars(20,rcayley,kappa=50)
+plot(Rs)
+Qs<-Q4(Rs)
+
+HnFun<-function(Qs){
+  Tn<-t(Qs)%*%Qs
+  n<-nrow(Qs)
+  tau4n<-svd(Tn)$d[1]
+  tau4n1<-rep(0,n)
+  
+  for(i in 1:n){
+    Qsi<-Qs[-i,]
+    Tn1<-t(Qsi)%*%Qsi
+    tau4n1[i]<-svd(Tn1)$d[1]
+  }
+  Hn<-(n-2)*(1+tau4n1-tau4n)/(n-1-tau4n1)
+  return(Hn)
+}
+
+stats<-HnFun(Qs)
+plot(Rs,label_points=round(stats,3))
+plot(Rs,label_points=round(stats,3),col=2)
+plot(Rs,label_points=round(stats,3),col=3)
+
+QsOutlier<-as.Q4(rbind(Qs,Q4(c(1,0,0),pi/2)))
+RsOutlier<-SO3(QsOutlier)
+statsOutlier<-HnFun(QsOutlier)
+plot(RsOutlier,label_points=round(statsOutlier,3))
+plot(RsOutlier,label_points=round(statsOutlier,3),col=2)
+plot(RsOutlier,label_points=round(statsOutlier,3),col=3)
+
+@
+
+For graphical methods see Lewis and Fisher (1982) \cite{lewis1982}.  For testing several possible outliers at once, sometimes called {\it en bloc}, FLW \cite{fisher1981} consider a generalized version of $E_n$.  Kimber (1985) \cite{kimber1985} also looks at en bloc testing based on a statistic similar in spirit to $X_n$.  He claims it does better than the en bloc methods of FLW.  Fisher (1982) \cite{fisher1982} considers robust estimation of the concentration parameter $\kappa$.  Rivest (1989) \cite{rivest1989} looks at outliers in the spherical regression case.  Best \& Fisher (1986) \cite{best1986} and Fisher, Lewis \& Embleton (1993) \cite{fisher1987} look more at axial data.
 
 {\bf ADD TESTS FOR UNIFORMITY}
 
@@ -170,9 +204,14 @@ For graphical methods see Lewis and Fisher (1982) \cite{lewis1982}.  For testing
 
 The tree assumptions being made when using a UARS model are $r_i$ is distributed according to some circular distribution centered at $0$, $\bm U_i$ is distributed uniformly on the unit sphere, $r_i$ and $\bm U_i$ are independent.  The following are ideas on how to test these assumptions given an unexpected pattern in the data.
 \begin{enumerate}
-\item $r_i\sim C(r|\kappa)$: Use one of the many statistics from Section \ref{sec:circle}
-\item $\bm U_i$ uniformly distributed on the sphere:  use one of the many tests of uniformity available for spherical data from Section \ref{sec:sphere}\\
+\item $r_i\sim C(r|\kappa)$: Use one of the statistics from Section \ref{sec:circle}
+\item $\bm U_i$ uniformly distributed on the sphere:  use one of the tests of uniformity available for spherical data from Section \ref{sec:sphere}
 \item $r_i$ indep. $\bm U_i$: nothing exists for this.  Come up with a likelihood ratio test comparing the UARS and PARS models.  Will need some kind of limiting distribution.  Check with Bingham, Nordman and Vardeman (2012) \cite{bingham2012}.
+\item Omnibus test ideas, i.e. $\bm R_i$ is weird for any reason:
+\begin{enumerate}
+\item Use multivariate methods on $\bm h_i\in\R^3$ that generates $\bm R_i=\exp[\bm{\Phi}(\bm h_i)]$
+\item $E_n$ check changes in resultant length of sample, can we do the same with $\|\sum_i\bm R_i\|$ or det$(\sum_i \bm R_i)$
+\end{enumerate}
 \end{enumerate}
 
 \bibliographystyle{plain}
