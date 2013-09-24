@@ -172,7 +172,7 @@ The tree assumptions being made when using a UARS model are $r_i$ is distributed
 \begin{enumerate}
 \item $r_i\sim C(r|\kappa)$: Use one of the many statistics from Section \ref{sec:circle}
 \item $\bm U_i$ uniformly distributed on the sphere:  use one of the many tests of uniformity available for spherical data from Section \ref{sec:sphere}\\
-\item $r_i$ indep. $\bm U_i$: nothing exists for this.  Come up with a likelihood ratio test comparing the UARS and PARS models.  Will need some kind of limiting distribution.
+\item $r_i$ indep. $\bm U_i$: nothing exists for this.  Come up with a likelihood ratio test comparing the UARS and PARS models.  Will need some kind of limiting distribution.  Check with Bingham, Nordman and Vardeman (2012) \cite{bingham2012}.
 \end{enumerate}
 
 \bibliographystyle{plain}
