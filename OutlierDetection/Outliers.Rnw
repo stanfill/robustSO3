@@ -17,7 +17,7 @@ options(replace.assign=TRUE,width=50)
 \Large{\bf Outlier Detection for Circular and Spherical Data}
 \end{center}
 \normalsize
-In this document I summarize the work done for outlier detection for circular, spherical and related data types
+This is the literature I have found for outliers for circular, spherical and $SO(3)$ data.
 
 \section{Circular Data}\label{sec:circle}
 
@@ -110,7 +110,9 @@ where $R$ is mean resultant length based on the entire sample of size $n$ and $R
 
 In a simulation study they determine that the statistics with distributions that rely on $\kappa$, namely $C$ and $D$, are the best choices.  Because $D$ is easier to compute it comes the most highly recommended.
 
-According to Mardia et al. (2009) \cite{mardia2009},  Best \& Fisher (1986) \cite{best1986} and Bagchi \& Guttman \cite{bagchi1990} consider other ways to identify outliers but I can't get a hold of either of these articles to read.  Wehrly and Shine (1981) \cite{wehrly1981} compare the circular mean and median based on influence functions.  Lenth (1981) \cite{lenth1981} and Ducharme \& Milasevic (1987) \cite{ducharme1987} both investigate estimators that perform well with outliers.  Barnett \& Lewis \cite{barnett1994} gives a nice summary of these results (Chapter 11).
+The following is according to Chapter 12 of Mardia and Jupp (2009) \cite{mardia2009} because I cannot get a physical copy of either artilce.  Best \& Fisher (1986) \cite{best1986} use the relationship between the Watson distribution on the sphere and the exponential distribution to test a discordant point as an outlier.  This is an application of the ideas of FLW to a different distribution and space.  Bagchi \& Guttman (1990) \cite{bagchi1990} use Bayesian methods to test for discordant points en bloc, given the number of discordent points is fixed and known.  
+
+In terms of estimators that accomodate outliers, Wehrly and Shine (1981) \cite{wehrly1981} compare the circular mean and median based on traditional influence functions.  Since the influence functions for both estimators are bounded and are therefor B-robust estimators the authors claim the mean is preferred since it is also the MLE.  Ko \& Guttorp (1988) \cite{ko1988} later claim the work of Wehrly and Shine (1981) (and Watson (1983) \cite{watson1983} for that matter) is garbage because using traditional influence curves for bounded parameter spaces is meaningless.  Lenth (1981) \cite{lenth1981} considers an iteratively re-weighted M-estimator.  The main drawback from his estimator is its reliance on a good estimate of concentration $\kappa$.  Ducharme \& Milasevic (1987) \cite{ducharme1987} intorduce the {\it normalized spatial median}, which is shown to perform well in the presence of outliers.  Barnett \& Lewis \cite{barnett1994} summarize most of this material in Chapter 11.
 
 
 \section{Spherical Data}\label{sec:sphere}
@@ -198,17 +200,19 @@ For graphical methods see Lewis and Fisher (1982) \cite{lewis1982}.  For testing
 
 {\bf ADD TESTS FOR UNIFORMITY}
 
-\section{Other Leads}
 
 \section{$SO(3)$ Ideas}
 
-The tree assumptions being made when using a UARS model are $r_i$ is distributed according to some circular distribution centered at $0$, $\bm U_i$ is distributed uniformly on the unit sphere, $r_i$ and $\bm U_i$ are independent.  The following are ideas on how to test these assumptions given an unexpected pattern in the data.
+I have not found a formal discussion or definition of rotations. Fletcher et al. (2008) \cite{fletcher2008} use the term `outlier' a lot in connection with rotation data, but it is never defined.  For their simulation study they simulate some data from a distribution with one central direction, then simulate the rest of the data from the same distribution with a mean rotated through $90^\circ$.
+
+The three assumptions being made when using a UARS model are $r_i$ is distributed according to some circular distribution centered at $0$, $\bm U_i$ is distributed uniformly on the unit sphere, $r_i$ and $\bm U_i$ are independent.  The following are ideas on how to test these assumptions given an unexpected pattern in the data.
 \begin{enumerate}
 \item $r_i\sim C(r|\kappa)$: Use one of the statistics from Section \ref{sec:circle}
-\item $\bm U_i$ uniformly distributed on the sphere:  use one of the tests of uniformity available for spherical data from Section \ref{sec:sphere}
-\item $r_i$ indep. $\bm U_i$: nothing exists for this.  Come up with a likelihood ratio test comparing the UARS and PARS models.  Will need some kind of limiting distribution.  Check with Bingham, Nordman and Vardeman (2012) \cite{bingham2012}.
-\item Omnibus test ideas, i.e. $\bm R_i$ is weird for any reason:
+\item $\bm U_i$ uniformly distributed on the sphere:  use one of the tests of uniformity available for spherical data from Section \ref{sec:sphere}.  We could also do a likelihood ratio test comparing the likelihood of observing these data assuming the UARS and PARS models, see Bingham et al. (2012) \cite{bingham2012}.  This will require some asymptotics and will likely be difficult since the PARS model cannot be written down in closed form.
+\item $r_i$ indep. $\bm U_i$: nothing exists for this.  
+\item Omnibus test ideas, i.e. $\bm R_i$ is weird for whatever reason:
 \begin{enumerate}
+\item Using the quaternion, apply the $H_n$ statistic using the fourth (largest) eigenvalue in place of the third.
 \item Use multivariate methods on $\bm h_i\in\R^3$ that generates $\bm R_i=\exp[\bm{\Phi}(\bm h_i)]$
 \item $E_n$ check changes in resultant length of sample, can we do the same with $\|\sum_i\bm R_i\|$ or det$(\sum_i \bm R_i)$
 \end{enumerate}
