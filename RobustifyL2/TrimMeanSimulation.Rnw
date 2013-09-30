@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage{amsmath,amsfonts,bm,fullpage}
+\usepackage{natbib}
+\bibliographystyle{abbrvnat}
+\newcommand{\ProjMean}{{\widehat{\bm S}_{2}}}
+\newcommand{\R}{{\mathbb{R}}}
+\begin{document}
+
+\begin{center}
+\Large{\bf Robustifying the Projected Mean}
+\end{center}
+\normalsize
+This is the literature I have found methods to robustify the $L_2$ estimator for various data types.  Specifically I focus on the trimmed and winsorized means.
+
+<<setup,include=FALSE>>=
+library(rotations)
+source("/Users/stanfill/Documents/GitHub/robustSO3/robustFunctions.R")
+
+# set global chunk options
+opts_chunk$set(fig.path='Figure/', fig.align='center', fig.show='hold',dev='png')
+options(replace.assign=TRUE,width=50)
+@
+ 
+\section{Trimmed Mean}
+
+In Section 4 of \cite{laha2011} they define the circular $\gamma$-trimmed mean as
+\[
+\mu_\gamma=\text{arg}\left[\frac{1}{1-2\gamma}\int_{\alpha}^\beta\right]
+\]
+
+<<tmean,eval=FALSE,include=FALSE>>=
+rangle<-rcayley
+n<-50
+kappa<-100
+p1<-.1
+p2<-.05
+Scont<-genR(pi/2) #slippage mean
+
+Rs<-ruarsCont(n,rangle,kappa,p1,S=id.SO3,Scont)
+Qs<-Q4(Rs)
+tMean<-trimMean(Qs,p2,HnFun)
+
+dist(mean(Qs))
+dist(trimMean(Qs,p2,HnFun))
+dist(trimMean(Qs,p2,HnFun,T))
+dist(median(Qs))
+plot(Rs,center=SO3(tMean),show_estimates='all')
+@
+
+\section{Winsorized Mean}
+
+%\bibliographystyle{plain}
+\bibliography{../OutlierDetection/RobustRefs}
+\end{document}
