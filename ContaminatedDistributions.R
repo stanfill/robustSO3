@@ -2,15 +2,15 @@
 
 library(rotations2)
 
-#n 			- sample size
-#rangle - angular distribution from which to simulate
-#kappa	- concentration parameter
-#p			- percent of n that will be contaminated
-#S			- central direction of normal data
-#Scont	-	central direction of contaminated data
-
 ruarsCont<-function(n,rangle,kappa,p,S=id.SO3,Scont){
 	
+  #n   		- sample size
+  #rangle - angular distribution from which to simulate
+  #kappa	- concentration parameter
+  #p			- percent of n that will be contaminated
+  #S			- central direction of normal data
+  #Scont	-	central direction of contaminated data
+  
 	rs<-rangle(n,kappa=kappa)
 
 	nCont<-floor(p*n)

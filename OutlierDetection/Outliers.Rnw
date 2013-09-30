@@ -6,7 +6,6 @@
 \begin{document}
 
 <<setup, include=FALSE>>=
-library(knitr)
 library(rotations)
 # set global chunk options
 opts_chunk$set(fig.path='Figure/', fig.align='center', fig.show='hold',dev='png')
