@@ -65,7 +65,7 @@ This is the literature I have found methods to robustify the $L_2$ estimator for
 
 
  
-\section{Trimmed Mean}
+\section{Trimmed Means}
 
 Assume the sample of size $n$, $x_1,\dots,x_n$, has empirical distribution function $F_n$.  The sample $\alpha$-trimmed mean, according to \cite{huber2009} page 10, is
 \[
@@ -76,16 +76,31 @@ The following is taken from Section 4 of \cite{laha2011}. In the circular contex
 \[
 \int_{\beta}^\alpha f(\theta)d\theta=1-2\gamma.
 \] 
-The circular $\gamma$-trimmed mean as
+The circular $\gamma$-trimmed mean is
 \[
 \mu_\gamma=\text{arg}\left[\frac{1}{1-2\gamma}\int^{\alpha}_\beta\exp(\imath\theta)f(\theta)d\theta\right].
 \]
-In \cite{laha2013} they update their work in this area for the wrapped normal distribution in particular.
+In their Theorem 4.1 they show it is SB-robust for the circular von Mises distribution.  In \cite{laha2013} they show it is SB-robust for the wrapped normal distribution too.  Remember SB-robustness is always with respect to some dispersion measure.
 
 
 
 
-\section{Winsorized Mean}
+\section{Weighted Means}
+
+According to \cite{huber2009} Section 11.2.2 the current best possible break down for a $d$-dimensional affine equivilant estimator is
+\[
+\epsilon^*=\frac{n-2d+1}{2n-2d+1}.
+\]
+So for us, this would be $(n-5)/(2n-5)$.  This break-down is achieved by the weighted average of the points $\bm x_i$ from $\bm X$ with weights $w_i=w(r_i)$ where
+\[
+r_i=\overset{\bm u}{sup}\frac{\bm u^\top\bm x_i-\text{MED}(\bm u^\top\bm X)}{\text{MAD}(\bm u^\top\bm X)}
+\]
+and $w(r)$ is a strictly positive, decreasing fuction of $r\geq 0$, with $w(r)r$ bounded.
+
+
+
+
+\section{Winsorized Means}
 
 %\bibliographystyle{plain}
 \bibliography{../OutlierDetection/RobustRefs}

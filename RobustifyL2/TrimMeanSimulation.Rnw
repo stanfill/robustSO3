@@ -21,7 +21,7 @@ opts_chunk$set(fig.path='Figure/', fig.align='center', fig.show='hold',dev='png'
 options(replace.assign=TRUE,width=50)
 @
  
-\section{Trimmed Mean}
+\section{Trimmed Means}
 
 Assume the sample of size $n$, $x_1,\dots,x_n$, has empirical distribution function $F_n$.  The sample $\alpha$-trimmed mean, according to \cite{huber2009} page 10, is
 \[
@@ -43,7 +43,7 @@ rangle<-rcayley
 n<-50
 kappa<-100
 p1<-.1
-p2<-.05
+p2<-.1
 Scont<-genR(pi/2) #slippage mean
 
 Rs<-ruarsCont(n,rangle,kappa,p1,S=id.SO3,Scont)
@@ -57,7 +57,31 @@ dist(median(Qs))
 plot(Rs,center=SO3(tMean),show_estimates='all')
 @
 
-\section{Winsorized Mean}
+\section{Weighted Means}
+
+According to \cite{huber2009} Section 11.2.2 the current best possible break down for a $d$-dimensional affine equivilant estimator is
+\[
+\epsilon^*=\frac{n-2d+1}{2n-2d+1}.
+\]
+So for us, this would be $(n-5)/(2n-5)$.  This break-down is achieved by the weighted average of the points $\bm x_i$ from $\bm X$ with weights $w_i=w(r_i)$ where
+\[
+r_i=\sup_{\bm u}\frac{\bm u^\top\bm x_i-\text{MED}(\bm u^\top\bm X)}{\text{MAD}(\bm u^\top\bm X)}
+\]
+and $w(r)$ is a strictly positive, decreasing fuction of $r\geq 0$, with $w(r)r$ bounded.  I think $r_i$ can be replaced with any one-dimensional projection of the outlyingness of the $\bm x_i$.  For example, $H_n$ or the distance the mean moves when $\bm R_i$ is removed.
+
+<<weightedMean,include=FALSE,eval=FALSE>>=
+Rs<-Q4(ruarsCont(n,rangle,kappa,p1,S=id.SO3,Scont))
+wsHn<-1/sqrt(HnFun(Rs))
+wsDist<-1/MeanMove(Rs)
+
+dist(weighted.mean(Rs,wsHn))
+dist(weighted.mean(Rs,wsDist))
+dist(mean(Rs))
+dist(median(Rs))
+dist(trimMean(Qs,p2,HnFun))
+@
+
+\section{Winsorized Means}
 
 %\bibliographystyle{plain}
 \bibliography{../OutlierDetection/RobustRefs}
