@@ -58,7 +58,7 @@ trimMean<-function(Qs,a,discordFun,anneal=F){
   #discordFun - function to identify extreme observations, larger value more extreme obs
   #anneal - T/F, remove all at once (F) or one at a time (T)
   n<-nrow(Qs)
-  nCut<-floor(min(max(0,n*a),n/2)) #remove atleast 0, atmost n/2
+  nCut<-floor(min(max(0,n*a),n)) #remove at least 0, at most n
   
   if(nCut==0){
     return(mean(Qs))

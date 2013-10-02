@@ -23,10 +23,20 @@ options(replace.assign=TRUE,width=50)
  
 \section{Trimmed Mean}
 
-In Section 4 of \cite{laha2011} they define the circular $\gamma$-trimmed mean as
+Assume the sample of size $n$, $x_1,\dots,x_n$, has empirical distribution function $F_n$.  The sample $\alpha$-trimmed mean, according to \cite{huber2009} page 10, is
 \[
-\mu_\gamma=\text{arg}\left[\frac{1}{1-2\gamma}\int_{\alpha}^\beta\right]
+\bar{X}_\alpha=\frac{1}{1-2\alpha}\int_{\alpha}^{1-\alpha}F_n^{-1}(t)dt.
 \]
+
+The following is taken from Section 4 of \cite{laha2011}. In the circular context, suppose $\theta$ is a circular random variable with p.d.f.~$f(\theta)$ and $0<\gamma\leq 0.5$ is fixed.  Let $\alpha,\beta$ be two points on the unit circle satisfying
+\[
+\int_{\beta}^\alpha f(\theta)d\theta=1-2\gamma.
+\] 
+The circular $\gamma$-trimmed mean is
+\[
+\mu_\gamma=\text{arg}\left[\frac{1}{1-2\gamma}\int^{\alpha}_\beta\exp(\imath\theta)f(\theta)d\theta\right].
+\]
+In their Theorem 4.1 they show it is SB-robust for the circular von Mises distribution.  In \cite{laha2013} they show it is SB-robust for the wrapped normal distribution too.  Remember SB-robustness is always with respect to some dispersion measure.
 
 <<tmean,eval=FALSE,include=FALSE>>=
 rangle<-rcayley
