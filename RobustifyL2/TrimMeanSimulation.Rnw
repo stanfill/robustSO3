@@ -85,7 +85,7 @@ dist(median(Rs))
 dist(trimMean(Qs,p2,HnFun))
 @
 
-<<HnDist,include=FALSE,echo=FALSE>>=
+<<HnDist,include=FALSE,echo=FALSE,eval=FALSE>>=
 kappa<-10
 Rs<-Q4(ruarsCont(n,rangle,kappa,p1,S=id.SO3,Scont))
 Hn<-sqrt(HnFun(Rs))
@@ -98,7 +98,32 @@ plot(Vals,Hn)
 @
 
 \section{Winsorized Means}
+The winsorized mean (in my mind) coincides with the multidimensional Huber estimator.  From the intervals Appendix, the infulece function of $\ProjMean$ for $\bm R(r,\bm u)$ distributed according to a directionally symmetric distribution on $SO(3)$ $F$ is
+\[
+\text{IF}_2(\bm R_i,F)=\frac{3}{1+2E[\cos(r)]}\sin(r)\bm u.
+\]
 
+Thus the gross error sensitivity is
+\[
+\|\text{IF}_2(\bm R_i,F)\|=\|\frac{3}{1+2E[\cos(r)]}\sin(r)\bm u\|=\left|\frac{3\sin(r)}{1+2E[\cos(r)]}\right|=\frac{3\sin(|r|)}{1+2E[\cos(r)]}
+\]
+
+<<IFheatMatp,eval=FALSE,include=FALSE>>=
+#Try to make a heat map representing the influence function of the 2D projected mean
+#For the projected mean the IF is proportional to sin(r_i)u_i
+len<-25
+
+theta <- acos(seq(-1, 1,length=len))
+phi <- seq(-pi, pi,length=len)
+ri <- seq(0,pi,length=len)
+IFS2<-expand.grid(sin(theta) * cos(phi),sin(theta) * sin(phi),sin(ri))
+names(IFS2)<-c("U1","U2","sinri")
+
+qplot(U1,U2,data=IFS2,colour=as.factor(sinri))
+
+ts<-seq(-pi,pi,length=100)
+plot(ts,sin(ts),type='l')+abline(h=0,v=0)
+@
 
 <<winsMean,include=FALSE>>=
 rangle<-rcayley
