@@ -14,7 +14,7 @@ This is the literature I have found methods to robustify the $L_2$ estimator for
 
 <<setup,include=FALSE>>=
 library(rotations)
-source("/Users/stanfill/Documents/GitHub/robustSO3/robustFunctions.R")
+#source("/Users/stanfill/Documents/GitHub/robustSO3/robustFunctions.R")
 
 # set global chunk options
 opts_chunk$set(fig.path='Figure/', fig.align='center', fig.show='hold',dev='png')
@@ -125,7 +125,7 @@ ts<-seq(-pi,pi,length=100)
 plot(ts,sin(ts),type='l')+abline(h=0,v=0)
 @
 
-<<winsMean,include=FALSE>>=
+<<winsMean,include=FALSE,eval=FALSE>>=
 rangle<-rcayley
 n<-50
 kappa<-100
@@ -139,6 +139,45 @@ plot(Rs,id.SO3)
 
 wRs<-winzMean(Rs,.1)
 plot(wRs$Rs,center=id.SO3)
+@
+
+<<simulation,echo=FALSE>>=
+dist<-c("Cayley","vonMises")
+rdist<-c(rcayley,rvmises)
+kappa<-c(.5,1,10)
+n<-c(10,50)
+res<-expand.grid(dist,kappa,n)
+res<-data.frame(Dist=res$Var1,kappa=res$Var2,n=res$Var3,Mean=0,Median=0,Trim=0,Winz=0,Weight=0)
+Scont<-genR(pi/2)
+B<-100
+
+pCont<-.1   #level of contamintion in the simulated data sets
+alpha<- .1  #percent to trim/winsorize
+
+for(i in 1:nrow(res)){
+  
+  dis<-2-i%%2
+  mediani<-meani<-trimi<-winzi<-weighti<-0
+    
+  for(j in 1:B){
+    Rs<-ruarsCont(n=res$n[i],rangle=rdist[dis][[1]],kappa=res$kappa[i],pCont,S=id.SO3,Scont)
+    mediani<-mediani+dist(median(Rs))
+    meani<-meani+dist(mean(Rs))
+    winzi<-winzi+dist(winzMean(Rs,alpha,HnFun)$Shat)
+    
+    Qs<-Q4(Rs)
+    trimi<-trimi+dist(trimMean(Qs,alpha,HnFun)$Shat)
+    weighti<-weighti+dist(weighted.mean(Qs,w=1/sqrt(HnFun(Qs))))
+  }
+  
+  res$Median[i]<-mediani/B
+  res$Mean[i]<-meani/B
+  res$Weight[i]<-weighti/B
+  res$Winz[i]<-winzi/B
+  res$Trim[i]<-trimi/B
+}
+
+res
 @
 
 %\bibliographystyle{plain}

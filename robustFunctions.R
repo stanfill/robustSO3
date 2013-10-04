@@ -24,6 +24,10 @@ HnFun<-function(Qs,full=TRUE){
   #Compute the statistic proposed by FLW(?) that is a function of the largest eigenvalue
   #when observation i was removed
   
+  if(ncol(Qs)==9){
+    Qs<-Q4(Qs)
+  }
+  
   Tn<-t(Qs)%*%Qs
   n<-nrow(Qs)
   tau4n<-svd(Tn)$d[1]
@@ -115,7 +119,7 @@ winzMean<-function(Rs,a,discordFun,anneal=F){
     wRs<-Rs
     wRs[toWinz,]<-winzRs
     
-    return(list(Rs=wRs,Shat=mean(Rs)))
+    return(list(Rs=wRs,Shat=mean(wRs)))
   }
   
 }
