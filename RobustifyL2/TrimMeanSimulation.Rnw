@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage{amsmath,amsfonts,bm,fullpage,multirow}
-\usepackage{natbib}
+\usepackage{natbib,tikz}
 \bibliographystyle{abbrvnat}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \newcommand{\ProjMean}{{\widehat{\bm S}_{2}}}
@@ -8,6 +8,7 @@
 \newcommand{\HuberMean}{{\widehat{\bm S}_H}}
 \newcommand{\WeightMean}{{\widehat{\bm S}_W}}
 \newcommand{\TrimMean}{{\widehat{\bm S}_T}}
+\newcommand{\WinzMean}{{\widehat{\bm S}_Z}}
 \newcommand{\R}{{\mathbb{R}}}
 \begin{document}
 
@@ -49,7 +50,7 @@ To define the $SO(3)$ trimmed mean we need to determine which observations are i
 \begin{equation}\label{eqn:Hj}
 H_j=(n-2)\frac{1+\hat\tau_{3,j}-\hat\tau_3}{n-1-\hat\tau_{3,j}}
 \end{equation}
-where $n$ is the sample size, $\hat{\tau}$ is the largest eigenvalue of $T=\sum_{i=1}^n\bm q_i\bm q_i^\top$ and $\hat\tau_{3,i}$ is the largets eigenvalue of $T-\bm q_j\bm q_j^\top$.  See ``Ouliers.pdf" for an expanded discussion on $H_i$.
+where $n$ is the sample size, $\hat{\tau}$ is the largest eigenvalue of $T=\sum_{i=1}^n\bm q_i\bm q_i^\top$ and $\hat\tau_{3,i}$ is the largest eigenvalue of $T-\bm q_j\bm q_j^\top$.  See ``Ouliers.pdf" for an expanded discussion on $H_i$.
 
 It follows that $\alpha$-trimmed mean in $SO(3)$ is defined by
 \[
@@ -59,7 +60,7 @@ where $\Omega_0=\{\bm R:\bm R\in SO(3), H(\bm R)\leq q_{\alpha}\}$ and $q_\alpha
 \[
 \TrimMean=\argmax_{\bm S\in SO(3)}\text{tr}(\bm S^\top\overline{\bm R}_T)
 \]
-where $\overline{\bm R}_T=\sum_{i=1}^n\bm R_iI(\bm H_i\leq \hat q_{\alpha})/n_\alpha$, $\hat q_{\alpha}$ is the $100(1-\alpha)\%$ of the distribution of $H_i$ and $n_\alpha$ is the final sample size after trimming.
+where $\overline{\bm R}_T=\sum_{i=1}^n\bm R_iI(\bm H_i\leq \hat q_{\alpha})$ and $\hat q_{\alpha}$ is the $100(1-\alpha)\%$ of the distribution of $H_i$.
 
 <<tmean,eval=FALSE,include=FALSE>>=
 rangle<-rcayley
@@ -94,9 +95,9 @@ and $w(r)$ is a strictly positive, decreasing function of $r\geq 0$, with $w(r)r
 
 Define the $SO(3)$ weighted mean as
 \begin{align*}
-\WeightMean=\argmax_{\bm S\in SO(3)}\text{tr}(\bm S\top\overline{\bm R}_W)
+\WeightMean=\argmax_{\bm S\in SO(3)}\text{tr}(\bm S^\top\overline{\bm R}_W)
 \end{align*}
-where $\overline{\bm R}_W=\sum_{i=1}^nw_i\bm R_i/\sum_i w_i$, $w_i^{-1}=\sqrt{H_i}/(\sum_i \sqrt{H_i})$ and $H_i$ is from \eqref{eqn:Hj}.  I use the square root of $H_i$ because it acts like a square loss function instead of an absolute value loss function, which is more ``robust."
+where $\overline{\bm R}_W=(\sum_{i}w_i\bm R_i)/(\sum_i w_i)$, the weights $w_i^{-1}=\sqrt{H_i}/(\sum_i \sqrt{H_i})$ and $H_i$ is from \eqref{eqn:Hj}.  I use the square root of $H_i$ because $H_i$ alone behaves like a square loss function instead of an absolute loss function.
 
 <<weightedMean,include=FALSE,eval=FALSE>>=
 Rs<-Q4(ruarsCont(n,rangle,kappa,p1,S=id.SO3,Scont))
@@ -126,15 +127,50 @@ plot(EDist,Vals)
 plot(Vals,Hn)
 @
 
-\section{Huber Estimator}
+\section{Huber Estimator \& Winsorized Mean}
 
-The multidimensional Huber estimator \citep{hampel2011} places a upper-bound on the influence function.  For observations beyond that bound, that point is projected into that bound. In the strict definition (4.3.2 on page 239) they bound the influence function.  Since the influence function of $\ProjMean$ is
+The idea of the multidimensional Huber estimator is to robustify an esimator by placing a bound on the norm of its influence function.  In Figure \ref{fig:Huber} the 2-dimensional case is illustrated for the artificial data $\bm q_1,\dots,\bm q_6$.
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}
+    \draw [black!20] (-3,-3) grid (3,3);
+    \draw (0,0) circle [radius=2];
+    \draw [->,ultra thick] (0,0) -- (2,0);
+    \draw [<->] (-3,0) -- (3,0);
+    \draw [<->] (0,-3) -- (0,3);
+    %\node [above] at (3,0) {$x$}
+    \node [above] at (1,0) {c};
+    \node [above] at (-1,-.5) {$\bm{q}_1$};
+    \draw [fill] (-1,-.5) circle [radius=0.025];
+    \node [above] at (.5,.75) {$\bm{q}_2$};
+    \draw [fill] (.5,.75) circle [radius=0.025];
+    \node [above] at (1,-1.732051) {$\bm{q}_3$};
+    \draw [fill] (1,-1.732051) circle [radius=0.025];
+    \node [above] at (-.25,1.5) {$\bm{q}_4$};
+    \draw [fill] (-.25,1.5) circle [radius=0.025];
+    \node [above] at (2,2) {$\bm{q}_5$};
+    \draw [fill] (2,2) circle [radius=0.025];
+    \node [left] at (1.414214, 1.414214) {$\bm{q}_5^*$};
+    \draw [fill] (1.414214, 1.414214) circle [radius=0.025];
+    \draw [->] (2,2) -- (1.414214, 1.414214);
+    \node [below] at (-1,-2.5) {$\bm{q}_6$};
+    \draw [fill] (-1,-2.5) circle [radius=0.025];
+    \node [above] at (-0.7427814,  -1.8569534) {$\bm{q}_6^*$};
+    \draw [fill] (-0.7427814, -1.8569534) circle [radius=0.025];
+    \draw [->] (-1,-2.5) -- (-0.7427814,  -1.8569534);
+\end{tikzpicture}
+\end{center}
+\caption{Multidimensional Huber estimator as illustrated in Section 4.3 of \cite{hampel2011}.}
+\label{fig:Huber}
+\end{figure}
+
+Each point represents the influence function evaluated at that data point.  The norm of the influence function for this estimator evaluated at $\bm q_1,\dots,\bm q_4$ all lie within the specified distance of the origin so they are left untouched.  The norm of the influence function evaluated at $\bm q_5$ and $\bm q_6$ however is larger than $c$ and therefore those points are altered such that the norm of the influence function has a norm of $c$.  The reason (according to pp 239 of \citealt{hampel2011}) for placing the bound on the influence function is because  ``the most meaningful version of the $\psi$-function defining an $M$-estimator is its influence function."
+
+Applying this idea to $SO(3)$ data, recall from the regions paper that the influence function of $\ProjMean$ is
 \[
 \text{IF}_2(\bm R_i,F)=\frac{3}{1+2E[\cos(r)]}\sin(r)\bm u
 \]
-then all that is being bounded is $\sin(r)$.  
-
-Unfortunately, this is not a very good estimator for us because it puts the most restrictions on the range near $\pi/2$ instead or $\pi$.  Therefore the modified Huber estimator on $SO(3)$ puts a bound on $r_i=d_r(\bm R_i,\ProjMean)$ and is denoted $\HuberMean$.
+where $r=d_r(\bm R_i,\bm S)$ or in practice $\hat{r}=d_r(\bm R_i,\ProjMean)$.  It follows that $\|\text{IF}_2(\bm R_i,F)\|\propto \sin(|r|)$.  Unfortunately, using the Huber estimator directly will put the most restrictions on the $r$ values near $\pi/2$ instead or $\pi$, which is where we really want to place the upper bound.  Therefore I propose the modified Huber estimator on $SO(3)$ put a bound on $r_i=d_r(\bm R_i,\ProjMean)$ and is denoted $\HuberMean$.  
 
 The algorithm I use to compute $\HuberMean$ based on the sample $\bm R_1,\dots,\bm R_n$ and the constant $c<\pi$ is as follows
 \begin{enumerate} 
@@ -145,11 +181,24 @@ The algorithm I use to compute $\HuberMean$ based on the sample $\bm R_1,\dots,\
 \item Find $\bm u_i\in\mathcal{S}^3$ satisfying $\exp[\bm{\Phi}(r_i\bm u_i)]=\ProjMean^{(j)\top}\bm R_i$
 \item Redefine $\bm R_i=\ProjMean^{(j)\top}\exp[\bm{\Phi}(c\bm u_i)]$
 \end{enumerate}
-\item Repeat steps 1 - 3 for $j+1$ until $\ProjMean^{(j)\top}\ProjMean^{(j+1)}\approx \bm{I}_{3\times 3}$
+\item Repeat steps 1 - 3 for $j+1$ until $r_i<c$ for all $i$
 \item Define $\HuberMean=\ProjMean^{(j+1)}$
 \end{enumerate}
 
-The winsorized mean is similar, but instead of specifying a certain distance after which the observation is projected closer, one specifies a certain percentage of the points that will be projected closer.  To order the data the square root of the $H_n$ statistic discussed above is used, that is for each $i$ $H_n$ is computed and the square root is taken.  The upper $1-\alpha$\% percentage is projected the the inner circle maintaining their original axis of rotation, but the angle of rotation is changed to the appropriate percentile.
+The winsorized mean is a combination of the trimmed mean and winsorized mean.  That is, the data are ordered according to their respective $H_j$ values.  All rotations beyond the upper $100(1-\alpha)$\% percentage is projected to the border of the inner circle while maintaining the original axis of rotation.  The mathematical definition is 
+\[
+\WinzMean=\argmax_{\bm S\in SO(3)}\text{tr}(\bm S^\top\overline{\bm R}_{Z})
+\]
+where $\overline{\bm R}_{Z}=\sum_{i=1}^n\bm R_i^*/n$, 
+\[
+\bm R_i^*=
+\begin{cases}
+\bm R_i&\text{ if }d_R(\ProjMean,\bm R_i)\leq\hat{q}\\
+\ProjMean\exp[\bm{\Phi}(\hat{q}\bm{u}_i^*)]&\text{ otherwise,}
+\end{cases}
+\]
+$\bm u_i^*$ is the axis of rotation corresponding to $\ProjMean^\top\bm R_i$ and $\hat{q}$ is the $100(1-\alpha)$\% percentile of the distribution of $H_j$.
+
 
 % 
 % Thus the gross error sensitivity is
@@ -274,18 +323,18 @@ res
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{r|lll|lll|lll|lll}
+\begin{tabular}{l|lll|lll|lll|lll}
   \hline
  & \multicolumn{6}{|c|}{Cayley} & \multicolumn{6}{|c}{von Mises}   \\ 
 \hline
    &  \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c|}{n=50} & \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c}{n=50} \\ 
   $\kappa$ &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 \\ \hline
-  Mean & 1.55 & 1.10 & 0.35 & 0.79 & 0.55 & 0.21 & 0.66 & 0.49 & 0.20 & 0.31 & 0.23 & 0.17 \\ 
-  Median & 1.71 & 1.30 & 0.37 & 0.92 & 0.66 & 0.18 & 0.52 & 0.33 & 0.09 & 0.15 & 0.11 & 0.03 \\ 
-  Trim & 1.56 & 1.16 & 0.34 & 0.80 & 0.57 & 0.16 & 0.70 & 0.52 & 0.13 & 0.33 & 0.24 & 0.06 \\ 
-  Winz & 1.56 & 1.11 & 0.36 & 0.75 & 0.51 & 0.21 & 0.68 & 0.51 & 0.18 & 0.32& 0.24 & 0.12 \\ 
-  Weight & 1.61 & 1.17 & 0.36 & 0.84 & 0.60 & 0.19& 0.56 & 0.39 & 0.12 & 0.21 & 0.15 & 0.07\\ 
-  Huber & 1.55 & 1.11 & 0.35 & 0.77 & 0.54 & 0.20 & 0.65 & 0.47 & 0.17 & 0.30 & 0.22 & 0.13 \\ 
+  $\ProjMedian$ (Median) & 1.71 & 1.30 & 0.37 & 0.92 & 0.66 & 0.18 & 0.52 & 0.33 & 0.09 & 0.15 & 0.11 & 0.03 \\ 
+  $\ProjMean$ (Mean) & 1.55 & 1.10 & 0.35 & 0.79 & 0.55 & 0.21 & 0.66 & 0.49 & 0.20 & 0.31 & 0.23 & 0.17 \\ 
+  $\TrimMean$ (Trim) & 1.56 & 1.16 & 0.34 & 0.80 & 0.57 & 0.16 & 0.70 & 0.52 & 0.13 & 0.33 & 0.24 & 0.06 \\ 
+  $\WinzMean$ (Winsorize)& 1.56 & 1.11 & 0.36 & 0.75 & 0.51 & 0.21 & 0.68 & 0.51 & 0.18 & 0.32& 0.24 & 0.12 \\ 
+  $\WeightMean$ (Weight) & 1.61 & 1.17 & 0.36 & 0.84 & 0.60 & 0.19& 0.56 & 0.39 & 0.12 & 0.21 & 0.15 & 0.07\\ 
+  $\HuberMean$ (Huber) & 1.55 & 1.11 & 0.35 & 0.77 & 0.54 & 0.20 & 0.65 & 0.47 & 0.17 & 0.30 & 0.22 & 0.13 \\ 
    \hline
 \end{tabular}
 \caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.}
@@ -295,13 +344,13 @@ res
 \begin{figure}
 \centering
 \includegraphics[width=.7\textwidth]{Estimator.png}
-\caption{Graphical representation of Table \ref{tab:SimRes} faceted by distribution and sample size.}
+\caption{Graphical representation of Table \ref{tab:SimRes} faceted by sample size and distribution.}
 \end{figure}
 
 
 For the Cayley (and presumably Fisher matrix) distribution, the Huber estimator and trimmed mean are close.  Trimmed mean is preferred for more concentrated data and the Huber estimator is preferred as the data become less concentrated.  This makes sense because the trimmed mean is discarding the contaminated data when the bulk of the data is highly concentrated, while the Huber estimator is trying to use all the data.  The median does really poorly, even compared to the mean.
 
-For the von Mises distribution, it looks like the median is unbeatable.  This is likely due to the heavy tail we identified in the Technometrics paper.  Similar to the other distribution, the trimmed mean improves considerably as the bulk of the data becomes more concentrated and the contamination can be cut out completely.  The Huber estimator and winsorized mean give comprable results but are not terribly good.
+For the von Mises distribution, it looks like the median is unbeatable.  This is likely due to the heavy tail we identified in the Technometrics paper.  Similar to the other distribution, the trimmed mean improves considerably as the bulk of the data becomes more concentrated and the contamination can be cut out completely.  The Huber estimator and winsorized mean give comparable results but are not terribly good.
 \clearpage
 %\bibliographystyle{plain}
 \bibliography{../OutlierDetection/RobustRefs}
