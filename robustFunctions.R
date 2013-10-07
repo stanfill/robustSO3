@@ -33,21 +33,10 @@ HnFun<-function(Qs,full=TRUE){
   if(class(Qs)=="SO3")
     Qs<-Q4(Qs)
   
-  Tn<-t(Qs)%*%Qs
-  n<-nrow(Qs)
-  tau4n<-svd(Tn)$d[1]
-  tau4n1<-rep(0,n)
-  
-  for(i in 1:n){
-    Qsi<-Qs[-i,]
-    Tn1<-t(Qsi)%*%Qsi
-    tau4n1[i]<-svd(Tn1)$d[1]
-  }
-  
   if(full){
-    Hn<- (n-2)*(1+tau4n1-tau4n)/(n-1-tau4n1)
+    Hn<- as.vector(HnCpp(Qs))
   }else{
-    Hn<- 1+tau4n1-tau4n
+    Hn<- as.vector(HnCpp(Qs))
   }
   return(Hn)
 }
