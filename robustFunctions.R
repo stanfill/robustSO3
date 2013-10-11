@@ -166,5 +166,6 @@ HuberMean<-function(RS,c){
     iters<-iters+1
     #Rs<-center(Rs,t(shat)) #add the center back
   }
+  #print(iters)
   return(list(Rs=Rs,Shat=mean(Rs)))
 }

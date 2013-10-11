@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{amsmath,amsfonts,bm,fullpage,multirow}
+\usepackage{amsmath,amsfonts,bm,fullpage,multirow,animate}
 \usepackage{natbib,tikz}
 \bibliographystyle{abbrvnat}
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -21,7 +21,8 @@ This is the literature I have found methods to robustify the $L_2$ estimator for
 <<setup,include=FALSE>>=
 library(rotations)
 #source("robustFunctions.R")
-#source("/Users/stanfill/Documents/GitHub/robustSO3/robustFunctions.R")
+source("/Users/stanfill/Documents/GitHub/robustSO3/robustFunctions.R")
+Rcpp::sourceCpp('/Users/stanfill/Documents/GitHub/robustSO3/robustCpp.cpp')
 
 # set global chunk options
 opts_chunk$set(fig.path='Figure/', fig.align='center', fig.show='hold',dev='png')
@@ -205,6 +206,37 @@ $\bm u_i^*$ is the axis of rotation corresponding to $\ProjMean^\top\bm R_i$ and
 % \[
 % \|\text{IF}_2(\bm R_i,F)\|=\|\frac{3}{1+2E[\cos(r)]}\sin(r)\bm u\|=\left|\frac{3\sin(r)}{1+2E[\cos(r)]}\right|=\frac{3\sin(|r|)}{1+2E[\cos(r)]}
 % \]
+
+<<huberContd,echo=FALSE,fig.show='animate',fig.align='center',dev='png',out.width=".5\\textwidth",fig.width=5,fig.height=5>>=
+#dig into Huber mean a bit more, that is see how the Huber behaves for a range of c values
+#source("robustFunctions.R")
+#Rcpp::sourceCpp('robustCpp.cpp')
+set.seed(1010)
+rangle<-rcayley
+n<-50
+kappa<-100
+p1<-.1
+Scont<-genR(pi/2) #slippage mean
+Rs<-ruarsCont(n,rangle,kappa,p1,S=id.SO3,Scont)
+
+c<-seq(1,.1,length=10)
+hm <- vector(mode='list', length=10)
+meanErr<-rep(0,11)
+meanErr[1]<-round(angle(mean(Rs)),3)
+
+plots <- vector(mode='list', length=10)
+plot(Rs,center=id.SO3,show_estimates='proj.mean',col=3)+
+    labs(title=paste("c=",3.14,"; Error=",meanErr))
+
+for(i in 1:10){
+  hm[[i]]<-HuberMean(Rs,c[i])
+  meanErr[(i+1)]<-round(angle(hm[[i]]$Shat),3)
+    
+  print(plot(hm[[i]]$Rs,center=id.SO3,show_estimates='proj.mean',col=3)+
+    labs(title=paste("c =",c[i],"; Error =",meanErr[(i+1)]))+
+    theme(plot.title = element_text(colour = 2+as.numeric(meanErr[(i+1)]<meanErr[i]))))
+}
+@
 
 <<IFheatMatp,eval=FALSE,include=FALSE>>=
 #Try to make a heat map representing the influence function of the 2D projected mean
