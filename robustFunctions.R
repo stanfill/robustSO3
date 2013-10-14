@@ -41,7 +41,7 @@ HnFun<-function(Qs,full=TRUE){
   return(Hn)
 }
 
-MeanMove<-function(Qs,...){
+MeanMove<-function(Qs,meanT='projected',distT='projected'){
   #Compute geodesic distance between full sample mean and mean when obs i is removed
   
   #Written for quaternions so change to quaternions if given matrices
@@ -49,12 +49,12 @@ MeanMove<-function(Qs,...){
     Qs<-Q4(Qs)
   
   n<-nrow(Qs)
-  Shat<-mean(Qs)
+  Shat<-mean(Qs,type=meanT)
   ds<-rep(0,n)
   for(i in 1:n){
     Qsi<-as.Q4(Qs[-i,])
-    Shati<-mean(Qsi)
-    ds[i]<-dist(Shat,Shati,...)
+    Shati<-mean(Qsi,type=meanT)
+    ds[i]<-dist(Shat,Shati,method=distT)
   }
   return(ds)
 }

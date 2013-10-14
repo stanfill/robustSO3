@@ -3,13 +3,14 @@
 \usepackage{natbib}
 \bibliographystyle{abbrvnat}
 \newcommand{\ProjMean}{{\widehat{\bm S}_{2}}}
+\newcommand{\GeomMean}{{\widehat{\bm S}_{2,R}}}
 \newcommand{\R}{{\mathbb{R}}}
 \begin{document}
 
 <<setup, include=FALSE>>=
-library(rotations)
-#source("../robustFunctions.R")
-#Rcpp::sourceCpp('../robustCpp.cpp')
+#library(rotations)
+#source("robustFunctions.R")
+#Rcpp::sourceCpp('robustCpp.cpp')
 
 # set global chunk options
 opts_chunk$set(fig.path='Figure/', fig.align='center', fig.show='hold',dev='png')
@@ -113,9 +114,9 @@ where $R$ is mean resultant length based on the entire sample of size $n$ and $R
 
 In a simulation study they determine that the statistics with distributions that rely on $\kappa$, namely $C$ and $D$, are the best choices.  Because $D$ is easier to compute it comes the most highly recommended.
 
-The following is according to Chapter 12 of \cite{mardia2009} because I cannot get a physical copy of either artilce.   \cite{best1986} use the relationship between the Watson distribution on the sphere and the exponential distribution to test a discordant point as an outlier.  This is an application of the ideas of FLW to a different distribution and space. \cite{bagchi1990} use Bayesian methods to test for discordant points en bloc, given the number of discordent points is fixed and known.  
+The following is according to Chapter 12 of \cite{mardia2009} because I cannot get a physical copy of either article.   \cite{best1986} use the relationship between the Watson distribution on the sphere and the exponential distribution to test a discordant point as an outlier.  This is an application of the ideas of FLW to a different distribution and space. \cite{bagchi1990} use Bayesian methods to test for discordant points en bloc, given the number of discordant points is fixed and known.  
 
-In terms of estimators that accomodate outliers,  \cite{wehrly1981} compare the circular mean and median based on traditional influence functions.  Since the influence functions for both estimators are bounded and are therefor B-robust estimators the authors claim the mean is preferred since it is also the MLE. \cite{ko1988} later claim the work of \cite{wehrly1981} (and \cite{watson1983} for that matter) is garbage because using traditional influence curves for bounded parameter spaces is meaningless.  \cite{lenth1981} considers an iteratively re-weighted M-estimator.  The main drawback from his estimator is its reliance on a good estimate of concentration $\kappa$.  \cite{ducharme1987} intorduce the {\it normalized spatial median}, which is shown to perform well in the presence of outliers.  \cite{barnett1994} summarize most of this material in Chapter 11.
+In terms of estimators that accommodate outliers,  \cite{wehrly1981} compare the circular mean and median based on traditional influence functions.  Since the influence functions for both estimators are bounded and are therefor B-robust estimators the authors claim the mean is preferred since it is also the MLE. \cite{ko1988} later claim the work of \cite{wehrly1981} (and \cite{watson1983} for that matter) is garbage because using traditional influence curves for bounded parameter spaces is meaningless.  \cite{lenth1981} considers an iteratively re-weighted M-estimator.  The main drawback from his estimator is its reliance on a good estimate of concentration $\kappa$.  \cite{ducharme1987} introduce the {\it normalized spatial median}, which is shown to perform well in the presence of outliers.  \cite{barnett1994} summarize most of this material in Chapter 11.
 
 
 \section{Spherical Data}\label{sec:sphere}
@@ -214,37 +215,57 @@ Thus, for a sample of rotations in quaternion form $\bm q_1,\dots,\bm q_n$ let $
 \[
 C^{(i)}=\|\hat{\bm q}_2-\hat{\bm q}^{(i)}\|=\sqrt{8[1-(\hat{\bm q}_2^\top\hat{\bm q}^{(i)})]}
 \]
-where $\hat{\bm q}_n$ is the projected mean for the full data set and $\hat{\bm q}^{(i)}$ is the projected mean when the $i$th observation has been deleted.  Figure \ref{fig:HnC} illustrate the relationship between these statistics in a concentrated data set (left) and a diffuse data set (right).  Both show a strong relationship between $C$ and $H_n$.
+where $\hat{\bm q}_n$ is the projected mean for the full data set and $\hat{\bm q}^{(i)}$ is the projected mean when the $i$th observation has been deleted.  Figures \ref{fig:HnC} and \ref{fig:HnCGeom} illustrate the relationship between these statistics for the projected and geometric means, respectively, in a concentrated data set (left) and a diffuse data set (right).  Both show a strong relationship between $C$ and $H_n$.
 
 <<HnC,echo=FALSE,out.width=".5\\textwidth",fig.align='center',fig.show='hold',fig.height=5,fig.width=5,fig.cap="The $H_n$ and $C$ statistics for a sample from the Cayley distribution with $\\kappa=50$ (left) and $\\kappa=1$ (right).",eval=FALSE>>=
 mains <- expression(paste(d[R](R[i], hat(S)[2])))
 Rs<-ruars(25,rcayley,kappa=50)
 Hn<-HnFun(Rs)
-C<-MeanMove(Rs,method='intrinsic')
+C<-MeanMove(Rs,distT='intrinsic')
 rs<-dist(Rs,mean(Rs),method='intrinsic')
 
 qplot(Hn,C,xlab=expression(H[n]),size=I(3),colour=rs)+theme_bw()+
   scale_colour_gradient(mains)
-ggsave("Figure/HnCConcentrated.pdf",height=5,width=6.5)
+ggsave("OutlierDetection/Figure/HnCConcentrated.pdf",height=5,width=6.5)
 
 Rs2<-ruars(25,rcayley,kappa=1)
 Hn2<-HnFun(Rs2)
-C2<-MeanMove(Rs2)
+C2<-MeanMove(Rs2,distT='intrinsic')
 rs2<-dist(Rs2,mean(Rs2),method='intrinsic')
 cpi2<-rep("A",nrow(Rs))
 cpi2[which(abs(rs2-pi/2)<.05)]<-"B"
 
 qplot(Hn2,C2,ylab="C",xlab=expression(H[n]),size=I(3),colour=rs2)+theme_bw()+
   scale_colour_gradient(mains)
-ggsave("Figure/HnCDiffuse.pdf",height=5,width=6.5)
+ggsave("OutlierDetection/Figure/HnCDiffuse.pdf",height=5,width=6.5)
+@
 
-qplot(Hn2,C2,ylab="C",xlab=expression(H[n]),size=I(3),colour=rs2,shape=cpi2)+theme_bw()+
+<<HnCIntrinsic,echo=FALSE,out.width=".5\\textwidth",fig.align='center',fig.show='hold',fig.height=5,fig.width=5,fig.cap="The $H_n$ and $C$ statistics for a sample from the Cayley distribution with $\\kappa=50$ (left) and $\\kappa=1$ (right).",eval=FALSE>>=
+mains <- expression(paste(d[R](R[i], hat(S)[R])))
+#Rs<-ruars(25,rcayley,kappa=50)
+Hn<-HnFun(Rs)
+C<-MeanMove(Rs,distT='intrinsic',meanT='geometric')
+rs<-dist(Rs,mean(Rs,type='geometric'),method='intrinsic')
+
+qplot(Hn,C,xlab=expression(H[n]),size=I(3),colour=rs)+theme_bw()+
   scale_colour_gradient(mains)
+ggsave("OutlierDetection/Figure/HnCConcentratedGeometric.pdf",height=5,width=6.5)
+
+#Rs2<-ruars(25,rcayley,kappa=1)
+Hn2<-HnFun(Rs2)
+C2<-MeanMove(Rs2,meanT='geometric',distT='intrinsic')
+rs2<-dist(Rs2,mean(Rs2,type='geometric'),method='intrinsic')
+cpi2<-rep("A",nrow(Rs))
+cpi2[which(abs(rs2-pi/2)<.05)]<-"B"
+
+qplot(Hn2,C2,ylab="C",xlab=expression(H[n]),size=I(3),colour=rs2)+theme_bw()+
+  scale_colour_gradient(mains)
+ggsave("OutlierDetection/Figure/HnCDiffuseGeometric.pdf",height=5,width=6.5)
 @
 
 <<HnDetail,include=FALSE,eval=FALSE>>=
 #I think Hn is punishing observations near pi/2 instead of near pi, similar to the idea of punishing them based on the influence function, sin(r), instead of distance from center, r
-#WRONG.  Hn is doing exactly what we want (punishing observations far from the center correctly), the C statistic is what is doing the wrong thing (punishing observations near pi/2)
+#WRONG.  Hn is doing exactly what we want (punishing observations far from the center correctly), the C statistic is what is doing the other thing (punishing observations near pi/2)
 
 Rs<-ruars(50,rcayley,kappa=1)
 Hn<-HnFun(Rs)
@@ -254,6 +275,22 @@ plot(Hn,rs)
 plot(Hn,C)
 plot(rs,C)
 lines(sort(rs),sin(sort(rs))*.08)
+@
+
+<<ProjMeanRobst,include=FALSE,eval=FALSE>>=
+#I think if you simulate a sample and estimate the mean then add an observation on the complete different pole of the projected mean, the projected mean will not change
+Rs<-ruars(20,rcayley,kappa=50)
+shat<-mean(Rs)
+Rsi<-matrix(matrix(genR(pi),3,3)%*%shat,1,9) #rotation the estimate mean through pi radians
+RsNew<-as.SO3(rbind(Rs,Rsi))
+shatNew<-mean(RsNew)
+
+shat-shatNew #very near matrix of zeros if I'm right.  I'M RIGHT
+dist(shat,as.SO3(Rsi),method='intrinsic') #even though it is pi radians away!
+
+plot(Rs,center=mean(Rs),show_estimates='all')
+plot(RsNew,center=mean(RsNew),show_estimates='all')
+
 @
 
 \begin{figure}
@@ -267,13 +304,30 @@ lines(sort(rs),sin(sort(rs))*.08)
         \caption{$\kappa=1$}
         \label{fig:HnDiff}
 \end{subfigure}
-\caption{The $H_n$ and $C$ statistics for a sample from the Cayley distribution with $\kappa=50$ (left) and $\kappa=1$ (right).  The points are colored based on each observations distance from the estimated mean, i.e.~color is determined by $d_R(\bm R_i,\hat{\bm q}_2$)}
+\caption{The $H_n$ and $C$ statistics for a sample $n=25$ from the Cayley distribution with $\kappa=50$ (left) and $\kappa=1$ (right).  The points are colored based on each observations distance from the projected mean, i.e.~color is determined by $d_R(\bm R_i,\ProjMean$)}
 \label{fig:HnC}
 \end{figure}
 
-It is clear from Figure \ref{fig:HnDiff} that the $C$ statistic cannot distinguish between observations that are on the extremes of the spectrum, i.e.~are very close to the center or a $90^\circ$ rotation away.  Put another way, observations that are roughly $\pi/2$ radians away from the estimated central direction $\ProjMean$ maximizes $C$, while observations very near or $\pi$ radians away from the estimated center have the same $C$ value.  This is exactly what the influence function does as well; recall from the intervals paper that the influence function of the projected mean is $IF_2(\bm R_i,F)\propto\sin(r_i)\bm U_i$.  The $H_n$ statistic, however, is closely related to the rotational distance between each observation and the estiamated center $\hat{\bm q}_2$.  It would be nice to show $C$ is maximized and that $H_1=1$ when $d_R(\bm R_i,\ProjMean)=\pi/2$. 
+\begin{figure}
+\centering
+\begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{Figure/HnCConcentratedGeometric}
+        \caption{$\kappa=50$}
+\end{subfigure}
+\begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{Figure/HnCDiffuseGeometric}
+        \caption{$\kappa=1$}
+        \label{fig:HnDiffGeom}
+\end{subfigure}
+\caption{The $H_n$ and $C$ statistics for a sample from $n=25$ the Cayley distribution with $\kappa=50$ (left) and $\kappa=1$ (right).  The points are colored based on each observations distance from the geometric mean, i.e.~color is determined by $d_R(\bm R_i,\GeomMean$)}
+\label{fig:HnCGeom}
+\end{figure}
 
-The question as to which statistic is appropriate comes down to: why do you care?  Large $C$ statistic (and also influence function) values will determine which observation will have the largest impact on the projected mean estimate of center.  The $H_n$ statistic will tell you which observation is most unlike the others, but not necessairly the one that will impact estimation.
+It is clear from Figure \ref{fig:HnDiff} that the $C$ statistic based on the projected mean cannot distinguish between observations that are on the extremes of the spectrum, i.e.~are very close to the center or a $90^\circ$ rotation away.  Put another way, observations that are roughly $\pi/2$ radians away from the estimated central direction $\ProjMean$ maximizes $C$, while observations very near or $\pi$ radians away from the estimated center have the same $C$ value.  This is exactly what the influence function does as well.  That is, based on results in the intervals paper, the influence function of the projected mean is $IF_2(\bm R_i,F)\propto\sin(r_i)\bm U_i$ which is maximized at $r_i=\pi/2$ and is the same from $r_i=0$ or $r_i=\pi$.  The $H_n$ statistic, however, is closely related to the rotational distance between each observation and the estimated center $\hat{\bm q}_2$.  It would be nice to show $C$ is maximized and that $H_1=1$ when $d_R(\bm R_i,\ProjMean)=\pi/2$. 
+
+From Figure \ref{fig:HnDiffGeom}, however, it is clear the $C$ statistic based on the geometric mean is linearly related to the $H_n$ statistic.  That is the geometric mean is influenced by observations away from the estimated center in a linear way, not a sinusoidal one.  The influence function for the geometric mean hasn't been determined yet, but based on these results, it will be linearly related to $r_i$, not $\sin(r_i)$.  This could be an argument on why the intrinsic approach is preferred to the extrinsic one.
+
+The question as to which statistic is appropriate comes down to: why do you care?  Large $C$ statistic (and also influence function) values will determine which observation will have the largest impact on the projected mean estimate of center.  The $H_n$ statistic will tell you which observation is most unlike the others, but not necessarily the one that will impact estimation.
 
 The three assumptions being made when using a UARS model are $r_i$ is distributed according to some circular distribution centered at $0$, $\bm U_i$ is distributed uniformly on the unit sphere, $r_i$ and $\bm U_i$ are independent.  The following are ideas on how to test these assumptions given an unexpected pattern in the data.
 \begin{enumerate}
