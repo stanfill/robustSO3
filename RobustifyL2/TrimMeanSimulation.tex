@@ -244,7 +244,7 @@ $\bm u_i^*$ is the axis of rotation corresponding to $\ProjMean^\top\bm R_i$ and
 
 I ran a very small simulation study with the new robustified $\ProjMean$ estimators (trimmed, winsorized, weighted, Huber) along with the tradition $\ProjMean$ and $\ProjMedian$.  I generated 100 samples per combination of distribution (Cayley or von Mises Fisher), sample size ($n=10,50$), concentration ($\kappa=0.5,1,10$) all with $10\%$ contamination.  Meaning 90\% of each sample was from the $F(\bm I_{3\times 3},\kappa)$ distribution and 10\% of the sample came from a $F(\bm S_c[\pi/2,\bm u],\kappa)$, i.e.~the slippage situation where the second principal direction was rotation though $\pi/2$ radians about some (uniformly distributed) axis.
 
-In Table \ref{tab:SimRes} is the average bias based on the Euclidean distance in each estimator for each simulated scenario.  That is bias$=\|\bm I_{3\times 3}-\widehat{\bm S}\|_F$ for each estimator.  The trimmed and winsorized mean use $\alpha=0.1$ and the Huber estimator sets $c=0.75$.
+In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance in each estimator for each simulated scenario.  That is bias$=\|\bm I_{3\times 3}-\widehat{\bm S}\|_F$ for each estimator.  The trimmed and winsorized mean use $\alpha=0.1$ and the Huber estimator sets $c=0.75$.
 
 
 
@@ -291,14 +291,37 @@ In Table \ref{tab:SimRes} is the average bias based on the Euclidean distance in
   $\HuberMean$ (Huber) & 1.55 & 1.11 & 0.35 & 0.77 & 0.54 & 0.20 & 0.65 & 0.47 & 0.17 & 0.30 & 0.22 & 0.13 \\ 
    \hline
 \end{tabular}
-\caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.}
-\label{tab:SimRes}
+\caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.  The robustified $L_2$ estimator is based on the distance of the observations from the bulk of the data, quanitifed by the $H_n$ statistic.}
+\label{tab:SimResHn}
 \end{table}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{l|lll|lll|lll|lll}
+  \hline
+ & \multicolumn{6}{|c|}{Cayley} & \multicolumn{6}{|c}{von Mises}   \\ 
+\hline
+   &  \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c|}{n=50} & \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c}{n=50} \\
+  $\kappa$ &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 \\ \hline
+  $\ProjMedian$ (Median) & 1.70 & 1.25 & 0.35 & 1.01 & 0.59 & 0.19 & 0.55 & 0.37 & 0.08 & 0.15 & 0.11 & 0.03 \\ 
+  $\ProjMean$ (Mean) & 1.56 & 1.04 & 0.33 & 0.83 & 0.49 & 0.22 & 0.76 & 0.50 & 0.19 & 0.30 & 0.25 & 0.17 \\ 
+   $\TrimMean$ (Trim) & 1.68 & 1.12 & 0.34 & 0.86 & 0.52 & 0.17 & 0.82 & 0.53 & 0.13 & 0.31 & 0.23 & 0.06 \\ 
+  $\WinzMean$ (Winsorize) & 1.60 & 1.06 & 0.34 & 0.82 & 0.49 & 0.18 & 0.74 & 0.51 & 0.13 & 0.29 & 0.22 & 0.06 \\ 
+  $\WeightMean$ (Weight) & 2.07 & 1.52 & 0.33 & 2.06 & 0.83 & 0.20 & 1.37 & 0.74 & 0.12 & 0.75 & 0.41 & 0.08 \\ 
+  $\HuberMean$ (Huber) & 1.56 & 1.03 & 0.33 & 0.82 & 0.48 & 0.20 & 0.74 & 0.49 & 0.16 & 0.28 & 0.23 & 0.13 \\ 
+   \hline
+\end{tabular}
+\caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.  The robustified $L_2$ estimator is based on the influence of the point on the $L_2$ estimator, quanitifed by the influence function.}
+\label{tab:SimResC}
+\end{table}
+
+
+
 
 \begin{figure}
 \centering
 \includegraphics[width=.7\textwidth]{Estimator.png}
-\caption{Graphical representation of Table \ref{tab:SimRes} faceted by sample size and distribution.}
+\caption{Graphical representation of Table \ref{tab:SimResHn} faceted by sample size and distribution.}
 \end{figure}
 
 

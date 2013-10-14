@@ -132,11 +132,13 @@ winzMean<-function(Rs,a,discordFun,anneal=F){
   
 }
 
-HuberMean<-function(RS,c){
+HuberMean<-function(RS,c,influence=FALSE){
   #Find the multidimensional Huber estimator based on 
   #projected mean
   #Rs - the sample
   #c  - the value the influence function should not exceed
+  #influence - T/F if T then use bound the influence function with c, if False use the raw distance
+  #             from the estimator to the observation
   
   if(class(Rs)=="Q4")
     Rs<-SO3(Rs)
@@ -146,6 +148,9 @@ HuberMean<-function(RS,c){
   
     shat<-mean(Rs)
     rs<-dist(Rs,shat,method='intrinsic')          #Estimate r_i based on Shat
+    if(influence){
+      rs<-sin(rs)
+    }
     #dhat<-mean(1+2*cos(rs))/3             #Estimate dhat
     #ifi<-sin(rs)/dhat                    #Evaluate infulence function
   
