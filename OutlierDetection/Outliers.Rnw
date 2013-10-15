@@ -224,9 +224,9 @@ Hn<-HnFun(Rs)
 C<-MeanMove(Rs,distT='intrinsic')
 rs<-dist(Rs,mean(Rs),method='intrinsic')
 
-qplot(Hn,C,xlab=expression(H[n]),size=I(3),colour=rs)+theme_bw()+
+qplot(Hn,C,xlab=expression(H[i]),ylab=expression(C[i]),size=I(3),colour=rs)+theme_bw()+
   scale_colour_gradient(mains)
-ggsave("OutlierDetection/Figure/HnCConcentrated.pdf",height=5,width=6.5)
+ggsave("OutlierDetection/Figure/HnCConcentrated.pdf",height=4,width=5.5)
 
 Rs2<-ruars(25,rcayley,kappa=1)
 Hn2<-HnFun(Rs2)
@@ -235,9 +235,9 @@ rs2<-dist(Rs2,mean(Rs2),method='intrinsic')
 cpi2<-rep("A",nrow(Rs))
 cpi2[which(abs(rs2-pi/2)<.05)]<-"B"
 
-qplot(Hn2,C2,ylab="C",xlab=expression(H[n]),size=I(3),colour=rs2)+theme_bw()+
+qplot(Hn2,C2,ylab=expression(C[i]),xlab=expression(H[i]),size=I(3),colour=rs2)+theme_bw()+
   scale_colour_gradient(mains)
-ggsave("OutlierDetection/Figure/HnCDiffuse.pdf",height=5,width=6.5)
+ggsave("OutlierDetection/Figure/HnCDiffuse.pdf",height=4,width=5.5)
 @
 
 <<HnCIntrinsic,echo=FALSE,out.width=".5\\textwidth",fig.align='center',fig.show='hold',fig.height=5,fig.width=5,fig.cap="The $H_n$ and $C$ statistics for a sample from the Cayley distribution with $\\kappa=50$ (left) and $\\kappa=1$ (right).",eval=FALSE>>=
@@ -247,9 +247,9 @@ Hn<-HnFun(Rs)
 C<-MeanMove(Rs,distT='intrinsic',meanT='geometric')
 rs<-dist(Rs,mean(Rs,type='geometric'),method='intrinsic')
 
-qplot(Hn,C,xlab=expression(H[n]),size=I(3),colour=rs)+theme_bw()+
+qplot(Hn,C,xlab=expression(H[i]),ylab=expression(C[i]),size=I(3),colour=rs)+theme_bw()+
   scale_colour_gradient(mains)
-ggsave("OutlierDetection/Figure/HnCConcentratedGeometric.pdf",height=5,width=6.5)
+ggsave("OutlierDetection/Figure/HnCConcentratedGeometric.pdf",height=4,width=5.5)
 
 #Rs2<-ruars(25,rcayley,kappa=1)
 Hn2<-HnFun(Rs2)
@@ -258,9 +258,9 @@ rs2<-dist(Rs2,mean(Rs2,type='geometric'),method='intrinsic')
 cpi2<-rep("A",nrow(Rs))
 cpi2[which(abs(rs2-pi/2)<.05)]<-"B"
 
-qplot(Hn2,C2,ylab="C",xlab=expression(H[n]),size=I(3),colour=rs2)+theme_bw()+
+qplot(Hn2,C2,ylab=expression(C[i]),xlab=expression(H[n]),size=I(3),colour=rs2)+theme_bw()+
   scale_colour_gradient(mains)
-ggsave("OutlierDetection/Figure/HnCDiffuseGeometric.pdf",height=5,width=6.5)
+ggsave("OutlierDetection/Figure/HnCDiffuseGeometric.pdf",height=4,width=5.5)
 @
 
 <<HnDetail,include=FALSE,eval=FALSE>>=
@@ -281,16 +281,19 @@ lines(sort(rs),sin(sort(rs))*.08)
 #I think if you simulate a sample and estimate the mean then add an observation on the complete different pole of the projected mean, the projected mean will not change
 Rs<-ruars(20,rcayley,kappa=50)
 shat<-mean(Rs)
-Rsi<-matrix(matrix(genR(pi),3,3)%*%shat,1,9) #rotation the estimate mean through pi radians
+shatG<-mean(Rs,type='geometric')
+Rsi<-matrix(matrix(genR(pi-.0001),3,3)%*%shat,1,9) #rotation the estimate mean through pi radians
 RsNew<-as.SO3(rbind(Rs,Rsi))
 shatNew<-mean(RsNew)
+shatGNew<-mean(RsNew,type='geometric')
 
 shat-shatNew #very near matrix of zeros if I'm right.  I'M RIGHT
 dist(shat,as.SO3(Rsi),method='intrinsic') #even though it is pi radians away!
-
-plot(Rs,center=mean(Rs),show_estimates='all')
-plot(RsNew,center=mean(RsNew),show_estimates='all')
-
+coo<-3
+plot(Rs,center=mean(Rs),show_estimates=c('geom.mean','proj.mean'),col=coo)
+ggsave("Summary/Figure/Sample1.png",width=4,height=3)
+plot(RsNew,center=mean(RsNew),show_estimates=c('geom.mean','proj.mean'),col=coo,label_points=c(rep("",20),"X"))
+ggsave("Summary/Figure/Sample2.png",width=4,height=3)
 @
 
 \begin{figure}
