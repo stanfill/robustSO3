@@ -61,6 +61,7 @@
 \newcommand{\GeomMean}{{\widehat{\bm S}_{R}}}
 \newcommand{\R}{{\mathbb{R}}}
 \newcommand{\qest}{{\hat{\bm q}}}
+\newcommand{\Sest}{{\widehat{\bm S}}}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
@@ -85,13 +86,13 @@ C_i=\|\qest-\hat{\bm q}^{(i)}\|=\sqrt{8[1-(\qest^\top\qest^{(i)})]}
 \end{equation}
 where $\qest^{(i)}$ is the estimated central direction when the $i$th observation is deleted.  
 
-The \emph{influence function} of an estimator quantifies the change in that estimator when one sample point is changed.  In the regions paper we derived the influence function of the projected mean $\ProjMean$ to be
+The \emph{influence function} of an estimator quantifies the change in that estimator when one sample point is changed.  In the regions paper we derived the influence function of the projected mean $\ProjMean$ based on a sample of directionally symmetric rotations $\bm R_i$ with central orientation $\bm S$ to be
 \begin{equation}\label{eqn:IF}
 \text{IF}(\bm R_i,F)=\frac{1}{d}\sin(r_i)\bm U_i
 \end{equation}
-where $d=[1+2E\cos(r_i)]/3$.  Heuristically the $C_i$-statistic is an empirical influence function.  The results soon to come back this up.
+where $d=[1+2E\cos(r_i)]/3$ and $\bm R_i=\bm S\exp[\bm\Phi(r_i\bm U_i)]$.  Heuristically the $C_i$-statistic is an empirical influence function.  The influence function of the geometric mean is not readily available, but the results to come next indicate it is a linear function of $r_i$ and not a sinusoidal one.
 
-A special type of spherical data is axial data, that is $\bm X$ is said to come from an axial population if $\bm X_i$ and $-\bm X_i$ have the same distribution for all $i$.  Quaternions are one example of axial data.  Let $\bm Q$ denote the $n\times 4$ matrix with rows $\bm q_i$ and define $\bm T=\bm Q^\top\bm Q=\sum_{i=1}^n\bm q_i\bm q_i^\top$.  Further let $\hat\tau_1\leq\hat\tau_2\leq\hat\tau_3\leq\hat\tau_4$ denote the ordered eigenvalues of $\bm T_n$.  Similarly define $\bm T_{i}=\bm T-\bm q_i\bm q_i^\top$, i.e.~$\bm T$ with the $i$th observation deleted with eigenvalues $\hat\tau_{1,i}\leq\hat\tau_{2,i}\leq\hat\tau_{3,i}\leq\hat\tau_{4,i}$.  Define the statistic
+A special type of spherical data is axial data, that is $\bm X$ is said to come from an axial population if $\bm X_i$ and $-\bm X_i$ have the same distribution for all $i$.  Quaternions are one example of axial data.  Let $\bm Q$ denote the $n\times 4$ matrix with rows $\bm q_i$ and define $\bm T=\bm Q^\top\bm Q=\sum_{i=1}^n\bm q_i\bm q_i^\top$.  Further let $\hat\tau_1\leq\hat\tau_2\leq\hat\tau_3\leq\hat\tau_4$ denote the ordered eigenvalues of $\bm T_n$.  Similarly let $\bm T_{i}$ denote the matrix $\bm T$ with the $i$th observation deleted $\bm T_i=\bm T-\bm q_i\bm q_i^\top$, which has ordered eigenvalues $\hat\tau_{1,i}\leq\hat\tau_{2,i}\leq\hat\tau_{3,i}\leq\hat\tau_{4,i}$.  Define the statistic
 \begin{equation}\label{eqn:Hj}
 H_i=(n-2)\frac{1+\hat\tau_{4,i}-\hat\tau_4}{n-1-\hat\tau_{4,i}}.
 \end{equation}
@@ -101,7 +102,7 @@ Another note on \eqref{eqn:Hj} is that for quaternion data the projected mean is
 
 %There appears to be a connection between the statistic $H_n$ and Collett's $C$ statistic.  The $H_n$ statistic is a function of the difference in the largest eigenvalue of the matrix $T=\sum_{i=1}^n\bm q_i\bm q_i^\top$ when the $i$th observation has been removed.  Collett's $C$ statistic is the relative change in the mean resultant length when the $i$th observation has been removed.   The statistics $H_n$ and $C$ can be translated to rotation data most easily when we consider the quaternion representation.  This is because the projected mean in the quaternion case is the eigenvector associated with the largest eigenvalue of $T$.  
 
-Figures \ref{fig:HnC} and \ref{fig:HnCGeom} illustrate the relationship between the $H_i$- and $C_i$-statistics for the projected and geometric means, respectively, in a concentrated data set (left) and a diffuse data set (right).  Both show a strong relationship between $C_i$ and $H_i$.
+Figures \ref{fig:HnC} and \ref{fig:HnCGeom} illustrate the relationship between the $H_i$- and $C_i$-statistics for the projected and geometric means, respectively, in a concentrated data set (left) and a diffuse data set (right).  Both show a strong relationship between $C_i$ and $H_i$.  The color of each dot is determined by the distance each point is from the estimated center, $d_R(\bm R_i,\Sest)$ for the projected and geometric means.
 
 \begin{figure}
 \centering
@@ -114,7 +115,7 @@ Figures \ref{fig:HnC} and \ref{fig:HnCGeom} illustrate the relationship between 
         \caption{$\kappa=1$}
         \label{fig:HnDiff}
 \end{subfigure}
-\caption{The $H_n$ and $C$ statistics for a sample $n=25$ from the Cayley distribution with $\kappa=50$ (left) and $\kappa=1$ (right).  The points are colored based on each observations distance from the projected mean, i.e.~color is determined by $d_R(\bm R_i,\ProjMean$)}
+\caption{The $H_i$ and $C_i$ statistics for a sample $n=25$ from the Cayley distribution with $\kappa=50$ (left) and $\kappa=1$ (right).  The points are colored based on each observations distance from the projected mean, i.e.~$d_R(\bm R_i,\ProjMean$)}
 \label{fig:HnC}
 \end{figure}
 
@@ -129,7 +130,7 @@ Figures \ref{fig:HnC} and \ref{fig:HnCGeom} illustrate the relationship between 
         \caption{$\kappa=1$}
         \label{fig:HnDiffGeom}
 \end{subfigure}
-\caption{The $H_n$ and $C$ statistics for a sample from $n=25$ the Cayley distribution with $\kappa=50$ (left) and $\kappa=1$ (right).  The points are colored based on each observations distance from the geometric mean, i.e.~color is determined by $d_R(\bm R_i,\GeomMean$)}
+\caption{The $H_i$ and $C_i$ statistics for a sample from $n=25$ the Cayley distribution with $\kappa=50$ (left) and $\kappa=1$ (right).  The points are colored based on each observations distance from the geometric mean, i.e.~$d_R(\bm R_i,\GeomMean$)}
 \label{fig:HnCGeom}
 \end{figure}
 
@@ -142,17 +143,19 @@ To make the distinction between the projected and geometric means more clear con
 \begin{figure}
 \centering
 \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{Figure/Sample1}
-        \caption{}
-        \label{fig:samp1}
+  \centering
+  \includegraphics[width=\textwidth]{Figure/Sample1}
+  \caption{}
+  \label{fig:samp1}
 \end{subfigure}
 \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{Figure/Sample2}
-        \caption{}
-        \label{fig:samp2}
+  \centering
+  \includegraphics[width=\textwidth]{Figure/Sample2}
+  \caption{}
+  \label{fig:samp2}
 \end{subfigure}
-\caption{Random sample of size $20$ from Cayley($\bm I_{3\times 3},50$) distribution in (a).  Same sample with additional observation that is the rotation of $\ProjMean$ rotated through $\pi$ radians in (b), marked with an ``X".  Notice $\ProjMean$ is EXACTLY THE SAME in both samples, but $\GeomMean$ moves away.}
-\label{fig:HnCGeom}
+\caption{Random sample of size $20$ from Cayley($\bm I_{3\times 3},50$) distribution in (a).  Same sample with additional observation that is the rotation of $\ProjMean$ rotated through $\pi$ radians in (b), marked with an ``X".  Notice $\ProjMean$ is exactly the same in both samples, but $\GeomMean$ moves away.}
+\label{fig:sample}
 \end{figure}
 
 The question as to which statistic is appropriate comes down to: why do you care?  Large $C$ statistic (and also influence function) values will determine which observation will have the largest impact on the projected mean estimate of center.  The $H_n$ statistic will tell you which observation is most unlike the others, but not necessarily the one that will impact estimation.
