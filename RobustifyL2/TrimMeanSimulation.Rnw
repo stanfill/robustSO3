@@ -347,7 +347,7 @@ for(i in 1:nrow(res)){
     
     Qs<-Q4(Rs)
     trimi<-trimi+dist(trimMean(Qs,alpha,HnFun)$Shat)
-    weighti<-weighti+dist(weighted.mean(Qs,w=1/sqrt(HnFun(Qs))))
+    weighti<-weighti+dist(weighted.mean(Qs,w=1/HnFun(Qs)))
   }
   
   res$Median[i]<-mediani/B
@@ -359,6 +359,12 @@ for(i in 1:nrow(res)){
 }
 
 res
+
+library(reshape2)
+library(xtable)
+mres<-melt(res,id.vars=c("Dist","n","kappa"))
+cres<-dcast(mres,variable~Dist+n+kappa)
+xtable(cres,digits=2)
 @
 
 % \begin{table}[ht]
@@ -398,8 +404,8 @@ res
   $\ProjMean$ (Mean) & 1.55 & 1.10 & 0.35 & 0.79 & 0.55 & 0.21 & 0.66 & 0.49 & 0.20 & 0.31 & 0.23 & 0.17 \\ 
   $\TrimMean$ (Trim) & 1.56 & 1.16 & 0.34 & 0.80 & 0.57 & 0.16 & 0.70 & 0.52 & 0.13 & 0.33 & 0.24 & 0.06 \\ 
   $\WinzMean$ (Winsorize)& 1.56 & 1.11 & 0.36 & 0.75 & 0.51 & 0.21 & 0.68 & 0.51 & 0.18 & 0.32& 0.24 & 0.12 \\ 
-  $\WeightMean$ (Weight) & 1.61 & 1.17 & 0.36 & 0.84 & 0.60 & 0.19& 0.56 & 0.39 & 0.12 & 0.21 & 0.15 & 0.07\\ 
-  $\HuberMean$ (Huber) & 1.55 & 1.11 & 0.35 & 0.77 & 0.54 & 0.20 & 0.65 & 0.47 & 0.17 & 0.30 & 0.22 & 0.13 \\ 
+  $\WeightMean$ (Weight) & 1.60 & 1.17 & 0.41 & 0.83 & 0.63 & 0.19 & 0.56 & 0.39 & 0.11 & 0.19 & 0.16 & 0.08 \\ 
+  $\HuberMean$ (Huber) & \bf 1.55 & 1.11 & 0.35 & 0.77 & 0.54 & 0.20 & 0.65 & 0.47 & 0.17 & 0.30 & 0.22 & 0.13 \\ 
    \hline
 \end{tabular}
 \caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.  The robustified $L_2$ estimator is based on the distance of the observations from the bulk of the data, quanitifed by the $H_n$ statistic.}
@@ -422,7 +428,7 @@ res
   $\HuberMean$ (Huber) & 1.56 & 1.03 & 0.33 & 0.82 & 0.48 & 0.20 & 0.74 & 0.49 & 0.16 & 0.28 & 0.23 & 0.13 \\ 
    \hline
 \end{tabular}
-\caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.  The robustified $L_2$ estimator is based on the influence of the point on the $L_2$ estimator, quanitifed by the influence function.}
+\caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.  The robustified $L_2$ estimator is based on the influence of the point on the $L_2$ estimator, quanitifed by the $\sin(\hat r_i)$ where $\hat r_i=d_R(\bm R_i,\ProjMean)$.}
 \label{tab:SimResC}
 \end{table}
 

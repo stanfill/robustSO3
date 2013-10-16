@@ -62,6 +62,7 @@
 \newcommand{\R}{{\mathbb{R}}}
 \newcommand{\qest}{{\hat{\bm q}}}
 \newcommand{\Sest}{{\widehat{\bm S}}}
+\newcommand{\red}[1]{{\color{red} #1}}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
@@ -115,7 +116,7 @@ Figures \ref{fig:HnC} and \ref{fig:HnCGeom} illustrate the relationship between 
         \caption{$\kappa=1$}
         \label{fig:HnDiff}
 \end{subfigure}
-\caption{The $H_i$ and $C_i$ statistics for a sample $n=25$ from the Cayley distribution with $\kappa=50$ (left) and $\kappa=1$ (right).  The points are colored based on each observations distance from the projected mean, i.e.~$d_R(\bm R_i,\ProjMean$)}
+\caption{The $H_i$ and $C_i$ statistics for a sample $n=25$ from the Cayley distribution with $\kappa=50$ (left) and $\kappa=1$ (right).  The points are colored based on each observations distance from the projected mean $\hat r_i=d_R(\bm R_i,\ProjMean$)}
 \label{fig:HnC}
 \end{figure}
 
@@ -130,15 +131,15 @@ Figures \ref{fig:HnC} and \ref{fig:HnCGeom} illustrate the relationship between 
         \caption{$\kappa=1$}
         \label{fig:HnDiffGeom}
 \end{subfigure}
-\caption{The $H_i$ and $C_i$ statistics for a sample from $n=25$ the Cayley distribution with $\kappa=50$ (left) and $\kappa=1$ (right).  The points are colored based on each observations distance from the geometric mean, i.e.~$d_R(\bm R_i,\GeomMean$)}
+\caption{The $H_i$ and $C_i$ statistics for a sample from $n=25$ the Cayley distribution with $\kappa=50$ (left) and $\kappa=1$ (right).  The points are colored based on each observations distance from the geometric mean $\hat r_i=d_R(\bm R_i,\GeomMean$)}
 \label{fig:HnCGeom}
 \end{figure}
 
-It is clear from Figure \ref{fig:HnDiff} that the $C$ statistic based on the projected mean cannot distinguish between observations that are on the extremes of the spectrum, i.e.~are very close to the center or a $90^\circ$ rotation away.  Put another way, observations that are roughly $\pi/2$ radians away from the estimated central direction $\ProjMean$ maximizes $C$, while observations very near or $\pi$ radians away from the estimated center have the same $C$ value.  This is exactly what the influence function does as well.  That is, based on results in the intervals paper, the influence function of the projected mean is $IF_2(\bm R_i,F)\propto\sin(r_i)\bm U_i$ which is maximized at $r_i=\pi/2$ and is the same from $r_i=0$ or $r_i=\pi$.  The $H_n$ statistic, however, is closely related to the rotational distance between each observation and the estimated center $\hat{\bm q}_2$.  It would be nice to show $C$ is maximized and that $H_1=1$ when $d_R(\bm R_i,\ProjMean)=\pi/2$. 
+From Figure \ref{fig:HnDiff} it appears that the $C_i$ statistic based on the projected mean cannot distinguish between observations that are on the extremes of the spectrum, i.e.~are very close to the estimated center or a $90^\circ$ rotation away.  More specifically, $C$ is maximized for observations that are roughly $\pi/2$ radians away from the estimated central direction $\ProjMean$, while observations near or $\pi$ radians away from the estimated center have the same $C$ value.  This same behavior is exhibited by the influence function.  From \eqref{eqn:IF}, the influence function of the projected mean is $IF(\bm R_i,F)\propto\sin(r_i)\bm U_i$ which is maximized (ignoring $\bm U_i$) at $r_i=\pi/2$ and is the same from $r_i=0$ or $r_i=\pi$.  The $H_n$ statistic, however, is closely related to the rotational distance between each observation and the estimated center $\ProjMean$.  I can show empirically that for $\bm R_i$ satisfying $d_R(\bm R_i,\ProjMean)=\pi/2$ both maximizes $C_i$ and $H_i=1$, but this would be nice to prove. 
 
-From Figure \ref{fig:HnDiffGeom}, however, it is clear the $C$ statistic based on the geometric mean is linearly related to the $H_n$ statistic.  That is the geometric mean is influenced by observations away from the estimated center in a linear way, not a sinusoidal one.  The influence function for the geometric mean hasn't been determined yet, but based on these results, it will be linearly related to $r_i$, not $\sin(r_i)$.  This could be an argument on why the intrinsic approach is preferred to the extrinsic one.
+From Figure \ref{fig:HnDiffGeom}, however, it is clear the $C_i$ statistic based on the geometric mean is linearly related to the $H_i$ statistic.  Therefore the geometric mean is influenced by observations away from the estimated center in a linear way, not a sinusoidal one.  The influence function for the geometric mean has not been determined yet, but based on these results, it will be proportional to $r_i$ and not $\sin(r_i)$.  This could be an argument for the intrinsic approach and against the extrinsic approach.
 
-To make the distinction between the projected and geometric means more clear consider Figure \ref{fig:sample}.  In Figure \ref{fig:samp1} a random sample from the Cayley($\bm I_{3\times 3},50$) is plotted with both $L_2$ estimators, $\ProjMean$ and $\GeomMean$.  In Figure \ref{fig:samp2} the exact same sample is plotted, with the addition of an observation that is a rotation of $\ProjMean$ through $\pi$ radians.  The additional observation is marked with an ``X".  In the figure (and numerically) there is no difference between the projected mean in these two samples.  The geometric mean, however, moves away from the true center $\bm I_{3\times 3}$ as one would expect given the additional observation on the other pole.
+Looking at this relationship another way, consider Figure \ref{fig:sample}.  In Figure \ref{fig:samp1}, the $x$-axis of a random sample from the Cayley($\bm I_{3\times 3},50$) distribution is plotted with both $L_2$ estimators, $\ProjMean$ and $\GeomMean$.  In Figure \ref{fig:samp2} the exact same sample is plotted, with the addition of an observation that is a rotation of $\ProjMean$ through $\pi$ radians.  The additional observation is marked with an ``X".  In the figure (and numerically) there is no difference between the projected mean in these two samples.  The geometric mean, however, moves away from the true center $\bm I_{3\times 3}$ as one would expect given the additional observation on the other pole.
 
 \begin{figure}
 \centering
@@ -163,18 +164,19 @@ The question as to which statistic is appropriate comes down to: why do you care
  
 \section{Robustified Means}
 
+In this section I use the $H_i$ and $C_i$ statistics to robustify the projected $\ProjMean$ $L_2$ estimator.  In particular I look at the trimmed, weighted and winsorized mean as well as the Huber estimator.  I think it would be simple to extend these ideas to the geometric $L_2$ estimator $\GeomMean$.
 
 To define the $SO(3)$ \emph{trimmed mean} we need to determine which observations are in the tails.  To do this consider the the discordant measure $H_i$ proposed by \cite{best1986} and later expanded to the hypersphere by \cite{figueiredo2005} defined in Section \ref{sec:outliers}.
 
 It follows that $\alpha$-trimmed mean in $SO(3)$ is defined by
 \[
-\bm S_{T}=\frac{1}{|\Omega_0|}\int_{\Omega_0}\bm Rf(\bm R|\bm S,\kappa)d\bm R
+\bm S_{T}=\int_{SO(3)}\bm Rf^*(\bm R|\bm S,\kappa)d\bm R
 \]
-where $\Omega_0=\{\bm R:\bm R\in SO(3), H(\bm R)\leq q_{\alpha}\}$ and $q_\alpha$ is the $100(1-\alpha)\%$ of the distribution of $H_j$.  In practice $\bm S_T$ can be estimated by
+where $f^*(\bm R|\bm S,\kappa)$ is the rotational distribution that puts $0$ probability on rotations $\bm R_i$ with $H_i$ statistics beyond the $100(1-\alpha)\%$ of the $H_i$ distribution.  In practice $\bm S_T$ can be estimated by
 \[
 \TrimMean=\argmax_{\bm S\in SO(3)}\text{tr}(\bm S^\top\overline{\bm R}_T)
 \]
-where $\overline{\bm R}_T=\sum_{i=1}^n\bm R_iI(\bm H_i\leq \hat q_{\alpha})$ and $\hat q_{\alpha}$ is the $100(1-\alpha)\%$ of the distribution of $H_i$.
+where $\overline{\bm R}_T=\sum_{i=1}^n\bm R_iI( H_i\leq \hat H_\alpha)$ and $\hat H_{\alpha}$ is the $100(1-\alpha)\%$ of the distribution of $H_i$.
 
 
 Define the $SO(3)$ \emph{weighted mean} as
@@ -184,7 +186,7 @@ Define the $SO(3)$ \emph{weighted mean} as
 where $\overline{\bm R}_W=(\sum_{i}w_i\bm R_i)/(\sum_i w_i)$, the weights $w_i^{-1}=\sqrt{H_i}/(\sum_i \sqrt{H_i})$ and $H_i$ is from \eqref{eqn:Hj}.  I use the square root of $H_i$ because $H_i$ alone behaves like a square loss function instead of an absolute loss function.
 
 
-The idea of the multidimensional \emph{Huber estimator} is to robustify an estimator by placing a bound on the norm of its influence function.  In Figure \ref{fig:Huber} the 2-dimensional case is illustrated for the artificial data $\bm q_1,\dots,\bm q_6$.
+The idea of the multidimensional \emph{Huber estimator} is to robustify an estimator by placing a bound on the norm of its influence function.  In Figure \ref{fig:Huber} the 2-dimensional case is illustrated for the artificial data $\bm R_1,\dots,\bm R_6$.
 \begin{figure}
 \begin{center}
 \begin{tikzpicture}
@@ -193,44 +195,41 @@ The idea of the multidimensional \emph{Huber estimator} is to robustify an estim
     \draw [->,ultra thick] (0,0) -- (2,0);
     \draw [<->] (-3,0) -- (3,0);
     \draw [<->] (0,-3) -- (0,3);
-    %\node [above] at (3,0) {$x$}
+    \node [above left] at (0,0) {$\widehat{\bm S}_E$};
+    \draw [fill] (0,0) circle [radius=0.025];
     \node [above] at (1,0) {c};
-    \node [above] at (-1,-.5) {$\bm{q}_1$};
+    \node [above] at (-1,-.5) {$\bm{R}_1$};
     \draw [fill] (-1,-.5) circle [radius=0.025];
-    \node [above] at (.5,.75) {$\bm{q}_2$};
+    \node [above] at (.5,.75) {$\bm{R}_2$};
     \draw [fill] (.5,.75) circle [radius=0.025];
-    \node [above] at (1,-1.732051) {$\bm{q}_3$};
+    \node [above] at (1,-1.732051) {$\bm{R}_3$};
     \draw [fill] (1,-1.732051) circle [radius=0.025];
-    \node [above] at (-.25,1.5) {$\bm{q}_4$};
+    \node [above] at (-.25,1.5) {$\bm{R}_4$};
     \draw [fill] (-.25,1.5) circle [radius=0.025];
-    \node [above] at (2,2) {$\bm{q}_5$};
+    \node [above] at (2,2) {$\bm{R}_5$};
     \draw [fill] (2,2) circle [radius=0.025];
-    \node [left] at (1.414214, 1.414214) {$\bm{q}_5^*$};
+    \node [left] at (1.414214, 1.414214) {$\bm{R}_5^*$};
     \draw [fill] (1.414214, 1.414214) circle [radius=0.025];
     \draw [->] (2,2) -- (1.414214, 1.414214);
-    \node [below] at (-1,-2.5) {$\bm{q}_6$};
+    \node [below] at (-1,-2.5) {$\bm{R}_6$};
     \draw [fill] (-1,-2.5) circle [radius=0.025];
-    \node [above] at (-0.7427814,  -1.8569534) {$\bm{q}_6^*$};
+    \node [above] at (-0.7427814,  -1.8569534) {$\bm{R}_6^*$};
     \draw [fill] (-0.7427814, -1.8569534) circle [radius=0.025];
     \draw [->] (-1,-2.5) -- (-0.7427814,  -1.8569534);
 \end{tikzpicture}
 \end{center}
-\caption{Multidimensional Huber estimator as illustrated in Section 4.3 of \cite{hampel2011}.}
+\caption{Multidimensional Huber estimator with estimated center $\ProjMean$ as illustrated in Section 4.3 of \cite{hampel2011}.}
 \label{fig:Huber}
 \end{figure}
 
-Each point represents the influence function evaluated at that data point.  The norm of the influence function for this estimator evaluated at $\bm q_1,\dots,\bm q_4$ all lie within the specified distance of the origin so they are left untouched.  The norm of the influence function evaluated at $\bm q_5$ and $\bm q_6$ however is larger than $c$ and therefore those points are altered such that the norm of the influence function has a norm of $c$.  The reason (according to pp 239 of \citealt{hampel2011}) for placing the bound on the influence function is because  ``the most meaningful version of the $\psi$-function defining an $M$-estimator is its influence function."
+Each point represents the influence function evaluated at that data point.  The norm of the influence function for this estimator evaluated at $\bm R_1,\dots,\bm R_4$ all lie within the specified range of the estimated center so they are left untouched.  The norm of the influence function evaluated at $\bm R_5$ and $\bm R_6$ however is larger than $c$ and therefore those points are altered such that the norm of the influence function has a norm of $c$.  The reason (according to page 239 of \citealt{hampel2011}) for placing the bound on the influence function is because  ``the most meaningful version of the $\psi$-function defining an $M$-estimator is its influence function."
 
-Applying this idea to $SO(3)$ data, recall from the regions paper that the influence function of $\ProjMean$ is
-\[
-\text{IF}_2(\bm R_i,F)=\frac{3}{1+2E[\cos(r)]}\sin(r)\bm u
-\]
-where $r=d_r(\bm R_i,\bm S)$ or in practice $\hat{r}=d_r(\bm R_i,\ProjMean)$.  It follows that $\|\text{IF}_2(\bm R_i,F)\|\propto \sin(|r|)$.  Unfortunately, using the Huber estimator directly will put the most restrictions on the $r$ values near $\pi/2$ instead or $\pi$, which is where we really want to place the upper bound.  Therefore I propose the modified Huber estimator on $SO(3)$ put a bound on $r_i=d_r(\bm R_i,\ProjMean)$ and is denoted $\HuberMean$.  
+Applying this idea to $SO(3)$ data, recall from \eqref{eqn:IF} that $\text{IF}\propto\sin(r)\bm U_i$ where $\bm U_i$ has norm one, thus $\|\text{IF}(\bm R_i,F)\|\propto \sin(|r|)$.  It follows that using the Huber estimator directly will put the most restrictions on the rotations $\bm R_i$ that are near $\pi/2$ radians away from the estimated center instead of observations as far as $\pi$ radians away.  Alternatively a modified Huber estimator on $SO(3)$ could puts a bound on $\hat r_i=d_r(\bm R_i,\ProjMean)$.  
 
-The algorithm I use to compute $\HuberMean$ based on the sample $\bm R_1,\dots,\bm R_n$ and the constant $c<\pi$ is as follows
+The algorithm I use to compute $\HuberMean$ based on the sample $\bm R_1,\dots,\bm R_n$ and the constant $c$ is as follows
 \begin{enumerate} 
 \item Compute $\ProjMean^{(j)}$
-\item For each $i$ compute $r_i^{(j)}=d_r(\bm R_i,\ProjMean^{(j)})$
+\item For each $i$ compute $\hat r_i^{(j)}=d_r(\bm R_i,\ProjMean^{(j)})$
 \item For each $i$ such that $r_i>c$:
 \begin{enumerate}
 \item Find $\bm u_i\in\mathcal{S}^3$ satisfying $\exp[\bm{\Phi}(r_i\bm u_i)]=\ProjMean^{(j)\top}\bm R_i$
@@ -239,8 +238,17 @@ The algorithm I use to compute $\HuberMean$ based on the sample $\bm R_1,\dots,\
 \item Repeat steps 1 - 3 for $j+1$ until $r_i<c$ for all $i$
 \item Define $\HuberMean=\ProjMean^{(j+1)}$
 \end{enumerate}
+Figure \ref{fig:huberContd} illustrates the modifed Huber estiamtor for a variety of $c$ values.  Notice that when the $c$ value is vert small, then the data converge quickly to the initial estimate of center, which is the opposite of what we would like to do.
 
-The \emph{winsorized mean} is a combination of the trimmed mean and winsorized mean.  That is, the data are ordered according to their respective $H_j$ values.  All rotations beyond the upper $100(1-\alpha)$\% percentage is projected to the border of the inner circle while maintaining the original axis of rotation.  The mathematical definition is 
+\begin{figure}[h]
+\begin{center}
+\animategraphics[width=.5\textwidth,controls,loop]{1}{Figure/huberContd}{1}{11}
+\end{center}
+\caption{The modified Huber estiamator (limit the distance from the estimated central direction) for a range of c values.}
+\label{fig:huberContd}
+\end{figure}
+
+An $SO(3)$ interpretation of the \emph{winsorized mean} is a combination of the $SO(3)$ trimmed mean and modified Huber estiamtor.  That is, the data are ordered according to their statistic values, e.g.~$H_i$ or $C_I$.  All rotations beyond the upper $100(1-\alpha)$\% percentage of that statistic is projected to the border of the inner circle while maintaining the original axis of rotation.  The mathematical definition is 
 \[
 \WinzMean=\argmax_{\bm S\in SO(3)}\text{tr}(\bm S^\top\overline{\bm R}_{Z})
 \]
@@ -252,18 +260,16 @@ where $\overline{\bm R}_{Z}=\sum_{i=1}^n\bm R_i^*/n$,
 \ProjMean\exp[\bm{\Phi}(\hat{q}\bm{u}_i^*)]&\text{ otherwise,}
 \end{cases}
 \]
-$\bm u_i^*$ is the axis of rotation corresponding to $\ProjMean^\top\bm R_i$ and $\hat{q}$ is the $100(1-\alpha)$\% percentile of the distribution of $H_j$.
+$\bm U_i^*$ is the axis of rotation corresponding to $\ProjMean^\top\bm R_i$ and $\hat{H}_\alpha$ is the $100(1-\alpha)$\% percentile of the distribution of $H_i$.
 
 
 
 
 \section{(Very) Limited Simulation Study}
 
-I ran a very small simulation study with the new robustified $\ProjMean$ estimators (trimmed, winsorized, weighted, Huber) along with the tradition $\ProjMean$ and $\ProjMedian$.  I generated 100 samples per combination of distribution (Cayley or von Mises Fisher), sample size ($n=10,50$), concentration ($\kappa=0.5,1,10$) all with $10\%$ contamination.  Meaning 90\% of each sample was from the $F(\bm I_{3\times 3},\kappa)$ distribution and 10\% of the sample came from a $F(\bm S_c[\pi/2,\bm u],\kappa)$, i.e.~the slippage situation where the second principal direction was rotation though $\pi/2$ radians about some (uniformly distributed) axis.
+Below is a a very small simulation study comparing the usual projected estimators $\ProjMean$, $\ProjMedian$ and the robustified versions of the projected $L_2$ estimator (trimmed, winsorized, weighted, Huber).  One-hundred samples per combination of distribution (Cayley or von Mises Fisher), sample size ($n=10,50$), concentration ($\kappa=0.5,1,10$) all with $10\%$ contamination.  That is 90\% of the final data set comes from the respective $F(\bm I_{3\times 3},\kappa)$ distribution and the remaining 10\% of the sample comes from a $F(\bm S_c[\pi/2,\bm u],\kappa)$.  In the cirulcar/spherical dataset this is called the slippage alternative.
 
 In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance in each estimator for each simulated scenario.  That is bias$=\|\bm I_{3\times 3}-\widehat{\bm S}\|_F$ for each estimator.  The trimmed and winsorized mean use $\alpha=0.1$ and the Huber estimator sets $c=0.75$.
-
-
 
 
 \begin{table}[ht]
@@ -274,15 +280,15 @@ In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance 
 \hline
    &  \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c|}{n=50} & \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c}{n=50} \\ 
   $\kappa$ &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 \\ \hline
-  $\ProjMedian$ (Median) & 1.71 & 1.30 & 0.37 & 0.92 & 0.66 & 0.18 & 0.52 & 0.33 & 0.09 & 0.15 & 0.11 & 0.03 \\ 
-  $\ProjMean$ (Mean) & 1.55 & 1.10 & 0.35 & 0.79 & 0.55 & 0.21 & 0.66 & 0.49 & 0.20 & 0.31 & 0.23 & 0.17 \\ 
-  $\TrimMean$ (Trim) & 1.56 & 1.16 & 0.34 & 0.80 & 0.57 & 0.16 & 0.70 & 0.52 & 0.13 & 0.33 & 0.24 & 0.06 \\ 
-  $\WinzMean$ (Winsorize)& 1.56 & 1.11 & 0.36 & 0.75 & 0.51 & 0.21 & 0.68 & 0.51 & 0.18 & 0.32& 0.24 & 0.12 \\ 
-  $\WeightMean$ (Weight) & 1.61 & 1.17 & 0.36 & 0.84 & 0.60 & 0.19& 0.56 & 0.39 & 0.12 & 0.21 & 0.15 & 0.07\\ 
-  $\HuberMean$ (Huber) & 1.55 & 1.11 & 0.35 & 0.77 & 0.54 & 0.20 & 0.65 & 0.47 & 0.17 & 0.30 & 0.22 & 0.13 \\ 
+  $\ProjMedian$ (Median) & 1.71 & 1.30 & 0.37 & 0.92 & 0.66 & 0.18 & \red{ 0.52 }& \red{ 0.33} & \red{ 0.09} & \red{ 0.15} & \red{ 0.11} & \red{ 0.03} \\ 
+  $\ProjMean$ (Mean) & \red{ 1.55} & \red{ 1.10} & 0.35 & 0.79 & 0.55 & 0.21 & 0.66 & 0.49 & 0.20 & 0.31 & 0.23 & 0.17 \\ 
+  $\TrimMean$ (Trim) & 1.56 & 1.16 & \red{ 0.34} & 0.80 & 0.57 & \red{ 0.16} & 0.70 & 0.52 & 0.13 & 0.33 & 0.24 & 0.06 \\ 
+  $\WinzMean$ (Winsorize)& 1.56 & 1.11 & 0.36 & \red{ 0.75} & \red{ 0.51} & 0.21 & 0.68 & 0.51 & 0.18 & 0.32& 0.24 & 0.12 \\ 
+  $\WeightMean$ (Weight) & 1.60 & 1.17 & 0.41 & 0.83 & 0.63 & 0.19 & 0.56 & 0.39 & 0.11 & 0.19 & 0.16 & 0.08 \\ 
+  $\HuberMean$ (Huber) & \red{ 1.55} & 1.11 & 0.35 & 0.77 & 0.54 & 0.20 & 0.65 & 0.47 & 0.17 & 0.30 & 0.22 & 0.13 \\ 
    \hline
 \end{tabular}
-\caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.  The robustified $L_2$ estimator is based on the distance of the observations from the bulk of the data, quantified by the $H_n$ statistic.}
+\caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.  The projected $L_2$ estimator $\ProjMean$ is robustified based on the ordering of the data determined by $H_i$ statistic (i.e.~distance from the bulk of the data).}
 \label{tab:SimResHn}
 \end{table}
 
@@ -294,15 +300,15 @@ In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance 
 \hline
    &  \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c|}{n=50} & \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c}{n=50} \\
   $\kappa$ &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 \\ \hline
-  $\ProjMedian$ (Median) & 1.70 & 1.25 & 0.35 & 1.01 & 0.59 & 0.19 & 0.55 & 0.37 & 0.08 & 0.15 & 0.11 & 0.03 \\ 
-  $\ProjMean$ (Mean) & 1.56 & 1.04 & 0.33 & 0.83 & 0.49 & 0.22 & 0.76 & 0.50 & 0.19 & 0.30 & 0.25 & 0.17 \\ 
-   $\TrimMean$ (Trim) & 1.68 & 1.12 & 0.34 & 0.86 & 0.52 & 0.17 & 0.82 & 0.53 & 0.13 & 0.31 & 0.23 & 0.06 \\ 
-  $\WinzMean$ (Winsorize) & 1.60 & 1.06 & 0.34 & 0.82 & 0.49 & 0.18 & 0.74 & 0.51 & 0.13 & 0.29 & 0.22 & 0.06 \\ 
-  $\WeightMean$ (Weight) & 2.07 & 1.52 & 0.33 & 2.06 & 0.83 & 0.20 & 1.37 & 0.74 & 0.12 & 0.75 & 0.41 & 0.08 \\ 
-  $\HuberMean$ (Huber) & 1.56 & 1.03 & 0.33 & 0.82 & 0.48 & 0.20 & 0.74 & 0.49 & 0.16 & 0.28 & 0.23 & 0.13 \\ 
+  $\ProjMedian$ (Median) & 1.70 & 1.25 & 0.35 & 1.01 & 0.59 & 0.19 & \red{ 0.55} & \red{ 0.37}& \red{ 0.08} & \red{ 0.15} & \red{ 0.11} & \red{ 0.03} \\ 
+  $\ProjMean$ (Mean) & \red{ 1.56} & 1.04 & \red{ 0.33} & 0.83 & 0.49 & 0.22 & 0.76 & 0.50 & 0.19 & 0.30 & 0.25 & 0.17 \\ 
+   $\TrimMean$ (Trim) & 1.68 & 1.12 & 0.34 & 0.86 & 0.52 & \red{ 0.17} & 0.82 & 0.53 & 0.13 & 0.31 & 0.23 & 0.06 \\ 
+  $\WinzMean$ (Winsorize) & 1.60 & 1.06 & 0.34 & \red{ 0.82} & 0.49 & 0.18 & 0.74 & 0.51 & 0.13 & 0.29 & 0.22 & 0.06 \\ 
+  $\WeightMean$ (Weight) & 2.07 & 1.52 & \red{ 0.33} & 2.06 & 0.83 & 0.20 & 1.37 & 0.74 & 0.12 & 0.75 & 0.41 & 0.08 \\ 
+  $\HuberMean$ (Huber) & \red{ 1.56 }& \red{ 1.03} & \red{ 0.33} & \red{ 0.82} & \red{ 0.48} & 0.20 & 0.74 & 0.49 & 0.16 & 0.28 & 0.23 & 0.13 \\ 
    \hline
 \end{tabular}
-\caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.  The robustified $L_2$ estimator is based on the influence of the point on the $L_2$ estimator, quantified by the influence function.}
+\caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.  The projected $L_2$ estimator $\ProjMean$ is robustified based on the affect each observation has on $\ProjMean$ as determined by $C_i$ statistic (i.e.~empirical influence function).}
 \label{tab:SimResC}
 \end{table}
 
