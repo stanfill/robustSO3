@@ -196,17 +196,17 @@ The algorithm I use to compute $\HuberMean$ based on the sample $\bm R_1,\dots,\
 \item Repeat steps 1 - 3 for $j+1$ until $r_i<c$ for all $i$
 \item Define $\HuberMean=\ProjMean^{(j+1)}$
 \end{enumerate}
-Figure \ref{fig:huberContd} illustrates the modifed Huber estiamtor for a variety of $c$ values.  Notice that when the $c$ value is vert small, then the data converge quickly to the initial estimate of center, which is the opposite of what we would like to do.
+Figure \ref{fig:huberContd} illustrates the modified Huber estimator for a variety of $c$ values.  Notice that when the $c$ value is very small, then the data converge quickly to the initial estimate of center, which is the opposite of what we would like to do.
 
 \begin{figure}[h]
 \begin{center}
 \animategraphics[width=.5\textwidth,controls,loop]{1}{Figure/huberContd}{1}{11}
 \end{center}
-\caption{The modified Huber estiamator (limit the distance from the estimated central direction) for a range of c values.}
+\caption{The modified Huber estimator (limit the distance from the estimated central direction) for a range of c values.}
 \label{fig:huberContd}
 \end{figure}
 
-An $SO(3)$ interpretation of the \emph{winsorized mean} is a combination of the $SO(3)$ trimmed mean and modified Huber estiamtor.  That is, the data are ordered according to their statistic values, e.g.~$H_i$ or $C_I$.  All rotations beyond the upper $100(1-\alpha)$\% percentage of that statistic is projected to the border of the inner circle while maintaining the original axis of rotation.  The mathematical definition is 
+An $SO(3)$ interpretation of the \emph{winsorized mean} is a combination of the $SO(3)$ trimmed mean and modified Huber estimator.  That is, the data are ordered according to their statistic values, e.g.~$H_i$ or $C_I$.  All rotations beyond the upper $100(1-\alpha)$\% percentage of that statistic is projected to the border of the inner circle while maintaining the original axis of rotation.  The mathematical definition is 
 \[
 \WinzMean=\argmax_{\bm S\in SO(3)}\text{tr}(\bm S^\top\overline{\bm R}_{Z})
 \]
@@ -225,7 +225,7 @@ $\bm U_i^*$ is the axis of rotation corresponding to $\ProjMean^\top\bm R_i$ and
 
 \section{(Very) Limited Simulation Study}
 
-Below is a a very small simulation study comparing the usual projected estimators $\ProjMean$, $\ProjMedian$ and the robustified versions of the projected $L_2$ estimator (trimmed, winsorized, weighted, Huber).  One-hundred samples per combination of distribution (Cayley or von Mises Fisher), sample size ($n=10,50$), concentration ($\kappa=0.5,1,10$) all with $10\%$ contamination.  That is 90\% of the final data set comes from the respective $F(\bm I_{3\times 3},\kappa)$ distribution and the remaining 10\% of the sample comes from a $F(\bm S_c[\pi/2,\bm u],\kappa)$.  In the cirulcar/spherical dataset this is called the slippage alternative.
+Below is a a very small simulation study comparing the usual projected estimators $\ProjMean$, $\ProjMedian$ and two versions of each robustified projected $L_2$ estimator (trimmed, winsorized, weighted, Huber).  The two versions of robustification come from the choice of statistics to determine ``outliers": either $H_i$ which identifies observations far from the bulk of the data (Table \ref{tab:SimResHn}), or $C_i$ which identifies observations that influence the estimated center (Table \ref{tab:SimResC}).  One-hundred samples per combination of distribution (Cayley or von Mises Fisher), sample size ($n=10,50$), concentration ($\kappa=0.5,1,10$) all with $10\%$ contamination.  That is 90\% of the final data set comes from the respective $F(\bm I_{3\times 3},\kappa)$ distribution and the remaining 10\% of the sample comes from a $F(\bm S_c[\pi/2,\bm u],\kappa)$.  In the circular/spherical data set this is called the slippage alternative.
 
 In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance in each estimator for each simulated scenario.  That is bias$=\|\bm I_{3\times 3}-\widehat{\bm S}\|_F$ for each estimator.  The trimmed and winsorized mean use $\alpha=0.1$ and the Huber estimator sets $c=0.75$.
 
@@ -250,6 +250,10 @@ In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance 
 \label{tab:SimResHn}
 \end{table}
 
+Results when the $H_i$ statistic is used to robustify $\ProjMean$ are in Table \ref{tab:SimResHn}.  For the Cayley (and presumably Fisher matrix) distribution, the traditional mean, Huber estimator and trimmed mean are close.  Trimmed mean is preferred for more concentrated data and the Huber estimator is preferred as the data become less concentrated.  A possible explanation is that the trimmed mean is discarding the contaminated data when the bulk of the data is highly concentrated, while the Huber estimator is trying to use all the data.  As was demonstrated in the Technometric paper, the median does really poorly.
+
+For the von Mises distribution in Table \ref{tab:SimResHn}, it looks like the median is unbeatable.  This is likely due to the heavy tail we identified in the Technometrics paper.  Similar to the other distribution, the trimmed mean improves considerably as the bulk of the data becomes more concentrated and the contamination can be cut out completely.  The Huber estimator and winsorized mean give comparable results but are great.
+
 \begin{table}[ht]
 \centering
 \begin{tabular}{l|lll|lll|lll|lll}
@@ -270,6 +274,9 @@ In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance 
 \label{tab:SimResC}
 \end{table}
 
+The results in Table \ref{tab:SimResC} include results for when robustification is based on the influence function or the affect each observation has on the estimate of center.  For this case the Huber estimator does well for the Cayley distribution.  The trimmed mean does well when the data become highly concentrated and that is likely due to the same reason as before.  Again the median is best for the von Mises Fisher distribution.  
+
+Also of note in Table \ref{tab:SimResC} is how terrible the weighted mean $\WeightMean$ does in a majority of the situations.  This is likely due to the fact that the $C_i$ statistic will put weight on observations far from the estimated center, so long as they are not near $\pi/2$ radians away from that estimate.  This could result putting a lot of weight on an observation that could draw the estimate far off course.
 
 % \begin{figure}
 % \centering
@@ -278,9 +285,7 @@ In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance 
 % \end{figure}
 
 
-For the Cayley (and presumably Fisher matrix) distribution, the Huber estimator and trimmed mean are close.  Trimmed mean is preferred for more concentrated data and the Huber estimator is preferred as the data become less concentrated.  This makes sense because the trimmed mean is discarding the contaminated data when the bulk of the data is highly concentrated, while the Huber estimator is trying to use all the data.  The median does really poorly, even compared to the mean.
 
-For the von Mises distribution, it looks like the median is unbeatable.  This is likely due to the heavy tail we identified in the Technometrics paper.  Similar to the other distribution, the trimmed mean improves considerably as the bulk of the data becomes more concentrated and the contamination can be cut out completely.  The Huber estimator and winsorized mean give comparable results but are not terribly good.
 \clearpage
 %\bibliographystyle{plain}
 \bibliography{../OutlierDetection/RobustRefs}
