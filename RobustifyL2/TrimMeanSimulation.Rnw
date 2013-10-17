@@ -496,6 +496,61 @@ xtable(cres,digits=2)
 For the Cayley (and presumably Fisher matrix) distribution, the Huber estimator and trimmed mean are close.  Trimmed mean is preferred for more concentrated data and the Huber estimator is preferred as the data become less concentrated.  This makes sense because the trimmed mean is discarding the contaminated data when the bulk of the data is highly concentrated, while the Huber estimator is trying to use all the data.  The median does really poorly, even compared to the mean.
 
 For the von Mises distribution, it looks like the median is unbeatable.  This is likely due to the heavy tail we identified in the Technometrics paper.  Similar to the other distribution, the trimmed mean improves considerably as the bulk of the data becomes more concentrated and the contamination can be cut out completely.  The Huber estimator and winsorized mean give comparable results but are not terribly good.
+
+<<simulationHnFunExtrinsic,echo=FALSE,eval=FALSE>>=
+#Run a quick simulation to assess the effectiveness of robustified EXTRINSIC L2 estimators based on the HnFun function, which punishes observations far away from the bulk of the data, not necessairly the obervaitons that affect the L2 estimator
+
+library(rotations)
+Rcpp::sourceCpp('robustCpp.cpp')
+source("robustFunctions.R")
+
+dist<-c("Cayley","vonMises")
+rdist<-c(rcayley,rvmises)
+kappa<-c(.5,1,10)
+n<-c(10,50)
+res<-expand.grid(dist,n,kappa)
+res<-data.frame(Dist=res$Var1,n=res$Var2,kappa=res$Var3,Mean=0,Median=0,Trim=0,Winz=0,Weight=0,Huber=0)
+Scont<-genR(pi/2)
+B<-100
+
+cHub<-0.75
+pCont<-.1   #level of contamintion in the simulated data sets
+alpha<- .1  #percent to trim/winsorize
+
+for(i in 1:nrow(res)){
+  
+  dis<-2-i%%2
+  mediani<-meani<-trimi<-winzi<-weighti<-huberi<-0
+    
+  for(j in 1:B){
+    Rs<-ruarsCont(n=res$n[i],rangle=rdist[dis][[1]],kappa=res$kappa[i],p=pCont,S=id.SO3,Scont=Scont)
+    mediani<-mediani+dist(median(Rs,type='geometric'))
+    meani<-meani+dist(mean(Rs,type='geometric'))
+    winzi<-winzi+dist(winzMean(Rs,alpha,HnFun,type='geometric')$Shat)
+    huberi<-huberi+dist(HuberMean(Rs,cHub,type='geometric')$Shat)
+    
+    Qs<-Q4(Rs)
+    trimi<-trimi+dist(trimMean(Qs,alpha,HnFun,type='geometric')$Shat)
+    weighti<-weighti+dist(weighted.mean(Qs,w=1/HnFun(Qs),type='geometric'))
+  }
+  
+  res$Median[i]<-mediani/B
+  res$Mean[i]<-meani/B
+  res$Weight[i]<-weighti/B
+  res$Winz[i]<-winzi/B
+  res$Trim[i]<-trimi/B
+  res$Huber[i]<-huberi/B
+}
+
+res
+
+library(reshape2)
+library(xtable)
+mres<-melt(res,id.vars=c("Dist","n","kappa"))
+cres<-dcast(mres,variable~Dist+n+kappa)
+xtable(cres,digits=2)
+@
+
 \clearpage
 %\bibliographystyle{plain}
 \bibliography{../OutlierDetection/RobustRefs}

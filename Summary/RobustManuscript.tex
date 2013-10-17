@@ -53,12 +53,13 @@
 \bibliographystyle{abbrvnat}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \newcommand{\ProjMean}{{\widehat{\bm S}_{E}}}
-\newcommand{\ProjMedian}{{\widehat{\bm S}_{1}}}
+\newcommand{\ProjMedian}{{\widetilde{\bm S}_{E}}}
+\newcommand{\GeomMean}{{\widehat{\bm S}_{R}}}
+\newcommand{\GeomMedian}{{\widetilde{\bm S}_{R}}}
 \newcommand{\HuberMean}{{\widehat{\bm S}_H}}
 \newcommand{\WeightMean}{{\widehat{\bm S}_W}}
 \newcommand{\TrimMean}{{\widehat{\bm S}_T}}
 \newcommand{\WinzMean}{{\widehat{\bm S}_Z}}
-\newcommand{\GeomMean}{{\widehat{\bm S}_{R}}}
 \newcommand{\R}{{\mathbb{R}}}
 \newcommand{\qest}{{\hat{\bm q}}}
 \newcommand{\Sest}{{\widehat{\bm S}}}
@@ -83,9 +84,9 @@ Two of the most promising leads on outlier detection in $SO(3)$ is a generalizat
 
 For a sample of rotations $\bm q_1,\dots,\bm q_n$ let $\qest$ denote the estimated center.  Define the rotation analog of the Collett's $C$-statistic as 
 \begin{equation}\label{eqn:Ci}
-C_i=\|\qest-\hat{\bm q}^{(i)}\|=\sqrt{8[1-(\qest^\top\qest^{(i)})]}
+C_i=d_E(\qest,\hat{\bm q}^{(i)})=\sqrt{8[1-(\qest^\top\qest^{(i)})]}
 \end{equation}
-where $\qest^{(i)}$ is the estimated central direction when the $i$th observation is deleted.  
+where $d_E$ is the Euclidean distance and $\qest^{(i)}$ is the estimated central direction when the $i$th observation is deleted.  
 
 The \emph{influence function} of an estimator quantifies the change in that estimator when one sample point is changed.  In the regions paper we derived the influence function of the projected mean $\ProjMean$ based on a sample of directionally symmetric rotations $\bm R_i$ with central orientation $\bm S$ to be
 \begin{equation}\label{eqn:IF}
@@ -267,7 +268,9 @@ $\bm U_i^*$ is the axis of rotation corresponding to $\ProjMean^\top\bm R_i$ and
 
 \section{(Very) Limited Simulation Study}
 
-Below is a a very small simulation study comparing the usual projected estimators $\ProjMean$, $\ProjMedian$ and two versions of each robustified projected $L_2$ estimator (trimmed, winsorized, weighted, Huber).  The two versions of robustification come from the choice of statistics to determine ``outliers": either $H_i$ which identifies observations far from the bulk of the data (Table \ref{tab:SimResHn}), or $C_i$ which identifies observations that influence the estimated center (Table \ref{tab:SimResC}).  One-hundred samples per combination of distribution (Cayley or von Mises Fisher), sample size ($n=10,50$), concentration ($\kappa=0.5,1,10$) all with $10\%$ contamination.  That is 90\% of the final data set comes from the respective $F(\bm I_{3\times 3},\kappa)$ distribution and the remaining 10\% of the sample comes from a $F(\bm S_c[\pi/2,\bm u],\kappa)$.  In the circular/spherical data set this is called the slippage alternative.
+Below is a a very small simulation study comparing the usual estimators and two versions of each robustified $L_2$ estimator (trimmed, winsorized, weighted, Huber).  The two versions of robustification come from the choice of statistics to determine ``outliers": either $H_i$ which identifies observations far from the bulk of the data (Tables \ref{tab:SimResHn} and \ref{tab:SimResHnIntrin}), or $C_i$ which identifies observations that influence the estimated center (Table \ref{tab:SimResC}).  One-hundred samples per combination of distribution (Cayley or von Mises Fisher), sample size ($n=10,50$), concentration ($\kappa=0.5,1,10$) all with $10\%$ contamination.  That is 90\% of the final data set comes from the respective $F(\bm I_{3\times 3},\kappa)$ distribution and the remaining 10\% of the sample comes from a $F(\bm S_c[\pi/2,\bm u],\kappa)$.  In the circular/spherical data set this is called the slippage alternative.  
+
+Tables \ref{tab:SimResHn} and \ref{tab:SimResC} include results for the extrinsic mean $\ProjMean$ and median $\ProjMedian$. Both methods to identify extreme observations are used because of the results of Section \ref{sec:outliers}.  Table \ref{tab:SimResHnIntrin} includes results for the intrinsic mean $\GeomMean$ and median $\GeomMedian$ with robustified versions of $\GeomMean$ based on $H_i$ stastic since it is linearly related to $C_i$, again from the results of Section \ref{sec:outliers}.
 
 In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance in each estimator for each simulated scenario.  That is bias$=\|\bm I_{3\times 3}-\widehat{\bm S}\|_F$ for each estimator.  The trimmed and winsorized mean use $\alpha=0.1$ and the Huber estimator sets $c=0.75$.
 
@@ -280,12 +283,12 @@ In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance 
 \hline
    &  \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c|}{n=50} & \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c}{n=50} \\ 
   $\kappa$ &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 \\ \hline
-  $\ProjMedian$ (Median) & 1.71 & 1.30 & 0.37 & 0.92 & 0.66 & 0.18 & \red{ 0.52 }& \red{ 0.33} & \red{ 0.09} & \red{ 0.15} & \red{ 0.11} & \red{ 0.03} \\ 
-  $\ProjMean$ (Mean) & \red{ 1.55} & \red{ 1.10} & 0.35 & 0.79 & 0.55 & 0.21 & 0.66 & 0.49 & 0.20 & 0.31 & 0.23 & 0.17 \\ 
-  $\TrimMean$ (Trim) & 1.56 & 1.16 & \red{ 0.34} & 0.80 & 0.57 & \red{ 0.16} & 0.70 & 0.52 & 0.13 & 0.33 & 0.24 & 0.06 \\ 
-  $\WinzMean$ (Winsorize)& 1.56 & 1.11 & 0.36 & \red{ 0.75} & \red{ 0.51} & 0.21 & 0.68 & 0.51 & 0.18 & 0.32& 0.24 & 0.12 \\ 
+  $\ProjMedian$ (Median) & 1.71 & 1.30 & 0.37 & 0.92 & 0.66 & 0.18 & \red{0.52 }& \red{0.33} & \red{0.09} & \red{0.15} & \red{ 0.11} & \red{ 0.03} \\ 
+  $\ProjMean$ (Mean) & \red{1.55} & \red{1.10} & 0.35 & 0.79 & 0.55 & 0.21 & 0.66 & 0.49 & 0.20 & 0.31 & 0.23 & 0.17 \\ 
+  $\TrimMean$ (Trim) & 1.56 & 1.16 & \red{0.34} & 0.80 & 0.57 & \red{0.16} & 0.70 & 0.52 & 0.13 & 0.33 & 0.24 & 0.06 \\ 
+  $\WinzMean$ (Winsorize)& 1.56 & 1.11 & 0.36 & \red{0.75} & \red{0.51} & 0.21 & 0.68 & 0.51 & 0.18 & 0.32& 0.24 & 0.12 \\ 
   $\WeightMean$ (Weight) & 1.60 & 1.17 & 0.41 & 0.83 & 0.63 & 0.19 & 0.56 & 0.39 & 0.11 & 0.19 & 0.16 & 0.08 \\ 
-  $\HuberMean$ (Huber) & \red{ 1.55} & 1.11 & 0.35 & 0.77 & 0.54 & 0.20 & 0.65 & 0.47 & 0.17 & 0.30 & 0.22 & 0.13 \\ 
+  $\HuberMean$ (Huber) & \red{1.55} & 1.11 & 0.35 & 0.77 & 0.54 & 0.20 & 0.65 & 0.47 & 0.17 & 0.30 & 0.22 & 0.13 \\ 
    \hline
 \end{tabular}
 \caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.  The projected $L_2$ estimator $\ProjMean$ is robustified based on the ordering of the data determined by $H_i$ statistic (i.e.~distance from the bulk of the data).}
@@ -319,6 +322,28 @@ For the von Mises distribution in Table \ref{tab:SimResHn}, it looks like the me
 The results in Table \ref{tab:SimResC} include results for when robustification is based on the influence function or the affect each observation has on the estimate of center.  For this case the Huber estimator does well for the Cayley distribution.  The trimmed mean does well when the data become highly concentrated and that is likely due to the same reason as before.  Again the median is best for the von Mises Fisher distribution.  
 
 Also of note in Table \ref{tab:SimResC} is how terrible the weighted mean $\WeightMean$ does in a majority of the situations.  This is likely due to the fact that the $C_i$ statistic will put weight on observations far from the estimated center, so long as they are not near $\pi/2$ radians away from that estimate.  This could result putting a lot of weight on an observation that could draw the estimate far off course.
+
+Finally in Table \ref{tab:SimResHnIntrin} are results for the intrinsic mean/median along with the robustified intrinsic mean. Similar to the results for the Cayley distribution in Tables \ref{tab:SimResHn} and \ref{tab:SimResC} the mean is generally preferred to the other estimators; unlike the earlier results, however, the trimmed mean performs well especially for concentrated data.  For the von Mises distribution the geometric median is preferred, which is to be expected.  Unexpected is how well the weighted mean is doing.  I suspect the Huber estimator will perform better when the $c$ value is chosen appropriately, not arbitrarily (as was done here).
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{l|lll|lll|lll|lll}
+  \hline
+ & \multicolumn{6}{|c|}{Cayley} & \multicolumn{6}{|c}{von Mises}   \\ 
+\hline
+   &  \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c|}{n=50} & \multicolumn{3}{|c|}{n=10} & \multicolumn{3}{|c}{n=50} \\
+  $\kappa$ &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 &  0.5 &  1.0 & 10.0 \\ \hline
+ $\GeomMedian$ (Median) & 1.57 & 1.06 & 0.37 & 0.77 & 0.49 & 0.19 & 0.60 & 0.39 & \red{0.09} & \red{0.18} & \red{0.15} & \red{0.04} \\ 
+ $\GeomMean$ (Mean) & \red{1.54} & \red{0.99} & 0.40 & \red{0.68} & \red{0.43} & 0.24 & 0.92 & 0.64 & 0.25 & 0.44 & 0.37 & 0.23 \\ 
+ $\TrimMean$ (Trim) & \red{1.54} & \red{0.99} & \red{0.34} & 0.73 & 0.45 & \red{0.16} & 0.93 & 0.66 & 0.14 & 0.44 & 0.38 & 0.07 \\ 
+ $\WinzMean$ (Winsorize) & \red{1.54} & 1.00 & 0.40 & 0.71 & 0.45 & 0.28 & 0.87 & 0.68 & 0.22 & 0.43 & 0.37 & 0.33 \\ 
+ $\WeightMean$ (Weight) & 1.60 & 1.09 & 0.38 & 0.86 & 0.55 & 0.20 & \red{0.57} & \red{0.38} & 0.11 & \red{0.18} & 0.16 & 0.08 \\ 
+ $\HuberMean$ (Huber) & 1.55 & 1.01 & 0.36 & 0.70 & 0.45 & 0.19 & 0.80 & 0.53 & 0.17 & 0.35 & 0.29 & 0.13 \\ 
+   \hline
+\end{tabular}
+\caption{Mean estimator bias based on 100 samples from each combination of distribution, sample size and concentration.  The geometric $L_2$ estimator $\GeomMean$ is robustified based on the ordering of the data determined by $H_i$ statistic (i.e.~distance from the bulk of the data).}
+\label{tab:SimResHnIntrin}
+\end{table}
 
 % \begin{figure}
 % \centering

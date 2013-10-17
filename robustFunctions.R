@@ -59,12 +59,13 @@ MeanMove<-function(Qs,meanT='projected',distT='projected'){
   return(ds)
 }
 
-trimMean<-function(Qs,a,discordFun,anneal=F){
+trimMean<-function(Qs,a,discordFun,anneal=F,...){
   #Trim the most extreme a% based on the HnFun results
   #Qs - the sample
   #a - percent of sample to remove
   #discordFun - function to identify extreme observations, larger value more extreme obs
   #anneal - T/F, remove all at once (F) or one at a time (T)
+  #... - additional arguements passed to mean function
   n<-nrow(Qs)
   nCut<-floor(min(max(0,n*a),n)) #remove at least 0, at most n
   
@@ -82,17 +83,17 @@ trimMean<-function(Qs,a,discordFun,anneal=F){
       Hn<-discordFun(Qs)
       Qs<-as.Q4(Qs[-which.max(Hn),])
     }
-    return(list(Qs=Qs,Shat=mean(Qs)))
+    return(list(Qs=Qs,Shat=mean(Qs,...)))
     
   }else{
     Hn<-discordFun(Qs)
     toCut<-which(order(Hn)>(n-nCut))
     tQs<-as.Q4(Qs[-toCut,])
-    return(list(Qs=tQs,Shat=mean(tQs)))
+    return(list(Qs=tQs,Shat=mean(tQs,...)))
   }
 }
 
-winzMean<-function(Rs,a,discordFun,anneal=F){
+winzMean<-function(Rs,a,discordFun,anneal=F,...){
   #Project the most extreme a% observations closer
   #Rs - the sample
   #a - percent of sample to remove
@@ -106,9 +107,9 @@ winzMean<-function(Rs,a,discordFun,anneal=F){
     Rs<-SO3(Rs)
   
   if(nCut==0){
-    return(mean(Rs))
+    return(mean(Rs,...))
   }
-  Shat<-mean(Rs)
+  Shat<-mean(Rs,...)
   
   if(anneal){
     return(Shat)
@@ -127,12 +128,12 @@ winzMean<-function(Rs,a,discordFun,anneal=F){
     wRs<-Rs
     wRs[toWinz,]<-winzRs
     
-    return(list(Rs=wRs,Shat=mean(wRs)))
+    return(list(Rs=wRs,Shat=mean(wRs,...)))
   }
   
 }
 
-HuberMean<-function(RS,c,influence=FALSE){
+HuberMean<-function(RS,c,influence=FALSE,...){
   #Find the multidimensional Huber estimator based on 
   #projected mean
   #Rs - the sample
@@ -146,7 +147,7 @@ HuberMean<-function(RS,c,influence=FALSE){
   
   while(iters<100){
   
-    shat<-mean(Rs)
+    shat<-mean(Rs,...)
     rs<-dist(Rs,shat,method='intrinsic')          #Estimate r_i based on Shat
     if(influence){
       rs<-sin(rs)
@@ -172,5 +173,5 @@ HuberMean<-function(RS,c,influence=FALSE){
     #Rs<-center(Rs,t(shat)) #add the center back
   }
   #print(iters)
-  return(list(Rs=Rs,Shat=mean(Rs)))
+  return(list(Rs=Rs,Shat=mean(Rs,...)))
 }
