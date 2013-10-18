@@ -186,7 +186,7 @@ IfGeom<-function(r){
   sgn<-rep(1,length(r))
   sgn[r<0]<--1
   t1<-(1-cos(r))/2
-  t2<-2*asin(sqrt(t1))
+  t2<-asin(sqrt(t1))
   return(sgn*t2)
 }
 
@@ -196,15 +196,16 @@ library(ggplot2)
 IFm<-melt(IF,id.vars='rs')
 colnames(IFm)[2]<-"Method"
 
-las<-c(expression(-pi),expression(-pi/2),0,expression(pi/2),expression(pi))
+lasx<-c(expression(-pi),expression(-pi/2),0,expression(pi/2),expression(pi))
+lasy<-c(expression(-pi/2),0,expression(pi/2))
 
-qplot(rs,value,data=IFm,geom='line',xlab=expression(r[i]),ylab='Influence',colour=Method,size=I(2))+
-  geom_hline(yintercept=0)+geom_vline(xintercept=0)+theme_bw()+coord_fixed()+
-  theme(legend.position=c(.16,.875))+
-  scale_x_continuous(breaks=c(-pi,-pi/2,0,pi/2,pi),labels=las)+
-  scale_y_continuous(breaks=c(-pi,-pi/2,0,pi/2,pi),labels=las)
+qplot(rs,value,geom="blank",data=IFm,xlab=expression(r[i]),ylab='Influence',colour=Method)+
+  geom_hline(yintercept=0,colour='gray50')+geom_vline(xintercept=0,colour='gray50')+theme_bw()+
+  coord_fixed(ratio=1)+geom_line(size=I(2))+theme(legend.position=c(.12,.8))+
+  scale_x_continuous(breaks=c(-pi,-pi/2,0,pi/2,pi),labels=lasx)+
+  scale_y_continuous(breaks=c(-pi/2,0,pi/2),labels=lasy)
 
-ggsave("Summary/Figure/IFComparison.pdf",width=5,height=5)
+ggsave("Summary/Figure/IFComparison.pdf",width=6,height=4)
 @
 
 \begin{figure}

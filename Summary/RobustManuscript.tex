@@ -164,13 +164,14 @@ The question as to which statistic is appropriate comes down to: why do you care
 
 The influence function of $\GeomMean$ is not available in it full form, but it has been derived up to a constant.  More specifically the influence function of $\GeomMean$ is
 \[
-\text{IF}_{2R}(\bm R_i,F)\propto 2\sin^{-1}\left[\sqrt{\frac{1-\cos(r_i)}{2}}\right]\bm U_i.
+\text{IF}_{2R}(\bm R_i,F)\propto\sin^{-1}\left[\sqrt{\frac{1-\cos(r_i)}{2}}\right]\bm U_i.
 \]
-In Figure \ref{fig:IFs} the influence functions as a function of $r_i$ are compared.  The effect of $\bm U_i$ is ignored since it is uniformly distributed on the unit sphere by assumption.
+In Figure \ref{fig:IFs} the influence functions for the two $L_2$ estimatiors are compared as a function of $r_i$.  The $\bm U_i$ term is ignored, because the assumption that $\bm U_i$ is uniformly distributed on the unit sphere will make that term wash out.
  
 \begin{figure}
-\centering
-\includegraphics[width=.5\textwidth]{Figure/IFComparison.pdf}
+\begin{center}
+\includegraphics[width=.7\textwidth]{Figure/IFComparison.pdf}
+\end{center}\vspace{-1em}
 \caption{A comparison of the influence functions (up to a constant) for the $L_2$ estimators according to the extrinsic (red) and intrinsic (blue).}
 \label{fig:IFs}
 \end{figure} 

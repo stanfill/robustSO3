@@ -122,14 +122,15 @@ The question as to which statistic is appropriate comes down to: why do you care
 
 The influence function of $\GeomMean$ is not available in it full form, but it has been derived up to a constant.  More specifically the influence function of $\GeomMean$ is
 \[
-\text{IF}_{2R}(\bm R_i,F)\propto 2\sin^{-1}\left[\sqrt{\frac{1-\cos(r_i)}{2}}\right]\bm U_i.
+\text{IF}_{2R}(\bm R_i,F)\propto\sin^{-1}\left[\sqrt{\frac{1-\cos(r_i)}{2}}\right]\bm U_i.
 \]
-In Figure \ref{fig:IFs} the influence functions as a function of $r_i$ are compared.  The effect of $\bm U_i$ is ignored since it is uniformly distributed on the unit sphere by assumption.
+In Figure \ref{fig:IFs} the influence functions for the two $L_2$ estimators are compared as a function of $r_i$.  The $\bm U_i$ term is ignored, because the assumption that $\bm U_i$ is uniformly distributed on the unit sphere will make that term wash out.
  
 \begin{figure}
-\centering
-\includegraphics[width=.5\textwidth]{Figure/IFComparison.pdf}
-\caption{A comparison of the influence functions (up to a constant) for the $L_2$ estimators according to the extrinsic (red) and intrinsic (blue).}
+\begin{center}
+\includegraphics[width=.7\textwidth]{Figure/IFComparison.pdf}
+\end{center}\vspace{-1em}
+\caption{A comparison of the unstandardized influence functions for the $L_2$ estimators according to the extrinsic (red) and intrinsic (blue).}
 \label{fig:IFs}
 \end{figure} 
  
@@ -240,7 +241,7 @@ $\bm U_i^*$ is the axis of rotation corresponding to $\ProjMean^\top\bm R_i$ and
 
 Below is a a very small simulation study comparing the usual estimators and two versions of each robustified $L_2$ estimator (trimmed, winsorized, weighted, Huber).  The two versions of robustification come from the choice of statistics to determine ``outliers": either $H_i$ which identifies observations far from the bulk of the data (Tables \ref{tab:SimResHn} and \ref{tab:SimResHnIntrin}), or $C_i$ which identifies observations that influence the estimated center (Table \ref{tab:SimResC}).  One-hundred samples per combination of distribution (Cayley or von Mises Fisher), sample size ($n=10,50$), concentration ($\kappa=0.5,1,10$) all with $10\%$ contamination.  That is 90\% of the final data set comes from the respective $F(\bm I_{3\times 3},\kappa)$ distribution and the remaining 10\% of the sample comes from a $F(\bm S_c[\pi/2,\bm u],\kappa)$.  In the circular/spherical data set this is called the slippage alternative.  
 
-Tables \ref{tab:SimResHn} and \ref{tab:SimResC} include results for the extrinsic mean $\ProjMean$ and median $\ProjMedian$. Both methods to identify extreme observations are used because of the results of Section \ref{sec:outliers}.  Table \ref{tab:SimResHnIntrin} includes results for the intrinsic mean $\GeomMean$ and median $\GeomMedian$ with robustified versions of $\GeomMean$ based on $H_i$ stastic since it is linearly related to $C_i$, again from the results of Section \ref{sec:outliers}.
+Tables \ref{tab:SimResHn} and \ref{tab:SimResC} include results for the extrinsic mean $\ProjMean$ and median $\ProjMedian$. Both methods to identify extreme observations are used because of the results of Section \ref{sec:outliers}.  Table \ref{tab:SimResHnIntrin} includes results for the intrinsic mean $\GeomMean$ and median $\GeomMedian$ with robustified versions of $\GeomMean$ based on $H_i$ statistic since it is linearly related to $C_i$, again from the results of Section \ref{sec:outliers}.
 
 In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance in each estimator for each simulated scenario.  That is bias$=\|\bm I_{3\times 3}-\widehat{\bm S}\|_F$ for each estimator.  The trimmed and winsorized mean use $\alpha=0.1$ and the Huber estimator sets $c=0.75$.
 
