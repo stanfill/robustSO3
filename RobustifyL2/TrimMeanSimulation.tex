@@ -53,6 +53,7 @@
 \bibliographystyle{abbrvnat}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \newcommand{\ProjMean}{{\widehat{\bm S}_{2}}}
+\newcommand{\GeomMean}{{\widehat{\bm S}_{2R}}}
 \newcommand{\ProjMedian}{{\widehat{\bm S}_{1}}}
 \newcommand{\HuberMean}{{\widehat{\bm S}_H}}
 \newcommand{\WeightMean}{{\widehat{\bm S}_W}}
@@ -173,9 +174,24 @@ Each point represents the influence function evaluated at that data point.  The 
 
 Applying this idea to $SO(3)$ data, recall from the regions paper that the influence function of $\ProjMean$ is
 \[
-\text{IF}_2(\bm R_i,F)=\frac{3}{1+2E[\cos(r)]}\sin(r)\bm u
+\text{IF}_2(\bm R_i,F)=\frac{3}{1+2E[\cos(r)]}\sin(r)\bm U_i
 \]
 where $r=d_r(\bm R_i,\bm S)$ or in practice $\hat{r}=d_r(\bm R_i,\ProjMean)$.  It follows that $\|\text{IF}_2(\bm R_i,F)\|\propto \sin(|r|)$.  Unfortunately, using the Huber estimator directly will put the most restrictions on the $r$ values near $\pi/2$ instead or $\pi$, which is where we really want to place the upper bound.  Therefore I propose the modified Huber estimator on $SO(3)$ put a bound on $r_i=d_r(\bm R_i,\ProjMean)$ and is denoted $\HuberMean$.  
+
+The influence function of $\GeomMean$ is not available in it full form, but it has been derived up to a constant.  More specifically the influence function of $\GeomMean$ is
+\[
+\text{IF}_{2R}(\bm R_i,F)\propto 2\sin^{-1}\left[\sqrt{\frac{1-\cos(r_i)}{2}}\right]\bm U_i.
+\]
+In Figure \ref{fig:IFs} the influence functions as a function of $r_i$ are compared.  The effect of $\bm U_i$ is ignored since it is uniformly distributed on the unit sphere by assumption.
+
+
+
+\begin{figure}
+\centering
+\includegraphics[width=.7\textwidth]{../Summary/Figure/IFComparison.pdf}
+\caption{A comparison of the influence functions (up to a constant) for the $L_2$ estimators according to the extrinsic (red) and intrinsic (blue).}
+\label{fig:IFs}
+\end{figure}
 
 The algorithm I use to compute $\HuberMean$ based on the sample $\bm R_1,\dots,\bm R_n$ and the constant $c<\pi$ is as follows
 \begin{enumerate} 
@@ -356,6 +372,10 @@ In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance 
 For the Cayley (and presumably Fisher matrix) distribution, the Huber estimator and trimmed mean are close.  Trimmed mean is preferred for more concentrated data and the Huber estimator is preferred as the data become less concentrated.  This makes sense because the trimmed mean is discarding the contaminated data when the bulk of the data is highly concentrated, while the Huber estimator is trying to use all the data.  The median does really poorly, even compared to the mean.
 
 For the von Mises distribution, it looks like the median is unbeatable.  This is likely due to the heavy tail we identified in the Technometrics paper.  Similar to the other distribution, the trimmed mean improves considerably as the bulk of the data becomes more concentrated and the contamination can be cut out completely.  The Huber estimator and winsorized mean give comparable results but are not terribly good.
+
+
+
+
 \clearpage
 %\bibliographystyle{plain}
 \bibliography{../OutlierDetection/RobustRefs}
