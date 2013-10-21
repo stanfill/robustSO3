@@ -46,12 +46,6 @@ C_i=d_E(\qest,\hat{\bm q}^{(i)})=\sqrt{8[1-(\qest^\top\qest^{(i)})]}
 \end{equation}
 where $d_E$ is the Euclidean distance and $\qest^{(i)}$ is the estimated central direction when the $i$th observation is deleted.  
 
-The \emph{influence function} of an estimator quantifies the change in that estimator when one sample point is changed.  In the regions paper we derived the influence function of the projected mean $\ProjMean$ based on a sample of directionally symmetric rotations $\bm R_i$ with central orientation $\bm S$ to be
-\begin{equation}\label{eqn:IF}
-\text{IF}(\bm R_i,F)=\frac{1}{d}\sin(r_i)\bm U_i
-\end{equation}
-where $d=[1+2E\cos(r_i)]/3$ and $\bm R_i=\bm S\exp[\bm\Phi(r_i\bm U_i)]$.  Heuristically the $C_i$-statistic is an empirical influence function.  The influence function of the geometric mean is not readily available, but the results to come next indicate it is a linear function of $r_i$ and not a sinusoidal one.
-
 A special type of spherical data is axial data, that is $\bm X$ is said to come from an axial population if $\bm X_i$ and $-\bm X_i$ have the same distribution for all $i$.  Quaternions are one example of axial data.  Let $\bm Q$ denote the $n\times 4$ matrix with rows $\bm q_i$ and define $\bm T=\bm Q^\top\bm Q=\sum_{i=1}^n\bm q_i\bm q_i^\top$.  Further let $\hat\tau_1\leq\hat\tau_2\leq\hat\tau_3\leq\hat\tau_4$ denote the ordered eigenvalues of $\bm T_n$.  Similarly let $\bm T_{i}$ denote the matrix $\bm T$ with the $i$th observation deleted $\bm T_i=\bm T-\bm q_i\bm q_i^\top$, which has ordered eigenvalues $\hat\tau_{1,i}\leq\hat\tau_{2,i}\leq\hat\tau_{3,i}\leq\hat\tau_{4,i}$.  Define the statistic
 \begin{equation}\label{eqn:Hj}
 H_i=(n-2)\frac{1+\hat\tau_{4,i}-\hat\tau_4}{n-1-\hat\tau_{4,i}}.
@@ -94,11 +88,109 @@ Figures \ref{fig:HnC} and \ref{fig:HnCGeom} illustrate the relationship between 
 \label{fig:HnCGeom}
 \end{figure}
 
-From Figure \ref{fig:HnDiff} it appears that the $C_i$ statistic based on the projected mean cannot distinguish between observations that are on the extremes of the spectrum, i.e.~are very close to the estimated center or a $90^\circ$ rotation away.  More specifically, $C$ is maximized for observations that are roughly $\pi/2$ radians away from the estimated central direction $\ProjMean$, while observations near or $\pi$ radians away from the estimated center have the same $C$ value.  This same behavior is exhibited by the influence function.  From \eqref{eqn:IF}, the influence function of the projected mean is $IF(\bm R_i,F)\propto\sin(r_i)\bm U_i$ which is maximized (ignoring $\bm U_i$) at $r_i=\pi/2$ and is the same from $r_i=0$ or $r_i=\pi$.  The $H_n$ statistic, however, is closely related to the rotational distance between each observation and the estimated center $\ProjMean$.  I can show empirically that for $\bm R_i$ satisfying $d_R(\bm R_i,\ProjMean)=\pi/2$ both maximizes $C_i$ and $H_i=1$, but this would be nice to prove. 
+From Figure \ref{fig:HnDiff} it appears that the $C_i$ statistic based on the projected mean cannot distinguish between observations that are on the extremes of the spectrum, i.e.~are very close to the estimated center or a $90^\circ$ rotation away.  More specifically, $C$ is maximized for observations that are roughly $\pi/2$ radians away from the estimated central direction $\ProjMean$, while observations near or $\pi$ radians away from the estimated center have the same $C$ value.  %This same behavior is exhibited by the influence function.  From \eqref{eqn:IF}, the influence function of the projected mean is $IF(\bm R_i,F)\propto\sin(r_i)\bm U_i$ which is maximized (ignoring $\bm U_i$) at $r_i=\pi/2$ and is the same from $r_i=0$ or $r_i=\pi$.
+The $H_n$ statistic, however, is closely related to the rotational distance between each observation and the estimated center $\ProjMean$.  I can show empirically that for $\bm R_i$ satisfying $d_R(\bm R_i,\ProjMean)=\pi/2$ both maximizes $C_i$ and $H_i=1$, but this would be nice to prove. 
 
 From Figure \ref{fig:HnDiffGeom}, however, it is clear the $C_i$ statistic based on the geometric mean is linearly related to the $H_i$ statistic.  Therefore the geometric mean is influenced by observations away from the estimated center in a linear way, not a sinusoidal one.  The influence function for the geometric mean has not been determined yet, but based on these results, it will be proportional to $r_i$ and not $\sin(r_i)$.  This could be an argument for the intrinsic approach and against the extrinsic approach.
 
-Looking at this relationship another way, consider Figure \ref{fig:sample}.  In Figure \ref{fig:samp1}, the $x$-axis of a random sample from the Cayley($\bm I_{3\times 3},50$) distribution is plotted with both $L_2$ estimators, $\ProjMean$ and $\GeomMean$.  In Figure \ref{fig:samp2} the exact same sample is plotted, with the addition of an observation that is a rotation of $\ProjMean$ through $\pi$ radians.  The additional observation is marked with an ``X".  In the figure (and numerically) there is no difference between the projected mean in these two samples.  The geometric mean, however, moves away from the true center $\bm I_{3\times 3}$ as one would expect given the additional observation on the other pole.
+
+The question as to which statistic is appropriate comes down to: why do you care?  Large $C$ statistic (and also influence function) values will determine which observation will have the largest impact on the projected mean estimate of center.  The $H_n$ statistic will tell you which observation is most unlike the others, but not necessarily the one that will impact estimation.
+
+\section{Influence Functions}\label{sec:ifs}
+
+The \emph{influence function} of an estimator quantifies the change in that estimator when one sample point is changed.  In the regions paper we proved the influence function of the projected mean $\ProjMean$ based on a sample of directionally symmetric rotations $\bm R_i=\exp[\bm \Phi(r_i\bm U_i)]$ with central orientation $\bm S$ to be
+\begin{equation}\label{eqn:IF}
+\text{IF}(\bm R_i,F)=\frac{1}{d}\sin(r_i)\bm U_i
+\end{equation}
+where $d=[1+2E\cos(r_i)]/3$ and $\bm R_i=\bm S\exp[\bm\Phi(r_i\bm U_i)]$.  Heuristically the $C_i$-statistic of Section \ref{sec:outliers} is an empirical influence function.  The influence function of the geometric mean is not readily available, but the results to come next indicate it is a linear function of $r_i$ and not a sinusoidal one.
+
+The influence function of $\GeomMean$ is not available in it full form, but it has been derived up to a constant.  More specifically the influence function of $\GeomMean$ is
+\[
+\text{IF}_{2R}(\bm R_i,F)\propto\sin^{-1}\left[\sqrt{\frac{1-\cos(r_i)}{2}}\right]\bm U_i\approx r_i\bm U_i.
+\]
+In Figure \ref{fig:IFs} the influence functions for the two $L_2$ estimators are compared as a function of $r_i$.  The $\bm U_i$ term is ignored, because the assumption that $\bm U_i$ is uniformly distributed on the unit sphere will make that term wash out.
+ 
+\begin{figure}
+\begin{center}
+\includegraphics[width=.7\textwidth]{Figure/IFComparison.pdf}
+\end{center}\vspace{-1em}
+\caption{A comparison of the unstandardized influence functions for the $L_2$ estimators according to the extrinsic (red) and intrinsic (blue).}
+\label{fig:IFs}
+\end{figure} 
+ 
+ 
+Looking at this relationship another way, consider Figures \ref{fig:circular} and \ref{fig:sample}.  In Figure \ref{fig:samp1}, the $x$-axis of a random sample from the Cayley($\bm I_{3\times 3},50$) distribution is plotted with both $L_2$ estimators, $\ProjMean$ and $\GeomMean$.  In Figure \ref{fig:samp2} the exact same sample is plotted, with the addition of an observation that is a rotation of $\ProjMean$ through $\pi$ radians.  The additional observation is marked with an ``X".  In the figure (and numerically) there is no difference between the projected mean in these two samples.  The geometric mean, however, moves away from the true center $\bm I_{3\times 3}$ as one would expect given the additional observation on the other pole.
+
+<<circEx,include=FALSE,eval=FALSE>>=
+library(circular)
+rs<-rwrappednormal(10,mu=circular(pi/2),sd=.75)
+plot(rs)
+rs<-as.numeric(rs)
+rad<-3 #radius of the tikz picture you want
+vecs<-data.frame(x=rad*cos(rs),y=rad*sin(rs))
+rbar<-colMeans(vecs)
+projMean<-3*rbar/sqrt(sum(rbar^2))
+projMeanArrow<-2.75*rbar/sqrt(sum(rbar^2))
+theta<-acos(projMean[1]/3)
+
+#Add outlier
+projMean90<-3*c(cos(theta+pi),sin(theta+pi))
+newvecs<-rbind(vecs,projMean90)
+rbarNew<-colMeans(newvecs)
+projMeanNew<-3*rbarNew/sqrt(sum(rbarNew^2))
+@
+
+\begin{figure}[h]
+\begin{center}
+
+\begin{subfigure}[h]{0.4\textwidth}
+\begin{tikzpicture}[scale=.75]
+    \draw (0,0) circle [radius=3];
+    \draw [fill] (-1.0250062,  2.819461) circle [radius=0.07]; %Sample 
+    \draw [fill] (-1.2003083,  2.749411) circle [radius=0.07];
+    \draw [fill] (0.4048608,  2.972556) circle [radius=0.07];
+    \draw [fill] (-2.6833833,  1.341437) circle [radius=0.07];
+    \draw [fill] (-2.0500236,  2.190298) circle [radius=0.07];
+    \draw [fill] (2.7410225, -1.219342) circle [radius=0.07];
+    \draw [fill] (-1.1894952,  2.754106) circle [radius=0.07];
+    \draw [fill] (1.9681982,  2.264110) circle [radius=0.07];
+    \draw [fill] (-2.5592776,  1.565279) circle [radius=0.07];
+    \draw [fill] (-1.9309514,  2.295959) circle [radius=0.07];
+    \draw [fill] (-0.7524364,  1.9733275) circle[radius=0.125]; %Arithmetic Mean
+    \node [below right] at (-0.7524364,  1.9733275) {$\overline{\bm R}$};
+    \draw [fill] (-1.068845,  2.803136) circle[radius=0.125]; %Projected Mean
+    \node [above left] at (-1.068845,  2.803136) {$\widehat{\bm S}_E$};
+    \draw [->] (-0.7524364,  1.9733275) -- (-0.9797747,  2.5695411);
+\end{tikzpicture}
+\caption{Data set}
+\end{subfigure}
+\begin{subfigure}[h]{0.4\textwidth}
+\begin{tikzpicture}[scale=.75]
+    \draw (0,0) circle [radius=3];
+    \draw [fill] (-1.0250062,  2.819461) circle [radius=0.07]; %Sample 
+    \draw [fill] (-1.2003083,  2.749411) circle [radius=0.07];
+    \draw [fill] (0.4048608,  2.972556) circle [radius=0.07];
+    \draw [fill] (-2.6833833,  1.341437) circle [radius=0.07];
+    \draw [fill] (-2.0500236,  2.190298) circle [radius=0.07];
+    \draw [fill] (2.7410225, -1.219342) circle [radius=0.07];
+    \draw [fill] (-1.1894952,  2.754106) circle [radius=0.07];
+    \draw [fill] (1.9681982,  2.264110) circle [radius=0.07];
+    \draw [fill] (-2.5592776,  1.565279) circle [radius=0.07];
+    \draw [fill] (-1.9309514,  2.295959) circle [radius=0.07];
+    \draw [fill] (-0.5868654,  1.5391035) circle[radius=0.125]; %New Arithmetic Mean
+    \node [below right] at (-0.5868654,  1.5391035) {$\overline{\bm R}$};
+    \draw [fill] (-1.068845,  2.803136) circle[radius=0.125]; %Projected Mean
+    \node [above left] at (-1.068845,  2.803136) {$\widehat{\bm S}_E$};
+    \draw [->] (-0.5868654,  1.5391035) -- (-0.9797747,  2.5695411);
+    \draw [fill] (1.068845, -2.803136) circle [radius=0.07]; %Added outlier
+    \node [above left] at (1.068845, -2.803136) {$X$};
+\end{tikzpicture}
+\caption{Data set with observation $X$ added.}
+\end{subfigure}
+\end{center}
+\caption{Demonstration of the projected mean influence function for the circular case.}
+\label{fig:circular}
+\end{figure}
 
 \begin{figure}
 \centering
@@ -118,22 +210,6 @@ Looking at this relationship another way, consider Figure \ref{fig:sample}.  In 
 \label{fig:sample}
 \end{figure}
 
-The question as to which statistic is appropriate comes down to: why do you care?  Large $C$ statistic (and also influence function) values will determine which observation will have the largest impact on the projected mean estimate of center.  The $H_n$ statistic will tell you which observation is most unlike the others, but not necessarily the one that will impact estimation.
-
-The influence function of $\GeomMean$ is not available in it full form, but it has been derived up to a constant.  More specifically the influence function of $\GeomMean$ is
-\[
-\text{IF}_{2R}(\bm R_i,F)\propto\sin^{-1}\left[\sqrt{\frac{1-\cos(r_i)}{2}}\right]\bm U_i.
-\]
-In Figure \ref{fig:IFs} the influence functions for the two $L_2$ estimators are compared as a function of $r_i$.  The $\bm U_i$ term is ignored, because the assumption that $\bm U_i$ is uniformly distributed on the unit sphere will make that term wash out.
- 
-\begin{figure}
-\begin{center}
-\includegraphics[width=.7\textwidth]{Figure/IFComparison.pdf}
-\end{center}\vspace{-1em}
-\caption{A comparison of the unstandardized influence functions for the $L_2$ estimators according to the extrinsic (red) and intrinsic (blue).}
-\label{fig:IFs}
-\end{figure} 
- 
 \section{Robustified Means}
 
 In this section I use the $H_i$ and $C_i$ statistics to robustify the projected $\ProjMean$ $L_2$ estimator.  In particular I look at the trimmed, weighted and winsorized mean as well as the Huber estimator.  I think it would be simple to extend these ideas to the geometric $L_2$ estimator $\GeomMean$.
