@@ -18,9 +18,13 @@
 \begin{document}
 
 \begin{center}
-\Large{\bf Robust Topics in $SO(3)$}
+\Large{\bf Extreme Observation Identification and Accommodation in the Rotation Group $SO(3)$}
 \end{center}
-\normalsize
+\begin{abstract}
+Similar to data on the circle and sphere, random matrices in the rotation group SO(3) lie in a bounded space and are often highly concentrated.  As such, data analysis techniques that identify and accommodate for extreme observations in SO(3) have received little attention.  With the increased use of tools that result in observations in SO(3), e.g.~Electron Backscatter Diffraction, extreme observations have become increasingly common though their treatment is still rudimentary.  In this paper we propose a definition of outlier in a variety of contexts.  Once an extreme observation has been identified, we propose a modified multi-dimensional Huber estimator as well as trimmed and winsorized means in SO(3) that are resistant to extreme observations with minimal cost to bias and standard error.  We demonstrate the behavior of these estimators relative to those that already exist in a simulation study and data example.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
 This is a summary of the material related to robustness for $SO(3)$ data.  A detailed account of outlier detection for circular and spherical data can be found in ``Outliers.pdf."  More detail on the robustified $L_2$ estimator can be found in ``TrimMeanSimulation.pdf."
 
 <<setup,include=FALSE,eval=FALSE>>=
@@ -114,12 +118,14 @@ In Figure \ref{fig:IFs} the influence functions for the two $L_2$ estimators are
 \begin{center}
 \includegraphics[width=.7\textwidth]{Figure/IFComparison.pdf}
 \end{center}\vspace{-1em}
-\caption{A comparison of the unstandardized influence functions for the $L_2$ estimators according to the extrinsic (red) and intrinsic (blue).}
+\caption{A comparison of the unstandardized influence functions for the $L_2$ estimators according to the extrinsic (red) and intrinsic (blue) approaches.}
 \label{fig:IFs}
 \end{figure} 
  
  
-Looking at this relationship another way, consider Figures \ref{fig:circular} and \ref{fig:sample}.  In Figure \ref{fig:samp1}, the $x$-axis of a random sample from the Cayley($\bm I_{3\times 3},50$) distribution is plotted with both $L_2$ estimators, $\ProjMean$ and $\GeomMean$.  In Figure \ref{fig:samp2} the exact same sample is plotted, with the addition of an observation that is a rotation of $\ProjMean$ through $\pi$ radians.  The additional observation is marked with an ``X".  In the figure (and numerically) there is no difference between the projected mean in these two samples.  The geometric mean, however, moves away from the true center $\bm I_{3\times 3}$ as one would expect given the additional observation on the other pole.
+Looking at this relationship another way, consider Figures \ref{fig:circular} and \ref{fig:sample}.  In Figure \ref{fig:circular1} a random sample on the circle is plotted along with the projected mean estimate of the central orientation.  In \ref{fig:circular2} an additional observation is added that is the projected mean rotated through 180$^\circ$.  It is clear that the additional point moves the arithmetic mean $\overline{\bm R}$ closer to the center of the circle in Figure \ref{fig:circular2}, but the projection of the arithmetic mean $\ProjMean$ to the surface of the circle is unchanged.
+
+To illustrate this on $SO(3)$ consider Figure \ref{fig:samp1}, in which the $x$-axis of a random sample from the Cayley($\bm I_{3\times 3},50$) distribution is plotted with both $L_2$ estimators, $\ProjMean$ and $\GeomMean$.  In Figure \ref{fig:samp2} the exact same sample is plotted, with the addition of an observation that is a rotation of $\ProjMean$ through $\pi$ radians.  The additional observation is marked with an ``X".  In the figure (and numerically) there is no difference between the projected mean in these two samples.  The geometric mean, however, moves away from the true center $\bm I_{3\times 3}$ as one would expect given the additional observation on the other pole.
 
 <<circEx,include=FALSE,eval=FALSE>>=
 library(circular)
@@ -138,14 +144,29 @@ projMean90<-3*c(cos(theta+pi),sin(theta+pi))
 newvecs<-rbind(vecs,projMean90)
 rbarNew<-colMeans(newvecs)
 projMeanNew<-3*rbarNew/sqrt(sum(rbarNew^2))
+
+#Finite sample breakdown, how many bad points can we add before the mean flips to the wrong pole
+#Answer depends on the variablity in the dataset to begin with
+newvecsFSB<-newvecs
+rbarMat<-matrix(0,10,2)
+rbarMat[1,]<-rbarNew
+n<-2:10
+for(i in n){
+  newvecsFSB<-rbind(newvecsFSB,projMean90)
+  rbarMat[i,]<-colMeans(newvecsFSB)
+}
 @
 
 \begin{figure}[h]
-\begin{center}
-
 \begin{subfigure}[h]{0.4\textwidth}
+\centering
 \begin{tikzpicture}[scale=.75]
     \draw (0,0) circle [radius=3];
+    \node at (0,0) {$+$};
+    \node at (-3,0) {$-$};\node [left] at(-3,0) {$\pi$};
+    \node at (3,0) {$-$}; \node [right] at(3,0) {$0$};
+    \node at (0,3) {$|$}; \node [above] at (0,3) {$\pi/2$};
+    \node at (0,-3) {$|$}; \node [below] at (0,-3) {$3\pi/2$};
     \draw [fill] (-1.0250062,  2.819461) circle [radius=0.07]; %Sample 
     \draw [fill] (-1.2003083,  2.749411) circle [radius=0.07];
     \draw [fill] (0.4048608,  2.972556) circle [radius=0.07];
@@ -162,11 +183,28 @@ projMeanNew<-3*rbarNew/sqrt(sum(rbarNew^2))
     \node [above left] at (-1.068845,  2.803136) {$\widehat{\bm S}_E$};
     \draw [->] (-0.7524364,  1.9733275) -- (-0.9797747,  2.5695411);
 \end{tikzpicture}
-\caption{Data set}
+\caption{Original data, A}
+\label{fig:circular1}
 \end{subfigure}
 \begin{subfigure}[h]{0.4\textwidth}
+\centering
 \begin{tikzpicture}[scale=.75]
     \draw (0,0) circle [radius=3];
+    \node at (0,0) {$+$};
+    \node at (-3,0) {$-$};\node [left] at(-3,0) {$\pi$};
+    \node at (3,0) {$-$}; \node [right] at(3,0) {$0$};
+    \node at (0,3) {$|$}; \node [above] at (0,3) {$\pi/2$};
+    \node at (0,-3) {$|$}; \node [below] at (0,-3) {$3\pi/2$};
+%     \node at (-1.0250062,  2.819461) {$\times$}; %Sample 
+%     \node at (-1.2003083,  2.749411) {$\times$};
+%     \node at (0.4048608,  2.972556) {$\times$};
+%     \node at (-2.6833833,  1.341437) {$\times$};
+%     \node at (-2.0500236,  2.190298) {$\times$};
+%     \node at (2.7410225, -1.219342) {$\times$};
+%     \node at (-1.1894952,  2.754106) {$\times$};
+%     \node at (1.9681982,  2.264110) {$\times$};
+%     \node at (-2.5592776,  1.565279) {$\times$};
+%     \node at (-1.9309514,  2.295959) {$\times$};
     \draw [fill] (-1.0250062,  2.819461) circle [radius=0.07]; %Sample 
     \draw [fill] (-1.2003083,  2.749411) circle [radius=0.07];
     \draw [fill] (0.4048608,  2.972556) circle [radius=0.07];
@@ -183,12 +221,12 @@ projMeanNew<-3*rbarNew/sqrt(sum(rbarNew^2))
     \node [above left] at (-1.068845,  2.803136) {$\widehat{\bm S}_E$};
     \draw [->] (-0.5868654,  1.5391035) -- (-0.9797747,  2.5695411);
     \draw [fill] (1.068845, -2.803136) circle [radius=0.07]; %Added outlier
-    \node [above left] at (1.068845, -2.803136) {$X$};
+    \node [above left] at (1.068845, -2.803136) {$x$};
 \end{tikzpicture}
-\caption{Data set with observation $X$ added.}
+\caption{Altered data, B}
+\label{fig:circular2}
 \end{subfigure}
-\end{center}
-\caption{Demonstration of the projected mean influence function for the circular case.}
+\caption{Illustration of the projected mean for data on the circle.  The projected mean is the exact same in both data sets even though data set B includes an additional observation, denoted $x$, that is far away from the bulk of the original data set A.}
 \label{fig:circular}
 \end{figure}
 
@@ -197,19 +235,19 @@ projMeanNew<-3*rbarNew/sqrt(sum(rbarNew^2))
 \begin{subfigure}[b]{0.45\textwidth}
   \centering
   \includegraphics[width=\textwidth]{Figure/Sample1}
-  \caption{}
+  \caption{Original data, A}
   \label{fig:samp1}
 \end{subfigure}
 \begin{subfigure}[b]{0.45\textwidth}
   \centering
   \includegraphics[width=\textwidth]{Figure/Sample2}
-  \caption{}
+  \caption{Altered data, B}
   \label{fig:samp2}
 \end{subfigure}
-\caption{Random sample of size $20$ from Cayley($\bm I_{3\times 3},50$) distribution in (a).  Same sample with additional observation that is the rotation of $\ProjMean$ rotated through $\pi$ radians in (b), marked with an ``X".  Notice $\ProjMean$ is exactly the same in both samples, but $\GeomMean$ moves away.}
+\caption{Random sample of size $20$ from Cayley($\bm I_{3\times 3},50$) distribution in (a).  Same sample with additional observation that is the rotation of $\ProjMean$ rotated through 180$^\circ$ about an arbitrary axis in (b), marked with an ``X".  Notice $\ProjMean$ is exactly the same in both samples, but $\GeomMean$ moves away.}
 \label{fig:sample}
 \end{figure}
-
+\clearpage
 \section{Robustified Means}
 
 In this section I use the $H_i$ and $C_i$ statistics to robustify the projected $\ProjMean$ $L_2$ estimator.  In particular I look at the trimmed, weighted and winsorized mean as well as the Huber estimator.  I think it would be simple to extend these ideas to the geometric $L_2$ estimator $\GeomMean$.
@@ -235,7 +273,7 @@ where $\overline{\bm R}_W=(\sum_{i}w_i\bm R_i)/(\sum_i w_i)$, the weights $w_i^{
 
 
 The idea of the multidimensional \emph{Huber estimator} is to robustify an estimator by placing a bound on the norm of its influence function.  In Figure \ref{fig:Huber} the 2-dimensional case is illustrated for the artificial data $\bm R_1,\dots,\bm R_6$.
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
 \begin{tikzpicture}
     \draw [black!20] (-3,-3) grid (3,3);
@@ -288,13 +326,13 @@ The algorithm I use to compute $\HuberMean$ based on the sample $\bm R_1,\dots,\
 \end{enumerate}
 Figure \ref{fig:huberContd} illustrates the modified Huber estimator for a variety of $c$ values.  Notice that when the $c$ value is very small, then the data converge quickly to the initial estimate of center, which is the opposite of what we would like to do.
 
-\begin{figure}[h]
-\begin{center}
-\animategraphics[width=.5\textwidth,controls,loop]{1}{Figure/huberContd}{1}{11}
-\end{center}
-\caption{The modified Huber estimator (limit the distance from the estimated central direction) for a range of c values.}
-\label{fig:huberContd}
-\end{figure}
+% \begin{figure}[h]
+% \begin{center}
+% \animategraphics[width=.5\textwidth,controls,loop]{1}{Figure/huberContd}{1}{11}
+% \end{center}
+% \caption{The modified Huber estimator (limit the distance from the estimated central direction) for a range of c values.}
+% \label{fig:huberContd}
+% \end{figure}
 
 An $SO(3)$ interpretation of the \emph{winsorized mean} is a combination of the $SO(3)$ trimmed mean and modified Huber estimator.  That is, the data are ordered according to their statistic values, e.g.~$H_i$ or $C_I$.  All rotations beyond the upper $100(1-\alpha)$\% percentage of that statistic is projected to the border of the inner circle while maintaining the original axis of rotation.  The mathematical definition is 
 \[
