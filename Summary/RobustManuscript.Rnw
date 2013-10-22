@@ -110,7 +110,7 @@ where $d=[1+2E\cos(r_i)]/3$ and $\bm R_i=\bm S\exp[\bm\Phi(r_i\bm U_i)]$.  Heuri
 
 The influence function of $\GeomMean$ is not available in it full form, but it has been derived up to a constant.  More specifically the influence function of $\GeomMean$ is
 \[
-\text{IF}_{2R}(\bm R_i,F)\propto\sin^{-1}\left[\sqrt{\frac{1-\cos(r_i)}{2}}\right]\bm U_i\approx r_i\bm U_i.
+\text{IF}_{2R}(\bm R_i,F)\propto\sin^{-1}\left[\sqrt{\frac{1-\cos(r_i)}{2}}\right]\bm U_i= \frac{1}{2}r_i\bm U_i.
 \]
 In Figure \ref{fig:IFs} the influence functions for the two $L_2$ estimators are compared as a function of $r_i$.  The $\bm U_i$ term is ignored, because the assumption that $\bm U_i$ is uniformly distributed on the unit sphere will make that term wash out.
  
