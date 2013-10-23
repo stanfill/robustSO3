@@ -21,7 +21,11 @@
 \Large{\bf Extreme Observation Identification and Accommodation in the Rotation Group $SO(3)$}
 \end{center}
 \begin{abstract}
-Similar to data on the circle and sphere, random matrices in the rotation group SO(3) lie in a bounded space and are often highly concentrated.  As such, data analysis techniques that identify and accommodate for extreme observations in SO(3) have received little attention.  With the increased use of tools that result in observations in SO(3), e.g.~Electron Backscatter Diffraction, extreme observations have become increasingly common though their treatment is still rudimentary.  In this paper we propose a definition of outlier in a variety of contexts.  Once an extreme observation has been identified, we propose a modified multi-dimensional Huber estimator as well as trimmed and winsorized means in SO(3) that are resistant to extreme observations with minimal cost to bias and standard error.  We demonstrate the behavior of these estimators relative to those that already exist in a simulation study and data example.
+Similar to data on the circle and sphere, random matrices in the rotation group SO(3) lie in a bounded space and are often highly concentrated.  As such, data analysis techniques that identify and accommodate for extreme observations in SO(3) have received little attention.  
+
+*Add some comment about how SO(3) data is being used in a variety of contexts but its behavior is still largely unstudied.  A better understanding of how the data behaves is needed to develop estimators that are optimal for these data.*
+
+In this paper we propose a definition of outlier in a variety of contexts.  Once an extreme observation has been identified, we propose a modified multi-dimensional Huber estimator as well as trimmed and winsorized means in SO(3) that are resistant to extreme observations with minimal cost to bias and standard error.  We demonstrate the behavior of these estimators relative to those that already exist in a simulation study and data example.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
