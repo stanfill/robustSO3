@@ -106,7 +106,7 @@ The \emph{influence function} of an estimator quantifies the change in that esti
 \begin{equation}\label{eqn:IF}
 \text{IF}(\bm R_i,F)=\frac{1}{d}\sin(r_i)\bm U_i
 \end{equation}
-where $d=[1+2E\cos(r_i)]/3$ and $\bm R_i=\bm S\exp[\bm\Phi(r_i\bm U_i)]$.  Heuristically the $C_i$-statistic of Section \ref{sec:outliers} is an empirical influence function.  The influence function of the geometric mean is not readily available, but the results to come next indicate it is a linear function of $r_i$ and not a sinusoidal one.
+where $d=[1+2E\cos(r_i)]/3$ and $\bm R_i=\bm S\exp[\bm\Phi(r_i\bm U_i)]$.  This is similar to the influence curve of the circular mean as poposed by \cite{wehrly1981} and later proved to be correct by Otieno in his 2003 dissertation.  Heuristically the $C_i$-statistic of Section \ref{sec:outliers} is an empirical influence function.  
 
 The influence function of $\GeomMean$ is not available in it full form, but it has been derived up to a constant.  More specifically the influence function of $\GeomMean$ is
 \[
@@ -249,6 +249,12 @@ for(i in n){
 \end{figure}
 \clearpage
 \section{Robustified Means}
+
+Literature review:
+\begin{enumerate}
+\item \cite{lenth1981} introduced a robustified version of the circular mean that looks to be similar to my Huber mean.  Don't quite understand the weight function or how they came up with it.
+\item
+\end{enumerate}
 
 In this section I use the $H_i$ and $C_i$ statistics to robustify the projected $\ProjMean$ $L_2$ estimator.  In particular I look at the trimmed, weighted and winsorized mean as well as the Huber estimator.  I think it would be simple to extend these ideas to the geometric $L_2$ estimator $\GeomMean$.
 
