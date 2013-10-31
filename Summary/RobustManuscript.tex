@@ -71,7 +71,7 @@
 \Large{\bf Extreme Observation Identification and Accommodation in the Rotation Group $SO(3)$}
 \end{center}
 \begin{abstract}
-Similar to data on the circle and sphere, random matrices that belong to the rotation group SO(3) lie in a bounded space and are often highly concentrated.  As a result, data analysis techniques that identify and accommodate for extreme observations in SO(3) have received little attention.  With the increased use of rotation data in fields such as material sciences, structural geology, kinematics and computer vision, a better understanding of SO(3) data in general and extreme observations in particular is becoming increasingly important.  In this paper we propose a definition of outlier in a variety of SO(3) contexts.  To accomodate for extreme observations we propose a modified multi-dimensional Huber estimator as well as trimmed and winsorized means in SO(3), which are resistant to extreme observations with minimal cost to bias and standard error.  We demonstrate the behavior of these estimators relative to those that already exist in a simulation study and data example.
+Similar to data on the circle and sphere, random matrices in the rotation group SO(3) lie in a bounded space and are often highly concentrated.  As a result, data analysis techniques that identify and accommodate for extreme observations in SO(3) have received little attention.  With the increased use of rotation data in fields such as material sciences, structural geology, kinematics and computer vision, a better understanding of SO(3) data in general and extreme observations in particular is becoming increasingly important.  In this paper we propose a definition of outlier in a variety of SO(3) contexts.  To accommodate for extreme observations we propose a modified multi-dimensional Huber estimator as well as trimmed and winsorized means in SO(3).  We show that our proposed estimators are resistant to extreme observations with minimal cost to bias and standard error.  The behavior of our proposed estimators is demonstrated relative to those used presently in the literature in a simulation study and data example.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
@@ -144,11 +144,20 @@ The question as to which statistic is appropriate comes down to: why do you care
 
 \section{Influence Functions}\label{sec:ifs}
 
+Literature review:
+\begin{enumerate}
+\item \cite{wehrly1981} state without proof the IF for the circular mean and median, theya re later proved correct in \cite{otieno2002} Appendix B.  They claim they're both bounded so are B-robust, therefore MLE will be hard to beat.
+\item \cite{ko1988} discuss SB robustness by standardizing the IF of the circular mean and median.  They show the circular mean is B-robust, but not SB-robust when directional dispersion is used to standardize the IF.
+\item \cite{he1992} criticizes \cite{ko1988} because their standardized influence function is basically a special case of Hampel's standardized bias.  They use K-L divergence to standardize the influence function instead of asymptotic variance.
+
+\item According to \cite{agostinelli2007}, \cite{ko1992} and Ronchetti (1992) are also references for influence functions of circular data.  The Ronchetti paper is in the book: {\it The Art of Statistical Science} dedicated to Watson, which I can't find a hard or digital copy of.
+\end{enumerate}
+
 The \emph{influence function} of an estimator quantifies the change in that estimator when one sample point is changed.  In the regions paper we proved the influence function of the projected mean $\ProjMean$ based on a sample of directionally symmetric rotations $\bm R_i=\exp[\bm \Phi(r_i\bm U_i)]$ with central orientation $\bm S$ to be
 \begin{equation}\label{eqn:IF}
 \text{IF}(\bm R_i,F)=\frac{1}{d}\sin(r_i)\bm U_i
 \end{equation}
-where $d=[1+2E\cos(r_i)]/3$ and $\bm R_i=\bm S\exp[\bm\Phi(r_i\bm U_i)]$.  Heuristically the $C_i$-statistic of Section \ref{sec:outliers} is an empirical influence function.  The influence function of the geometric mean is not readily available, but the results to come next indicate it is a linear function of $r_i$ and not a sinusoidal one.
+where $d=[1+2E\cos(r_i)]/3$ and $\bm R_i=\bm S\exp[\bm\Phi(r_i\bm U_i)]$.  This is similar to the influence curve of the circular mean as poposed by \cite{wehrly1981} and later proved to be correct by Otieno in his 2003 dissertation.  Heuristically the $C_i$-statistic of Section \ref{sec:outliers} is an empirical influence function.  
 
 The influence function of $\GeomMean$ is not available in it full form, but it has been derived up to a constant.  More specifically the influence function of $\GeomMean$ is
 \[
@@ -264,6 +273,22 @@ To illustrate this on $SO(3)$ consider Figure \ref{fig:samp1}, in which the $x$-
 \end{figure}
 \clearpage
 \section{Robustified Means}
+
+Literature review:
+\begin{enumerate}
+\item \cite{lenth1981} introduced a robustified version of the circular mean that looks to be similar to my Huber mean.  Don't quite understand the weight function or how they came up with it.
+\item \cite{fisher1982} discusses robust estimation of $\kappa$ (a winsorized estimator and an estimatorbased on \cite{chikkagoudar1980}'s robust estimate of $\sigma$ for the Exponential distribution).  A data example is used to show performance, but a simulation study is not.
+
+\item \cite{kimber1985} uses the statistics of \cite{fisher1982} in a simultion study and decides the Chikkagourad-estimator is no good but the winsorized is good.
+
+\item \cite{ducharme1987} proposes the normalized spatial median and shows it performs well for spherical data in the presence of outliers.
+
+\item Read \cite{he1992} and \cite{ko1993}!
+
+\item \cite{agostinelli2007} considers minimum disparity and weighted likelihood estimating equations to define robustifed estimators for the wrapped normal and von Mises distributions on the circle.  I am not a huge fan of these because you need to define bandwidth ($\kappa$) and disparity measure ($\alpha$) everytime and the answer can hang in the balance.  They are shown to be ``quite good."
+
+\item \cite{laha2011} and \cite{laha2013} cosider the SB-robustness of the circular mean and trimmed mean with respect to the expected distance between the mean and an observation.  In their 2013 article they introduce a trimmed estimate of the circular variance.  The circular normal distribution and it variants are considered in detail.
+\end{enumerate}
 
 In this section I use the $H_i$ and $C_i$ statistics to robustify the projected $\ProjMean$ $L_2$ estimator.  In particular I look at the trimmed, weighted and winsorized mean as well as the Huber estimator.  I think it would be simple to extend these ideas to the geometric $L_2$ estimator $\GeomMean$.
 
