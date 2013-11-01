@@ -211,18 +211,14 @@ qplot(rs,value,geom="blank",data=IFm,xlab=expression(r[i]),ylab='Influence',colo
 #Empirical IFs versus expected
 
 kap<-1
-Rs<-ruars(50,rcayley,kappa=kap)
-
-#For cayley, d=kapp/(kapp+2)
-d<-kap/(kap+2)
-rs<-angle(Rs)
 
 #Projected Mean
 Rs<-ruars(50,rcayley,kappa=kap)
+dMean<-kap/(kap+2)  #For cayley, d=kapp/(kapp+2)
 rs<-angle(Rs)
 mm<-MeanMove(Rs,distT='intrinsic') 
 mm<-mm/d/max(mm) #scale MeanMove to fit IF scale
-curve(sin(x)/d,from=0,to=pi,ylim=c(0,max(mm)),main='Projected Mean')
+curve(sin(x)/d,from=0,to=pi,ylim=c(0,max(mm)),main='Projected Mean',xlab='r',ylab='IF')
 points(rs,mm,pch=19)
 
 #Geometric Mean
@@ -230,15 +226,17 @@ Rs<-ruars(50,rcayley,kappa=kap)
 rs<-angle(Rs)
 mmGeom<-MeanMove(Rs,meanT='geometric',distT='intrinsic') 
 mmGeom<-mmGeom*pi/2/max(mmGeom) #scale MeanMove to fit IF scale
-plot(rs,mmGeom,pch=19,ylim=c(0,pi/2),xlim=c(0,pi),main='Geometric Mean')
+plot(rs,mmGeom,pch=19,ylim=c(0,pi/2),xlim=c(0,pi),main='Geometric Mean',xlab='r',ylab='IF')
 abline(0,1/2)
 
 #Projected Median
 Rs<-ruars(50,rcayley,kappa=kap)
+dMed<-kap*sqrt(2)*gamma(kap+2)/(3*sqrt(pi)*gamma(kap+2.5))
 rs<-angle(Rs)
 mmMed<-MedianMove(Rs,distT='intrinsic') 
-mmMed<-mmMed*pi/2/max(mmMed) #scale MeanMove to fit IF scale
-curve(sin(x)/sqrt(1-cos(x)),from=0,to=pi,ylim=c(0,max(mmMed)),main='Projected Mean')
+mmMed<-mmMed/(dMed)/max(mmMed) #scale MeanMove to fit IF scale
+curve(sin(x)/(sqrt(1-cos(x))*2*dMed),from=0,to=pi,ylim=c(0,max(mmMed)),
+      main='Projected Mean',xlab='r',ylab='IF')
 points(rs,mmMed,pch=19)
 
 @
