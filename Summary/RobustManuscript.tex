@@ -82,6 +82,11 @@ This is a summary of the material related to robustness for $SO(3)$ data.  A det
  
 \section{Outlier Detection}\label{sec:outliers}
  
+Literature review:
+\begin{enumerate}
+\item \cite{bagchi1990} use a Bayesian approach to identify ``spurious" observations.  An observations is defined as spurious if (according to Guttman) if it is generated in a manner not consistent with the proposed model.
+\end{enumerate}
+ 
 I have not found a formal discussion or definition of outliers for rotations. \cite{fletcher2008} use the term `outlier' a lot in connection with rotation data, but it is never defined.  For their simulation study they simulate some data from a distribution with one central direction $\bm S$, then simulate the rest of the data from the same distribution with mean rotated through $90^\circ$.
 
 Two of the most promising leads on outlier detection in $SO(3)$ is a generalization of \cite{collett1980} $C$-statistic and the $H_n$ statistic of (originally) \cite{best1986} and later \cite{figueiredo2005}.  The Collett's $C$-statistic boils down to how much your estimate of center moves when a particular observation is removed.  The $H_n$-statistic is based on axial data (like quaternions) and quantifies how far from the bulk of the data a particular observation lies.  More details on these statistics are below.  Since $H_n$ is based on the quaternion representation of rotation I will use quaternions throughout. 
@@ -150,7 +155,7 @@ Literature review:
 \item \cite{ko1988} discuss SB robustness by standardizing the IF of the circular mean and median.  They show the circular mean is B-robust, but not SB-robust when directional dispersion is used to standardize the IF.
 \item \cite{he1992} criticizes \cite{ko1988} because their standardized influence function is basically a special case of Hampel's standardized bias.  They use K-L divergence to standardize the influence function instead of asymptotic variance.
 
-\item According to \cite{agostinelli2007}, \cite{ko1992} and Ronchetti (1992) are also references for influence functions of circular data.  The Ronchetti paper is in the book: {\it The Art of Statistical Science} dedicated to Watson, which I can't find a hard or digital copy of.
+\item According to \cite{agostinelli2007}, \cite{ko1992} and Ronchetti (1992) are also references for influence functions of circular data.  The Ronchetti paper is in the book {\it The Art of Statistical Science} dedicated to Watson, which I can't find a hard or digital copy of.
 \end{enumerate}
 
 The \emph{influence function} of an estimator quantifies the change in that estimator when one sample point is changed.  In the regions paper we proved the influence function of the projected mean $\ProjMean$ based on a sample of directionally symmetric rotations $\bm R_i=\exp[\bm \Phi(r_i\bm U_i)]$ with central orientation $\bm S$ to be

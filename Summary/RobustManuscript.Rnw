@@ -40,6 +40,11 @@ options(replace.assign=TRUE,width=50)
  
 \section{Outlier Detection}\label{sec:outliers}
  
+Literature review:
+\begin{enumerate}
+\item \cite{bagchi1990} use a Bayesian approach to identify ``spurious" observations.  An observations is defined as spurious if (according to Guttman) if it is generated in a manner not consistent with the proposed model.
+\end{enumerate}
+ 
 I have not found a formal discussion or definition of outliers for rotations. \cite{fletcher2008} use the term `outlier' a lot in connection with rotation data, but it is never defined.  For their simulation study they simulate some data from a distribution with one central direction $\bm S$, then simulate the rest of the data from the same distribution with mean rotated through $90^\circ$.
 
 Two of the most promising leads on outlier detection in $SO(3)$ is a generalization of \cite{collett1980} $C$-statistic and the $H_n$ statistic of (originally) \cite{best1986} and later \cite{figueiredo2005}.  The Collett's $C$-statistic boils down to how much your estimate of center moves when a particular observation is removed.  The $H_n$-statistic is based on axial data (like quaternions) and quantifies how far from the bulk of the data a particular observation lies.  More details on these statistics are below.  Since $H_n$ is based on the quaternion representation of rotation I will use quaternions throughout. 

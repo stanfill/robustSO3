@@ -205,7 +205,42 @@ qplot(rs,value,geom="blank",data=IFm,xlab=expression(r[i]),ylab='Influence',colo
   scale_x_continuous(breaks=c(-pi,-pi/2,0,pi/2,pi),labels=lasx)+
   scale_y_continuous(breaks=c(-pi/2,0,pi/2),labels=lasy)
 
-ggsave("Summary/Figure/IFComparison.pdf",width=6,height=4)
+#ggsave("Summary/Figure/IFComparison.pdf",width=6,height=4)
+
+################
+#Empirical IFs versus expected
+
+kap<-1
+Rs<-ruars(50,rcayley,kappa=kap)
+
+#For cayley, d=kapp/(kapp+2)
+d<-kap/(kap+2)
+rs<-angle(Rs)
+
+#Projected Mean
+Rs<-ruars(50,rcayley,kappa=kap)
+rs<-angle(Rs)
+mm<-MeanMove(Rs,distT='intrinsic') 
+mm<-mm/d/max(mm) #scale MeanMove to fit IF scale
+curve(sin(x)/d,from=0,to=pi,ylim=c(0,max(mm)),main='Projected Mean')
+points(rs,mm,pch=19)
+
+#Geometric Mean
+Rs<-ruars(50,rcayley,kappa=kap)
+rs<-angle(Rs)
+mmGeom<-MeanMove(Rs,meanT='geometric',distT='intrinsic') 
+mmGeom<-mmGeom*pi/2/max(mmGeom) #scale MeanMove to fit IF scale
+plot(rs,mmGeom,pch=19,ylim=c(0,pi/2),xlim=c(0,pi),main='Geometric Mean')
+abline(0,1/2)
+
+#Projected Median
+Rs<-ruars(50,rcayley,kappa=kap)
+rs<-angle(Rs)
+mmMed<-MedianMove(Rs,distT='intrinsic') 
+mmMed<-mmMed*pi/2/max(mmMed) #scale MeanMove to fit IF scale
+curve(sin(x)/sqrt(1-cos(x)),from=0,to=pi,ylim=c(0,max(mmMed)),main='Projected Mean')
+points(rs,mmMed,pch=19)
+
 @
 
 \begin{figure}

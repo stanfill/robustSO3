@@ -59,6 +59,24 @@ MeanMove<-function(Qs,meanT='projected',distT='projected'){
   return(ds)
 }
 
+MedianMove<-function(Qs,medianT='projected',distT='projected'){
+  #Compute geodesic distance between full sample mean and mean when obs i is removed
+  
+  #Written for quaternions so change to quaternions if given matrices
+  if(class(Qs)=="SO3")
+    Qs<-Q4(Qs)
+  
+  n<-nrow(Qs)
+  Shat<-median(Qs,type=medianT)
+  ds<-rep(0,n)
+  for(i in 1:n){
+    Qsi<-as.Q4(Qs[-i,])
+    Shati<-median(Qsi,type=medianT)
+    ds[i]<-dist(Shat,Shati,method=distT)
+  }
+  return(ds)
+}
+
 trimMean<-function(Qs,a,discordFun,anneal=F,...){
   #Trim the most extreme a% based on the HnFun results
   #Qs - the sample
