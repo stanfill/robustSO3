@@ -151,8 +151,12 @@ The question as to which statistic is appropriate comes down to: why do you care
 
 Literature review:
 \begin{enumerate}
-\item \cite{wehrly1981} state without proof the IF for the circular mean and median, theya re later proved correct in \cite{otieno2002} Appendix B.  They claim they're both bounded so are B-robust, therefore MLE will be hard to beat.
-\item \cite{ko1988} discuss SB robustness by standardizing the IF of the circular mean and median.  They show the circular mean is B-robust, but not SB-robust when directional dispersion is used to standardize the IF.
+\item \cite{wehrly1981} state without proof the IF for the circular mean and median, they are later proved correct in \cite{otieno2002} Appendix B.  They claim they're both bounded so are B-robust, therefore MLE will be hard to beat.
+
+\item \cite{watson1986} derives the IF for spherical data and later concludes the estimators he considers in the same paper are all robust in the infantesimal sense (i.e.~B-Robust) because their influence functions are bounded.  He later hypothesizes this is true becuase of the bounded space spherical data exist on.
+
+\item \cite{ko1988} discuss SB robustness by standardizing the IF of the circular mean and median.  They show the circular mean is B-robust, but not SB-robust when directional dispersion is used to standardize the IF.  Criticizes \cite{wehrly1981} and \cite{watson1986} for stopping at B-robustness.
+
 \item \cite{he1992} criticizes \cite{ko1988} because their standardized influence function is basically a special case of Hampel's standardized bias.  They use K-L divergence to standardize the influence function instead of asymptotic variance.
 
 \item According to \cite{agostinelli2007}, \cite{ko1992} and Ronchetti (1992) are also references for influence functions of circular data.  The Ronchetti paper is in the book {\it The Art of Statistical Science} dedicated to Watson, which I can't find a hard or digital copy of.
@@ -192,25 +196,27 @@ To illustrate this on $SO(3)$ consider Figure \ref{fig:samp1}, in which the $x$-
 \begin{tikzpicture}[scale=.75]
     \draw (0,0) circle [radius=3];
     \node at (0,0) {$+$};
-    \node at (-3,0) {$-$};\node [left] at(-3,0) {$\pi$};
-    \node at (3,0) {$-$}; \node [right] at(3,0) {$0$};
-    \node at (0,3) {$|$}; \node [above] at (0,3) {$\pi/2$};
-    \node at (0,-3) {$|$}; \node [below] at (0,-3) {$3\pi/2$};
-    \draw [fill] (-1.0250062,  2.819461) circle [radius=0.07]; %Sample 
-    \draw [fill] (-1.2003083,  2.749411) circle [radius=0.07];
-    \draw [fill] (0.4048608,  2.972556) circle [radius=0.07];
-    \draw [fill] (-2.6833833,  1.341437) circle [radius=0.07];
-    \draw [fill] (-2.0500236,  2.190298) circle [radius=0.07];
-    \draw [fill] (2.7410225, -1.219342) circle [radius=0.07];
-    \draw [fill] (-1.1894952,  2.754106) circle [radius=0.07];
-    \draw [fill] (1.9681982,  2.264110) circle [radius=0.07];
-    \draw [fill] (-2.5592776,  1.565279) circle [radius=0.07];
-    \draw [fill] (-1.9309514,  2.295959) circle [radius=0.07];
-    \draw [fill] (-0.7524364,  1.9733275) circle[radius=0.125]; %Arithmetic Mean
-    \node [below right] at (-0.7524364,  1.9733275) {$\overline{\bm R}$};
-    \draw [fill] (-1.068845,  2.803136) circle[radius=0.125]; %Projected Mean
-    \node [above left] at (-1.068845,  2.803136) {$\widehat{\bm S}_E$};
-    \draw [->] (-0.7524364,  1.9733275) -- (-0.9797747,  2.5695411);
+    \node at (-3,0) {$-$};\node [right] at(-3,0) {$\pi$};
+    \node at (3,0) {$-$}; \node [left] at(3,0) {$0$};
+    %\node at (0,3) {$|$}; \node [below] at (0,3) {$\pi/2$};
+    %\node at (0,-3) {$|$}; \node [above] at (0,-3) {$3\pi/2$};
+    \draw [fill] (2.6752606, -1.357564) circle [radius=0.07]; %Sample 
+    \draw [fill] (0.2359919,  2.990704) circle [radius=0.07];
+    \draw [fill] (2.3156699,  1.907268) circle [radius=0.07];
+    \draw [fill] (1.1481158,  2.771611) circle [radius=0.07];
+    \draw [fill] (0.9825748,  2.834528) circle [radius=0.07];
+    \draw [fill] (-0.5708459,  2.945188) circle [radius=0.07];
+    \draw [fill] (-2.5521680,  1.576844) circle [radius=0.07];
+    \draw [fill] (-1.7480938,  2.438066) circle [radius=0.07];
+    \draw [fill] (-0.6299558,  2.933114) circle [radius=0.07];
+    \draw [fill] (2.4084683,  1.788653) circle [radius=0.07];
+    \draw [fill] (0.4265018, 2.0828413) circle[radius=0.125]; %Arithmetic Mean
+    \node [below right] at (0.4265018, 2.0828413) {$\overline{\bm R}$};
+    \draw [fill] (0.6018199, 2.9390156) circle[radius=0.125]; %Projected Mean
+    \node [above right] at (0.6018199, 2.9390156) {$\widehat{\bm S}_E$,$\widehat{\bm S}_R$};
+    \draw [->] (0.4265018, 2.0828413) -- (0.5516683, 2.6940976); %Arrow from R-bar to ProjMean
+    %\draw [fill] (0.7761543, 2.8978586) circle[radius=0.125]; %Geometric Mean
+    %\node [above left] at (0.7761543, 2.8978586) {$\widehat{\bm S}_R$};
 \end{tikzpicture}
 \caption{Original data, A}
 \label{fig:circular1}
@@ -220,10 +226,10 @@ To illustrate this on $SO(3)$ consider Figure \ref{fig:samp1}, in which the $x$-
 \begin{tikzpicture}[scale=.75]
     \draw (0,0) circle [radius=3];
     \node at (0,0) {$+$};
-    \node at (-3,0) {$-$};\node [left] at(-3,0) {$\pi$};
-    \node at (3,0) {$-$}; \node [right] at(3,0) {$0$};
-    \node at (0,3) {$|$}; \node [above] at (0,3) {$\pi/2$};
-    \node at (0,-3) {$|$}; \node [below] at (0,-3) {$3\pi/2$};
+    \node at (-3,0) {$-$};\node [right] at(-3,0) {$\pi$};
+    \node at (3,0) {$-$}; \node [left] at(3,0) {$0$};
+    %\node at (0,3) {$|$}; \node [below] at (0,3) {$\pi/2$};
+    %\node at (0,-3) {$|$}; \node [above] at (0,-3) {$3\pi/2$};
 %     \node at (-1.0250062,  2.819461) {$\times$}; %Sample 
 %     \node at (-1.2003083,  2.749411) {$\times$};
 %     \node at (0.4048608,  2.972556) {$\times$};
@@ -234,23 +240,25 @@ To illustrate this on $SO(3)$ consider Figure \ref{fig:samp1}, in which the $x$-
 %     \node at (1.9681982,  2.264110) {$\times$};
 %     \node at (-2.5592776,  1.565279) {$\times$};
 %     \node at (-1.9309514,  2.295959) {$\times$};
-    \draw [fill] (-1.0250062,  2.819461) circle [radius=0.07]; %Sample 
-    \draw [fill] (-1.2003083,  2.749411) circle [radius=0.07];
-    \draw [fill] (0.4048608,  2.972556) circle [radius=0.07];
-    \draw [fill] (-2.6833833,  1.341437) circle [radius=0.07];
-    \draw [fill] (-2.0500236,  2.190298) circle [radius=0.07];
-    \draw [fill] (2.7410225, -1.219342) circle [radius=0.07];
-    \draw [fill] (-1.1894952,  2.754106) circle [radius=0.07];
-    \draw [fill] (1.9681982,  2.264110) circle [radius=0.07];
-    \draw [fill] (-2.5592776,  1.565279) circle [radius=0.07];
-    \draw [fill] (-1.9309514,  2.295959) circle [radius=0.07];
-    \draw [fill] (-0.5868654,  1.5391035) circle[radius=0.125]; %New Arithmetic Mean
-    \node [below right] at (-0.5868654,  1.5391035) {$\overline{\bm R}$};
-    \draw [fill] (-1.068845,  2.803136) circle[radius=0.125]; %Projected Mean
-    \node [above left] at (-1.068845,  2.803136) {$\widehat{\bm S}_E$};
-    \draw [->] (-0.5868654,  1.5391035) -- (-0.9797747,  2.5695411);
-    \draw [fill] (1.068845, -2.803136) circle [radius=0.07]; %Added outlier
-    \node [above left] at (1.068845, -2.803136) {$x$};
+    \draw [fill] (2.6752606, -1.357564) circle [radius=0.07]; %Sample 
+    \draw [fill] (0.2359919,  2.990704) circle [radius=0.07];
+    \draw [fill] (2.3156699,  1.907268) circle [radius=0.07];
+    \draw [fill] (1.1481158,  2.771611) circle [radius=0.07];
+    \draw [fill] (0.9825748,  2.834528) circle [radius=0.07];
+    \draw [fill] (-0.5708459,  2.945188) circle [radius=0.07];
+    \draw [fill] (-2.5521680,  1.576844) circle [radius=0.07];
+    \draw [fill] (-1.7480938,  2.438066) circle [radius=0.07];
+    \draw [fill] (-0.6299558,  2.933114) circle [radius=0.07];
+    \draw [fill] (2.4084683,  1.788653) circle [radius=0.07];
+    \draw [fill] (0.333018, 1.626309) circle[radius=0.125]; %Arithmetic Mean
+    \node [below right] at (0.333018, 1.626309) {$\overline{\bm R}$};
+    \draw [fill] (0.6018199, 2.9390156) circle[radius=0.125]; %Projected Mean
+    \node [above right] at (0.6018199, 2.9390156) {$\widehat{\bm S}_E$};
+    \draw [->] (0.333018, 1.626309) -- (0.5516683, 2.6940976); %Arrow from R-bar to ProjMean
+    \draw [fill] (1.547205, 2.570244) circle[radius=0.125]; %Geometric Mean
+    \node [above right] at (1.547205, 2.570244) {$\widehat{\bm S}_R$};
+    \draw [fill] (-0.6018199, -2.939016) circle [radius=0.07]; %Added outlier
+    \node [above right] at (-0.6018199, -2.939016) {$x$};
 \end{tikzpicture}
 \caption{Altered data, B}
 \label{fig:circular2}
