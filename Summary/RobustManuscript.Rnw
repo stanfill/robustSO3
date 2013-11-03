@@ -296,7 +296,7 @@ Literature review:
 
 \item \cite{he1992} and \cite{ko1993} both consider robust M-estimators on the sphere.  In particular they compare estimators based on their influence functions, breakdown and limiting distributions.  In \cite{ko1993} they additionally consider optimal (in the Hampel sense) M-estimators on the sphere.
 
-\item \cite{preisig2006} considers robust M-estimators (trimmed, winsorized, Tukey bi-weight, iteratively reweighted least squares) in edge detection for 3D movement tracking.  Read two papers by Fletcher et al. (2008).
+\item \cite{preisig2006} considers robust M-estimators (trimmed, winsorized, Tukey bi-weight, iteratively reweighted least squares) in edge detection for 3D movement tracking.  Read \cite{fletcher2008} and \cite{fletcher2009} for more image related robust papers.  According to \cite{fletcher2008}, \cite{meer1991} and \cite{stewart1999}  are literature reviews of robust methods in computer vision.
 
 \item \cite{agostinelli2007} considers minimum disparity and weighted likelihood estimating equations to define robustifed estimators for the wrapped normal and von Mises distributions on the circle.  I am not a huge fan of these because you need to define bandwidth ($\kappa$) and disparity measure ($\alpha$) everytime and the answer can hang in the balance.  They are shown to be ``quite good."
 
