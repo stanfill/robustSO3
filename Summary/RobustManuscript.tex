@@ -1,4 +1,4 @@
-\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+\documentclass{article}\usepackage{graphicx, color}
 %% maxwidth is the original width if it is less than linewidth
 %% otherwise use linewidth (to make sure the graphics do not exceed the margin)
 \makeatletter
@@ -11,16 +11,21 @@
 }
 \makeatother
 
-\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
-\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
-\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\definecolor{fgcolor}{rgb}{0.2, 0.2, 0.2}
+\newcommand{\hlnumber}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlfunctioncall}[1]{\textcolor[rgb]{0.501960784313725,0,0.329411764705882}{\textbf{#1}}}%
+\newcommand{\hlstring}[1]{\textcolor[rgb]{0.6,0.6,1}{#1}}%
+\newcommand{\hlkeyword}[1]{\textcolor[rgb]{0,0,0}{\textbf{#1}}}%
+\newcommand{\hlargument}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hlcomment}[1]{\textcolor[rgb]{0.180392156862745,0.6,0.341176470588235}{#1}}%
+\newcommand{\hlroxygencomment}[1]{\textcolor[rgb]{0.43921568627451,0.47843137254902,0.701960784313725}{#1}}%
+\newcommand{\hlformalargs}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hleqformalargs}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hlassignement}[1]{\textcolor[rgb]{0,0,0}{\textbf{#1}}}%
+\newcommand{\hlpackage}[1]{\textcolor[rgb]{0.588235294117647,0.709803921568627,0.145098039215686}{#1}}%
+\newcommand{\hlslot}[1]{\textit{#1}}%
+\newcommand{\hlsymbol}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlprompt}[1]{\textcolor[rgb]{0.2,0.2,0.2}{#1}}%
 
 \usepackage{framed}
 \makeatletter
@@ -160,6 +165,8 @@ Literature review:
 \item \cite{he1992} criticizes \cite{ko1988} because their standardized influence function is basically a special case of Hampel's standardized bias.  They use K-L divergence to standardize the influence function instead of asymptotic variance.
 
 \item According to \cite{agostinelli2007}, \cite{ko1992} and Ronchetti (1992) are also references for influence functions of circular data.  The Ronchetti paper is in the book {\it The Art of Statistical Science} dedicated to Watson, which I can't find a hard or digital copy of.
+
+\item \cite{kato2012} derives the influence function for the MLE of the joint concentration/location parameter for the von Mises distribution on the hypersphere.
 \end{enumerate}
 
 The \emph{influence function} of an estimator quantifies the change in that estimator when one sample point is changed.  In the regions paper we proved the influence function of the projected mean $\ProjMean$ based on a sample of directionally symmetric rotations $\bm R_i=\exp[\bm \Phi(r_i\bm U_i)]$ with central orientation $\bm S$ to be
@@ -301,6 +308,8 @@ Literature review:
 \item \cite{agostinelli2007} considers minimum disparity and weighted likelihood estimating equations to define robustifed estimators for the wrapped normal and von Mises distributions on the circle.  I am not a huge fan of these because you need to define bandwidth ($\kappa$) and disparity measure ($\alpha$) everytime and the answer can hang in the balance.  They are shown to be ``quite good."
 
 \item \cite{laha2011} and \cite{laha2013} cosider the SB-robustness of the circular mean and trimmed mean with respect to the expected distance between the mean and an observation.  In their 2013 article they introduce a trimmed estimate of the circular variance.  The circular normal distribution and it variants are considered in detail.
+
+\item \cite{kato2012} considers robust estimators of the reparameterized von Mises distribution in the context of divergence as defined in \cite{basu1998} and \cite{jones2001}.  The estimators that result when the respective divergence is minimized are defined and their influence functions are given.  They compare their estimators to those of \cite{lenth1981} and find their estimators perform better.
 \end{enumerate}
 
 In this section I use the $H_i$ and $C_i$ statistics to robustify the projected $\ProjMean$ $L_2$ estimator.  In particular I look at the trimmed, weighted and winsorized mean as well as the Huber estimator.  I think it would be simple to extend these ideas to the geometric $L_2$ estimator $\GeomMean$.

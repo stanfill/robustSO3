@@ -118,6 +118,8 @@ Literature review:
 \item \cite{he1992} criticizes \cite{ko1988} because their standardized influence function is basically a special case of Hampel's standardized bias.  They use K-L divergence to standardize the influence function instead of asymptotic variance.
 
 \item According to \cite{agostinelli2007}, \cite{ko1992} and Ronchetti (1992) are also references for influence functions of circular data.  The Ronchetti paper is in the book {\it The Art of Statistical Science} dedicated to Watson, which I can't find a hard or digital copy of.
+
+\item \cite{kato2012} derives the influence function for the MLE of the joint concentration/location parameter for the von Mises distribution on the hypersphere.
 \end{enumerate}
 
 The \emph{influence function} of an estimator quantifies the change in that estimator when one sample point is changed.  In the regions paper we proved the influence function of the projected mean $\ProjMean$ based on a sample of directionally symmetric rotations $\bm R_i=\exp[\bm \Phi(r_i\bm U_i)]$ with central orientation $\bm S$ to be
@@ -297,6 +299,8 @@ Literature review:
 \item \cite{agostinelli2007} considers minimum disparity and weighted likelihood estimating equations to define robustifed estimators for the wrapped normal and von Mises distributions on the circle.  I am not a huge fan of these because you need to define bandwidth ($\kappa$) and disparity measure ($\alpha$) everytime and the answer can hang in the balance.  They are shown to be ``quite good."
 
 \item \cite{laha2011} and \cite{laha2013} cosider the SB-robustness of the circular mean and trimmed mean with respect to the expected distance between the mean and an observation.  In their 2013 article they introduce a trimmed estimate of the circular variance.  The circular normal distribution and it variants are considered in detail.
+
+\item \cite{kato2012} considers robust estimators of the reparameterized von Mises distribution in the context of divergence as defined in \cite{basu1998} and \cite{jones2001}.  The estimators that result when the respective divergence is minimized are defined and their influence functions are given.  They compare their estimators to those of \cite{lenth1981} and find their estimators perform better.
 \end{enumerate}
 
 In this section I use the $H_i$ and $C_i$ statistics to robustify the projected $\ProjMean$ $L_2$ estimator.  In particular I look at the trimmed, weighted and winsorized mean as well as the Huber estimator.  I think it would be simple to extend these ideas to the geometric $L_2$ estimator $\GeomMean$.
