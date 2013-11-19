@@ -29,10 +29,10 @@ for(i in 1:nrow(ResDfMSE)){
   for(j in 1:B){
     
     Rs<-ruarsCont(ResDfMSE$n[i],rcayley,kappa1,kappa2,ResDfMSE$Eps[i],id.SO3,Scont)
-    Shat<-mean(Rs)
-    Stilde<-median(Rs)
-    tMean<-trimMean(Rs,.1,HnFun)$Shat
-    wMean<-winzMean(Rs,.1,HnFun)$Shat
+    Shat<-mean(Rs,type='geometric')
+    Stilde<-median(Rs,type='geometric')
+    tMean<-trimMean(Rs,.1,HnFun,type='geometric')$Shat
+    wMean<-winzMean(Rs,.1,HnFun,type='geometric')$Shat
       
     MeanBias[j]<-angle(Shat)
     MedianBias[j]<-angle(Stilde)
@@ -56,15 +56,14 @@ for(i in 1:nrow(ResDfMSE)){
 mResDfBias<-melt(ResDfBias,id=c("Eps","n","Sstar"))
 mResDfBias$Sstar<-factor(mResDfBias$Sstar,labels=c('pi/2','pi'))
 colnames(mResDfBias)[4]<-"Estimator"
-mResDfBias$Estimator<-factor(mResDfBias$Estimator,labels=c("Mean","Median","Trimmed\nMean","Winsozrized\nMean"))
+mResDfBias$Estimator<-factor(mResDfBias$Estimator,labels=c("Winsozrized\nMean","Trimmed\nMean","Median","Mean"))
 qplot(Eps,value,data=mResDfBias,colour=Estimator,group=Estimator,geom='line',size=I(1.25),xlab=expression(epsilon),ylab='Bias')+
   facet_grid(Sstar~n,labeller = label_parsed,scales="free_y")+coord_fixed()
 
-ResDfMSE
 mResDfMSE<-melt(ResDfMSE,id=c("Eps","n","Sstar"))
 mResDfMSE$Sstar<-factor(mResDfMSE$Sstar,labels=c('pi/2','pi'))
 colnames(mResDfMSE)[4]<-"Estimator"
-mResDfMSE$Estimator<-factor(mResDfMSE$Estimator,labels=c("Mean","Median","Trimmed\nMean","Winsozrized\nMean"))
+mResDfMSE$Estimator<-factor(mResDfMSE$Estimator,labels=c("Winsozrized\nMean","Trimmed\nMean","Median","Mean"))
 qplot(Eps,value,data=mResDfMSE,colour=Estimator,group=Estimator,geom='line',size=I(1.25),xlab=expression(epsilon),ylab='MSE')+
   facet_grid(Sstar~n,labeller = label_parsed,scales="free_y")+coord_fixed()
 
@@ -72,7 +71,7 @@ mResDfBias$Measure<-'Bias'
 mResDfMSE$Measure<-'MSE'
 mResDF<-rbind(mResDfBias,mResDfMSE)
 
-write.csv(mResDF,"Results/ExtrinsicRobustSimulations_1000.csv")
+write.csv(mResDF,"Results/IntrinsicRobustSimulations_1000.csv")
 
 
 
