@@ -56,7 +56,7 @@ for(i in 1:nrow(ResDfMSE)){
 mResDfBias<-melt(ResDfBias,id=c("Eps","n","Sstar"))
 mResDfBias$Sstar<-factor(mResDfBias$Sstar,labels=c('pi/2','pi'))
 colnames(mResDfBias)[4]<-"Estimator"
-mResDfBias$Estimator<-factor(mResDfBias$Estimator,labels=c("Mean","Median","Trimmed\nMean","Winsozrized\nMean"))
+mResDfBias$Estimator<-factor(mResDfBias$Estimator,labels=c("Winsozrized\nMean","Trimmed\nMean","Median","Mean"))
 qplot(Eps,value,data=mResDfBias,colour=Estimator,group=Estimator,geom='line',size=I(1.25),xlab=expression(epsilon),ylab='Bias')+
   facet_grid(Sstar~n,labeller = label_parsed,scales="free_y")+coord_fixed()
 
