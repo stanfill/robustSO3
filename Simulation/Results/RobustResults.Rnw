@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{amsmath,amsfonts,bm,fullpage,subcaption,graphicx,caption}
+\usepackage{natbib}
+\bibliographystyle{abbrvnat}
+\newcommand{\ProjMean}{{\widehat{\bm S}_{2}}}
+\newcommand{\GeomMean}{{\widehat{\bm S}_{2,R}}}
+\newcommand{\R}{{\mathbb{R}}}
+\begin{document}
+
+<<readdata,include=FALSE>>=
+# set global chunk options
+opts_chunk$set(fig.path='Figures/', fig.align='center', fig.show='hold')
+options(replace.assign=TRUE,width=50)
+
+library(ggplot2)
+require(grid)
+extrinsic<-read.csv("ExtrinsicRobustSimulations_1000.csv")[,-1]
+intrinsic<-read.csv("IntrinsicRobustSimulations_1000.csv")[,-1]
+
+extrinsic$Method<-'Extrinsic'
+intrinsic$Method<-'Intrinsic'
+
+final<-rbind(extrinsic,intrinsic)
+@
+
+<<method,echo=FALSE,out.width="1\\textwidth",fig.width=8,fig.height=4,fig.cap="Comparison of contamination central orientations within the estimator methods (extrinsic/intrinsic).">>=
+#Compare contamination S's within each Method
+qplot(Eps,value,data=intrinsic[intrinsic$Measure=='Bias',],colour=Estimator,group=Estimator,geom='line',size=I(1.25),xlab=expression(epsilon),ylab='Bias',main='Intrinsic Estimators')+facet_grid(Sstar~n,labeller = label_parsed)+theme(panel.margin = unit(0.75, "lines"))
+
+qplot(Eps,value,data=extrinsic[extrinsic$Measure=='Bias',],colour=Estimator,group=Estimator,geom='line',size=I(1.25),xlab=expression(epsilon),ylab='Bias',main='Extrinsic Estimators')+facet_grid(Sstar~n,labeller = label_parsed)+theme(panel.margin = unit(.75, "lines"))
+@
+
+<<contam,echo=FALSE,out.width="1\\textwidth",fig.width=8,fig.height=4,fig.cap="Comparison of estimator methods (extrinsic/intrinsic) within contamination central orientations.">>=
+#Compare methods for a given contamination S
+qplot(Eps,value,data=final[final$Measure=='Bias' & final$Sstar=='pi/2',],colour=Estimator,group=Estimator,geom='line',size=I(1.25),xlab=expression(epsilon),ylab='Bias',main='Orthogonal S')+facet_grid(Method~n,labeller = label_parsed)+theme(panel.margin = unit(0.75, "lines"))
+
+qplot(Eps,value,data=final[final$Measure=='Bias' & final$Sstar=='pi',],colour=Estimator,group=Estimator,geom='line',size=I(1.25),xlab=expression(epsilon),ylab='Bias',main='Opposite S')+facet_grid(Method~n,labeller = label_parsed)+theme(panel.margin = unit(0.75, "lines"))
+
+@
+
+
+\end{document}
