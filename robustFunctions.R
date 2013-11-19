@@ -1,20 +1,22 @@
-ruarsCont<-function(n,rangle,kappa,p,S=id.SO3,Scont,space='SO3'){
+ruarsCont<-function(n,rangle,kappa1,kappa2=kappa1,p,S=id.SO3,Scont,space='SO3'){
   
   #n   		- sample size
   #rangle - angular distribution from which to simulate
-  #kappa	- concentration parameter
+  #kappa1	- concentration parameter for F data
+  #kappa2 - concentration for contaminated data
   #p			- percent of n that will be contaminated
   #S			- central direction of normal data
   #Scont	-	central direction of contaminated data
   #space  - SO3 (default) or quaternions("Q4")
-  
-  rs<-rangle(n,kappa=kappa)
-  
+    
   nCont<-floor(p*n)
   nNorm<-n-nCont
   
-  RsCont<-genR(rs[1:nCont],Scont) #Simulated from the contaminated distribution
-  RsNorm<-genR(rs[-c(1:nCont)],S)	#Simulate from the normal distribution
+  rsCont<-rangle(nCont,kappa=kappa2)
+  RsCont<-genR(rsCont,Scont) #Simulated from the contaminated distribution
+  
+  rsNorm<-rangle(nNorm,kappa=kappa1)
+  RsNorm<-genR(rsNorm,S)	#Simulate from the normal distribution
   
   Rs<-as.SO3(rbind(RsNorm,RsCont))
   
