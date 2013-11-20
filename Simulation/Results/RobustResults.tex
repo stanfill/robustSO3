@@ -60,62 +60,79 @@
 
 
 
+\section{Set-up}
+
 This simulation design is similar in spirit to Ko and Chang (1993)-\textit{Robust M-Estimators on Spheres}.  Simulation parameters:
-\begin{enumerate}
-\item Data generted from a $\epsilon$-contaminated distribution:
+\begin{itemize}
+\item Data generated from a $\epsilon$-contaminated distribution:
 \[
 F=(1-\epsilon)\text{Cayley}(\bm S,40)+\epsilon\text{Cayley}(\bm S^*,20)
 \]
-\item $\epsilon=0.05, 0.1, 0.15, 0.20$
+\item Contamination: $\epsilon=0.05, 0.1, 0.15, 0.20$
 \item $\bm S=\bm I_{3\times 3}$ and $\bm S^*$ is orthogonal to $\bm S$ (rotated through $\pi/2$ radians) or on the opposite pole (rotated through $\pi$ radians).
 \item Sample size: $n=20,50,100$
-\end{enumerate}
+\item 1,000 samples generated per combination of contamination percentage $\epsilon$, contaminated central orientation $\bm S^*$, and sample size $n$
+\end{itemize}
+The extrinsic simulation took 37.5 minutes and intrinsic estimators took 45 minutes.
 
-The median and mean are the usual minimizes of the first- and second-order distances, respectively.  The trimmed mean is found by the following process:
+The median and mean are the usual minimizes of the first- and second-order distances, respectively.  The winsorized mean is found by the following process (see Figure \ref{fig:Winz}):
 \begin{enumerate}
-\item Find the usual mean 
-\item Compute the distance between each observation and the estimated mean
-\item Remove 10\% observations that are the furthers from the estimated mean
+\item Find the usual mean $\widehat{\bm S}$
+\item Compute the residual between each observation $\bm R_i$ and the estimated mean $\widehat{\bm S}$ according to the Riemannian or Euclidean distance, $\hat r_i=d(\bm R_i,\widehat{\bm S})$
+\item Find the $100(1-\alpha)\%$ percentile of the residuals $\hat r_\alpha$
+\item Project all observations with residuals greater than $\hat r_\alpha$ onto the hyper-sphere (?) with radius (?) $\hat r_\alpha$
+\item Compute the mean of the new observations
 \end{enumerate}
 
-The winsorized mean is computed in the same way, except instead of removing the upper 10\%, they are projected back closer to the estimated mean.
 
-\begin{figure}
+
+The trimmed mean is computed in the same way, except the observations with residuals $\hat r_i>\hat r_\alpha$ are removed completely.
+
+\begin{figure}[h]
 \begin{center}
 \begin{tikzpicture}
-    \draw [black!20] (-3,-3) grid (3,3);
-    \draw (0,0) circle [radius=2];
+    %\draw [black!20] (-3,-3) grid (3,3);
+    \draw [dashed] (0,0) circle [radius=2];
     \draw [->,ultra thick] (0,0) -- (2,0);
     \draw [<->] (-3,0) -- (3,0);
     \draw [<->] (0,-3) -- (0,3);
     %\node [above] at (3,0) {$x$}
-    \node [above] at (1,0) {$c_\alpha$};
-    \node [above] at (-1,-.5) {$\bm{S}_1$};
+    \node [above left] at (0,0) {$\widehat{\bm{S}}$};
+    \draw [fill] (0,0) circle [radius=.08];
+    \node [below] at (1,0) {$c_\alpha$};
+    \node [above] at (-1,-.5) {$\bm{R}_1$};
     \draw [fill] (-1,-.5) circle [radius=0.025];
-    \node [above] at (.5,.75) {$\bm{S}_2$};
+    \node [above] at (.5,.75) {$\bm{R}_2$};
     \draw [fill] (.5,.75) circle [radius=0.025];
-    \node [above] at (1,-1.732051) {$\bm{S}_3$};
+    \node [above] at (1,-1.732051) {$\bm{R}_3$};
     \draw [fill] (1,-1.732051) circle [radius=0.025];
-    \node [above] at (-.25,1.5) {$\bm{S}_4$};
+    \node [above] at (-.25,1.5) {$\bm{R}_4$};
     \draw [fill] (-.25,1.5) circle [radius=0.025];
     %\node [above] at (2,2) {$\bm{S}_5$};
     %\draw [fill] (2,2) circle [radius=0.025];
     %\node [left] at (1.414214, 1.414214) {$\bm{S}_5^*$};
     %\draw [fill] (1.414214, 1.414214) circle [radius=0.025];
-    \draw [->] (2,2) -- (1.414214, 1.414214);
-    \node [below] at (-1,-2.5) {$\bm{S}_5$};
+    %\draw [->] (2,2) -- (1.414214, 1.414214);
+    \node [below] at (-1,-2.5) {$\bm{R}_5$};
     \draw [fill] (-1,-2.5) circle [radius=0.025];
-    \node [above] at (-0.7427814,  -1.8569534) {$\bm{S}_5^*$};
+    \node [above] at (-0.7427814,  -1.8569534) {$\bm{R}_5^*$};
     \draw [fill] (-0.7427814, -1.8569534) circle [radius=0.025];
     \draw [->] (-1,-2.5) -- (-0.7427814,  -1.8569534);
 \end{tikzpicture}
 \end{center}
-\caption{Winsorized mean estimator where $c_\alpha$ is the $(1-\alpha)100\%$ radius.}
-\label{fig:Huber}
+\caption{Winsorized mean estimator where $\hat r_\alpha$ is the upper $100(1-\alpha)\%$ percentile of the residuals.}
+\label{fig:Winz}
 \end{figure}
 
+\section{Results}
+
+\begin{itemize}
+\item The bias of the mean increases rapidly as $\epsilon$ increases, but the bias of the median increases slowly.
+\item The bias of three of the four estimators monotonically increases as $\epsilon$ increases, but the relationship between $\epsilon$ and the winsorized mean is unclear.  I have no idea why this may be.
+\item When the contamination central orientation is rotated through $\pi$ radians the extrinsic estimators aren't affected, but the intrinsic estimators are.
+\end{itemize}
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[]
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[h]
 
 
 {\centering \includegraphics[width=1\textwidth]{Figures/method1} 
@@ -123,7 +140,7 @@ The winsorized mean is computed in the same way, except instead of removing the 
 
 }
 
-\caption[Comparison of contamination central orientations within the estimator methods (extrinsic/intrinsic)]{Comparison of contamination central orientations within the estimator methods (extrinsic/intrinsic).\label{fig:method}}
+\caption[Estimator bias as  function of contamination, faceted by sample size and degree of rotation]{Estimator bias as  function of contamination, faceted by sample size and degree of rotation.\label{fig:method}}
 \end{figure}
 
 
@@ -139,7 +156,7 @@ The winsorized mean is computed in the same way, except instead of removing the 
 
 }
 
-\caption[Comparison of estimator methods (extrinsic/intrinsic) within contamination central orientations]{Comparison of estimator methods (extrinsic/intrinsic) within contamination central orientations.\label{fig:contam}}
+\caption[Estimator bias as  function of contamination, faceted by sample size and estimator type (extrinsic/intrinsic)]{Estimator bias as  function of contamination, faceted by sample size and estimator type (extrinsic/intrinsic).\label{fig:contam}}
 \end{figure}
 
 
