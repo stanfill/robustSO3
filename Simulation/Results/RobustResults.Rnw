@@ -112,4 +112,23 @@ qplot(Eps,value,data=final[final$Measure=='Bias' & final$Sstar=='pi',],colour=Es
 @
 
 
+<<directCompare,echo=FALSE,out.width="1\\textwidth",fig.width=9,fig.height=4,fig.cap="Direct comparison of extrinsic and intrinsic estimator bias as a function of contamination for n=50 (top) and n=100 (bottom).">>=
+#Compare methods for a given contamination S
+oneN<-final[final$n==50 & final$Measure=='Bias',]
+oneN$EstMetho<-as.factor(paste(oneN$Estimator,oneN$Method))
+
+qplot(Eps,value,data=oneN,geom='line',colour=Estimator,linetype=Method,group=EstMetho,size=I(1.25),alpha=I(.9))+
+  facet_grid(.~Sstar,labeller = label_parsed)+
+  scale_linetype_manual(values = rep(c("dotted","solid")))
+
+oneN<-final[final$n==100 & final$Measure=='Bias',]
+oneN$EstMetho<-as.factor(paste(oneN$Estimator,oneN$Method))
+
+qplot(Eps,value,data=oneN,geom='line',colour=Estimator,linetype=Method,group=EstMetho,size=I(1.25),alpha=I(.9))+
+  facet_grid(.~Sstar,labeller = label_parsed)+
+  scale_linetype_manual(values = rep(c("dotted","solid")))
+
+
+@
+
 \end{document}
