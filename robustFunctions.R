@@ -79,6 +79,16 @@ MedianMove<-function(Qs,medianT='projected',distT='projected'){
   return(ds)
 }
 
+DistToMedian<-function(Rs,medianT='projected',distT='projected'){
+  #Compute geodesic distance between median and each observation
+  
+  n<-nrow(Rs)
+  Shat<-median(Rs,type=medianT)
+  ds<-dist(Rs,Shat,method=distT)
+  
+  return(ds)
+}
+
 trimMean<-function(Qs,a,discordFun,anneal=F,...){
   #Trim the most extreme a% based on the HnFun results
   #Qs - the sample

@@ -43,7 +43,7 @@ The extrinsic simulation took 37.5 minutes and intrinsic estimators took 45 minu
 The median and mean are the usual minimizes of the first- and second-order distances, respectively.  The winsorized mean is found by the following process (see Figure \ref{fig:Winz}):
 \begin{enumerate}
 \item Find the usual mean $\widehat{\bm S}$
-\item Compute the residual between each observation $\bm R_i$ and the estimated mean $\widehat{\bm S}$ according to the Riemannian or Euclidean distance, $\hat r_i=d(\bm R_i,\widehat{\bm S})$
+\item Compute the residual between each observation $\bm R_i$ and the estimated mean $\widehat{\bm S}$ according to the Riemannian or Euclidean distance, $\hat e_i=d(\bm R_i,\widehat{\bm S})$
 \item Find the $100(1-\alpha)\%$ percentile of the residuals $\hat r_\alpha$
 \item Project all observations with residuals greater than $\hat r_\alpha$ onto the hyper-sphere (?) with radius (?) $\hat r_\alpha$
 \item Compute the mean of the new observations
@@ -64,7 +64,7 @@ The trimmed mean is computed in the same way, except the observations with resid
     %\node [above] at (3,0) {$x$}
     \node [above left] at (0,0) {$\widehat{\bm{S}}$};
     \draw [fill] (0,0) circle [radius=.08];
-    \node [below] at (1,0) {$c_\alpha$};
+    \node [below] at (1,0) {$e_\alpha$};
     \node [above] at (-1,-.5) {$\bm{R}_1$};
     \draw [fill] (-1,-.5) circle [radius=0.025];
     \node [above] at (.5,.75) {$\bm{R}_2$};

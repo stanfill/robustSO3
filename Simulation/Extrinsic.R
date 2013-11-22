@@ -2,14 +2,14 @@ library(rotations,lib='../BayesCR')
 #library(rotations)
 library(reshape2)
 source("robustFunctions.R")
-Rcpp::sourceCpp('robustCpp.cpp')
+#Rcpp::sourceCpp('robustCpp.cpp')
 
 #Scont<-genR(pi)
 #Rs<-ruarsCont(20,rcayley,10,20,.05,id.SO3,Scont)
 
 #plot(Rs)+aes(size=Z,alpha=Z)+scale_size(limits=c(-1,1), range=c(0.5,2.5))+theme(legend.position='none')
 
-eps<-c(0.05,.1,.15,.2)
+eps<-c(0.05,.1,.15,.2,.45)
 n<-c(20,50,100)
 kappa1<-40
 kappa2<-20
@@ -31,8 +31,11 @@ for(i in 1:nrow(ResDfMSE)){
     Rs<-ruarsCont(ResDfMSE$n[i],rcayley,kappa1,kappa2,ResDfMSE$Eps[i],id.SO3,Scont)
     Shat<-mean(Rs)
     Stilde<-median(Rs)
-    tMean<-trimMean(Rs,.1,HnFun)$Shat
-    wMean<-winzMean(Rs,.1,HnFun)$Shat
+    tMean<-trimMean(Rs,.1,DistToMedian)$Shat
+    wMean<-winzMean(Rs,.1,DistToMedian)$Shat
+    
+    #tMean<-trimMean(Rs,.1,HnFun)$Shat
+    #wMean<-winzMean(Rs,.1,HnFun)$Shat
       
     MeanBias[j]<-angle(Shat)
     MedianBias[j]<-angle(Stilde)
@@ -60,7 +63,7 @@ mResDfBias$Estimator<-factor(mResDfBias$Estimator,labels=c("Winsozrized\nMean","
 qplot(Eps,value,data=mResDfBias,colour=Estimator,group=Estimator,geom='line',size=I(1.25),xlab=expression(epsilon),ylab='Bias')+
   facet_grid(Sstar~n,labeller = label_parsed,scales="free_y")+coord_fixed()
 
-ResDfMSE
+#ResDfMSE
 mResDfMSE<-melt(ResDfMSE,id=c("Eps","n","Sstar"))
 mResDfMSE$Sstar<-factor(mResDfMSE$Sstar,labels=c('pi/2','pi'))
 colnames(mResDfMSE)[4]<-"Estimator"

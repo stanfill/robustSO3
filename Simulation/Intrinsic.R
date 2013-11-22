@@ -9,7 +9,7 @@ Rcpp::sourceCpp('robustCpp.cpp')
 
 #plot(Rs)+aes(size=Z,alpha=Z)+scale_size(limits=c(-1,1), range=c(0.5,2.5))+theme(legend.position='none')
 
-eps<-c(0.05,.1,.15,.2)
+eps<-c(0.05,.1,.15,.2,.45)
 n<-c(20,50,100)
 kappa1<-40
 kappa2<-20
@@ -31,8 +31,12 @@ for(i in 1:nrow(ResDfMSE)){
     Rs<-ruarsCont(ResDfMSE$n[i],rcayley,kappa1,kappa2,ResDfMSE$Eps[i],id.SO3,Scont)
     Shat<-mean(Rs,type='geometric')
     Stilde<-median(Rs,type='geometric')
-    tMean<-trimMean(Rs,.1,HnFun,type='geometric')$Shat
-    wMean<-winzMean(Rs,.1,HnFun,type='geometric')$Shat
+    
+    tMean<-trimMean(Rs,.1,DistToMedian,type='geometric')$Shat
+    wMean<-winzMean(Rs,.1,DistToMedian,type='geometric')$Shat
+    
+    #tMean<-trimMean(Rs,.1,HnFun,type='geometric')$Shat
+    #wMean<-winzMean(Rs,.1,HnFun,type='geometric')$Shat
       
     MeanBias[j]<-angle(Shat)
     MedianBias[j]<-angle(Stilde)
