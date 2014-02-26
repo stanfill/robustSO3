@@ -72,6 +72,7 @@ This is the literature I have found methods to robustify the $L_2$ estimator for
 
 
  
+ 
 \section{Trimmed Means}
 
 Assume the sample of size $n$, $x_1,\dots,x_n$, has empirical distribution function $F_n$.  The sample $\alpha$-trimmed mean, according to \cite{huber2009} page 10, is
@@ -362,11 +363,11 @@ In Table \ref{tab:SimResHn} is the average bias based on the Euclidean distance 
 
 
 
-\begin{figure}
-\centering
-\includegraphics[width=.7\textwidth]{Estimator.png}
-\caption{Graphical representation of Table \ref{tab:SimResHn} faceted by sample size and distribution.}
-\end{figure}
+% \begin{figure}
+% \centering
+% \includegraphics[width=.7\textwidth]{Estimator.png}
+% \caption{Graphical representation of Table \ref{tab:SimResHn} faceted by sample size and distribution.}
+% \end{figure}
 
 
 For the Cayley (and presumably Fisher matrix) distribution, the Huber estimator and trimmed mean are close.  Trimmed mean is preferred for more concentrated data and the Huber estimator is preferred as the data become less concentrated.  This makes sense because the trimmed mean is discarding the contaminated data when the bulk of the data is highly concentrated, while the Huber estimator is trying to use all the data.  The median does really poorly, even compared to the mean.

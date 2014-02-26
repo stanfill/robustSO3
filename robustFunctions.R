@@ -10,7 +10,8 @@ ruarsCont<-function(n,rangle,kappa1,kappa2=kappa1,p,S=id.SO3,Scont,space='SO3'){
   #space  - SO3 (default) or quaternions("Q4")
     
   nCont<-floor(p*n)
-  nNorm<-n-nCont
+
+  nNorm <- n-nCont
   
   rsCont<-rangle(nCont,kappa=kappa2)
   RsCont<-genR(rsCont,Scont) #Simulated from the contaminated distribution
@@ -21,7 +22,7 @@ ruarsCont<-function(n,rangle,kappa1,kappa2=kappa1,p,S=id.SO3,Scont,space='SO3'){
   Rs<-as.SO3(rbind(RsNorm,RsCont))
   
   if(space=='Q4')
-    Rs<-Q4(Rs)
+    Rs<-as.Q4(Rs)
   
   return(Rs)
   
@@ -33,7 +34,7 @@ HnFun<-function(Qs,full=TRUE){
   #Written for quaternions, so if SO3 is given, make them quaternions
   
   if(class(Qs)=="SO3")
-    Qs<-Q4(Qs)
+    Qs<-as.Q4(Qs)
   
   if(full){
     Hn<- as.vector(HnCpp(Qs))
@@ -48,7 +49,7 @@ MeanMove<-function(Qs,meanT='projected',distT='projected'){
   
   #Written for quaternions so change to quaternions if given matrices
   if(class(Qs)=="SO3")
-    Qs<-Q4(Qs)
+    Qs<-as.Q4(Qs)
   
   n<-nrow(Qs)
   Shat<-mean(Qs,type=meanT)
@@ -56,7 +57,7 @@ MeanMove<-function(Qs,meanT='projected',distT='projected'){
   for(i in 1:n){
     Qsi<-as.Q4(Qs[-i,])
     Shati<-mean(Qsi,type=meanT)
-    ds[i]<-dist(Shat,Shati,method=distT)
+    ds[i]<-rot.dist(Shat,Shati,method=distT)
   }
   return(ds)
 }
@@ -66,7 +67,7 @@ MedianMove<-function(Qs,medianT='projected',distT='projected'){
   
   #Written for quaternions so change to quaternions if given matrices
   if(class(Qs)=="SO3")
-    Qs<-Q4(Qs)
+    Qs<-as.Q4(Qs)
   
   n<-nrow(Qs)
   Shat<-median(Qs,type=medianT)
@@ -74,7 +75,7 @@ MedianMove<-function(Qs,medianT='projected',distT='projected'){
   for(i in 1:n){
     Qsi<-as.Q4(Qs[-i,])
     Shati<-median(Qsi,type=medianT)
-    ds[i]<-dist(Shat,Shati,method=distT)
+    ds[i]<-rot.dist(Shat,Shati,method=distT)
   }
   return(ds)
 }
@@ -84,7 +85,7 @@ DistToMedian<-function(Rs,medianT='projected',distT='projected'){
   
   n<-nrow(Rs)
   Shat<-median(Rs,type=medianT)
-  ds<-dist(Rs,Shat,method=distT)
+  ds<-rot.dist(Rs,Shat,method=distT)
   
   return(ds)
 }
@@ -134,7 +135,7 @@ winzMean<-function(Rs,a,discordFun,anneal=F,...){
   
   #Written for rotations, so if given quaternions make them rotations
   if(class(Rs)=="Q4")
-    Rs<-SO3(Rs)
+    Rs<-as.SO3(Rs)
   
   if(nCut==0){
     return(mean(Rs,...))
@@ -152,7 +153,7 @@ winzMean<-function(Rs,a,discordFun,anneal=F,...){
     toWinz<-which(crs>huberC)
     badRs<-as.SO3(Rs[toWinz,]) #These are the observations to project closer to center
     badRs<-center(badRs,Shat)
-    us<-axis(badRs)
+    us<-mis.axis(badRs)
     winzRs<-SO3(us,rep(huberC,length(toWinz)))
     winzRs<-center(winzRs,t(Shat))
     wRs<-Rs
@@ -172,13 +173,13 @@ HuberMean<-function(RS,c,influence=FALSE,...){
   #             from the estimator to the observation
   
   if(class(Rs)=="Q4")
-    Rs<-SO3(Rs)
+    Rs<-as.SO3(Rs)
   iters<-0
   
   while(iters<100){
   
     shat<-mean(Rs,...)
-    rs<-dist(Rs,shat,method='intrinsic')          #Estimate r_i based on Shat
+    rs<-rot.dist(Rs,shat,method='intrinsic')          #Estimate r_i based on Shat
     if(influence){
       rs<-sin(rs)
     }
@@ -195,8 +196,8 @@ HuberMean<-function(RS,c,influence=FALSE,...){
       #print(rs[toofar])
       toMove<-as.SO3(Rs[toofar,])
       toMove<-center(toMove,shat)
-      usStar<-axis(toMove)
-      Moved<-center(SO3(usStar,rep(c,numFar)),t(shat))
+      usStar<-mis.axis(toMove)
+      Moved<-center(as.SO3(usStar,rep(c,numFar)),t(shat))
       Rs[toofar,]<-Moved
     }
     iters<-iters+1
@@ -204,4 +205,30 @@ HuberMean<-function(RS,c,influence=FALSE,...){
   }
   #print(iters)
   return(list(Rs=Rs,Shat=mean(Rs,...)))
+}
+
+# #Knitr Doesn't like sourceCpp
+HnCpp<-function(Qs){
+  #//Compute the Hn tests statistics
+  Qs<-matrix(Qs,dim(Qs))
+  n = nrow(Qs)
+
+  T = t(Qs)%*%Qs
+
+  decomp<-eigen(T)
+  Hn<-rep(0,n)
+
+  
+  for(i in 1:n){
+    Qj = matrix(Qs[i,],1,4)
+    
+    Tj = T-t(Qj)%*%Qj;
+    dj <- eigen(Tj)
+    eigvalJ<-dj$values
+    
+    Hn[i]=(n-2)*(1+eigvalJ[3]-eigvalJ[3])/(n-1-eigvalJ[3]);
+    
+  }
+  
+  return(Hn)
 }

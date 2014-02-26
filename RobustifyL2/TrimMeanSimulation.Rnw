@@ -21,14 +21,16 @@ This is the literature I have found methods to robustify the $L_2$ estimator for
 
 <<setup,include=FALSE>>=
 library(rotations)
+
 #source("robustFunctions.R")
-source("/Users/stanfill/Documents/GitHub/robustSO3/robustFunctions.R")
-Rcpp::sourceCpp('/Users/stanfill/Documents/GitHub/robustSO3/robustCpp.cpp')
+source("C:/Users/Sta36z/Documents/robustSO3/robustFunctions.R")
+#sourceCpp("C:/Users/Sta36z/Documents/robustSO3/robustCpp.cpp")
 
 # set global chunk options
 opts_chunk$set(fig.path='Figure/', fig.align='center', fig.show='hold',dev='png')
 options(replace.assign=TRUE,width=50)
 @
+ 
  
 \section{Trimmed Means}
 
@@ -72,15 +74,18 @@ p1<-.1
 p2<-.1
 Scont<-genR(pi/2) #slippage mean
 
-Rs<-ruarsCont(n,rangle,kappa,p1,S=id.SO3,Scont)
-Qs<-Q4(Rs)
+Rs<-ruarsCont(n=n,rangle=rangle,kappa1=kappa,p=p1,S=id.SO3,Scont=Scont)
+Qs<-as.Q4(Rs)
 tMean<-trimMean(Qs,p2,HnFun)
 
-dist(mean(Qs))
-dist(trimMean(Qs,p2,HnFun))
-dist(trimMean(Qs,p2,HnFun,T))
-dist(median(Qs))
-plot(Rs,center=SO3(tMean),show_estimates='all')
+rot.dist(mean(Qs))
+rot.dist(trimMean(Qs,p2,HnFun)$Shat)
+rot.dist(trimMean(Qs,p2,HnFun,T)$Shat)
+rot.dist(median(Qs))
+
+plot(Rs,center=as.SO3(tMean$Shat),show_estimates='all')
+#plot(Rs,center=as.SO3(tMean$Shat),show_estimates='all',interactive=T)
+
 @
 
 \section{Weighted Means}
@@ -102,24 +107,24 @@ Define the $SO(3)$ weighted mean as
 where $\overline{\bm R}_W=(\sum_{i}w_i\bm R_i)/(\sum_i w_i)$, the weights $w_i^{-1}=\sqrt{H_i}/(\sum_i \sqrt{H_i})$ and $H_i$ is from \eqref{eqn:Hj}.  I use the square root of $H_i$ because $H_i$ alone behaves like a square loss function instead of an absolute loss function.
 
 <<weightedMean,include=FALSE,eval=FALSE>>=
-Rs<-Q4(ruarsCont(n,rangle,kappa,p1,S=id.SO3,Scont))
+Rs<-as.Q4(ruarsCont(n=n,rangle=rangle,kappa1=kappa,p=p1,S=id.SO3,Scont=Scont))
 wsHn<-1/sqrt(HnFun(Rs))
-wsVals<-1/sqrt(HnFun(Rs,scale=F))
-wsRDist<-1/MeanMove(Rs,method='intrinsic')
+wsVals<-1/sqrt(HnFun(Rs,full=T))
+wsRDist<-1/MeanMove(Rs,meanT='geometric')
 wsEDist<-1/MeanMove(Rs)
 
-dist(weighted.mean(Rs,wsHn))
-dist(weighted.mean(Rs,wsVals))
-dist(weighted.mean(Rs,wsRDist))
-dist(weighted.mean(Rs,wsEDist))
-dist(mean(Rs))
-dist(median(Rs))
-dist(trimMean(Qs,p2,HnFun))
+rot.dist(weighted.mean(Rs,wsHn))
+rot.dist(weighted.mean(Rs,wsVals))
+rot.dist(weighted.mean(Rs,wsRDist))
+rot.dist(weighted.mean(Rs,wsEDist))
+rot.dist(mean(Rs))
+rot.dist(median(Rs))
+rot.dist(trimMean(Qs,p2,HnFun)$Shat)
 @
 
 <<HnDist,include=FALSE,echo=FALSE,eval=FALSE>>=
 kappa<-10
-Rs<-Q4(ruarsCont(n,rangle,kappa,p1,S=id.SO3,Scont))
+Rs<-ruarsCont(n=n,rangle,kappa1=kappa,p=p1,S=id.SO3,Scont=Scont,space='Q4')
 Hn<-sqrt(HnFun(Rs))
 Vals<-sqrt(HnFun(Rs,full=F))
 EDist<-MeanMove(Rs)
@@ -211,11 +216,11 @@ qplot(rs,value,geom="blank",data=IFm,xlab=expression(r[i]),ylab='Influence',colo
 #Empirical IFs versus expected
 
 kap<-1
-
+d<-1
 #Projected Mean
 Rs<-ruars(50,rcayley,kappa=kap)
 dMean<-kap/(kap+2)  #For cayley, d=kapp/(kapp+2)
-rs<-angle(Rs)
+rs<-mis.angle(Rs)
 mm<-MeanMove(Rs,distT='intrinsic') 
 mm<-mm/d/max(mm) #scale MeanMove to fit IF scale
 curve(sin(x)/d,from=0,to=pi,ylim=c(0,max(mm)),main='Projected Mean',xlab='r',ylab='IF')
@@ -223,7 +228,7 @@ points(rs,mm,pch=19)
 
 #Geometric Mean
 Rs<-ruars(50,rcayley,kappa=kap)
-rs<-angle(Rs)
+rs<-mis.angle(Rs)
 mmGeom<-MeanMove(Rs,meanT='geometric',distT='intrinsic') 
 mmGeom<-mmGeom*pi/2/max(mmGeom) #scale MeanMove to fit IF scale
 plot(rs,mmGeom,pch=19,ylim=c(0,pi/2),xlim=c(0,pi),main='Geometric Mean',xlab='r',ylab='IF')
@@ -232,7 +237,7 @@ abline(0,1/2)
 #Projected Median
 Rs<-ruars(50,rcayley,kappa=kap)
 dMed<-kap*sqrt(2)*gamma(kap+2)/(3*sqrt(pi)*gamma(kap+2.5))
-rs<-angle(Rs)
+rs<-mis.angle(Rs)
 mmMed<-MedianMove(Rs,distT='intrinsic') 
 mmMed<-mmMed/(dMed)/max(mmMed) #scale MeanMove to fit IF scale
 curve(sin(x)/(sqrt(1-cos(x))*2*dMed),from=0,to=pi,ylim=c(0,max(mmMed)),
@@ -292,12 +297,12 @@ n<-50
 kappa<-100
 p1<-.1
 Scont<-genR(pi/2) #slippage mean
-Rs<-ruarsCont(n,rangle,kappa,p1,S=id.SO3,Scont)
+Rs<-ruarsCont(n=n,rangle=rangle,kappa1=kappa,p=p1,S=id.SO3,Scont=Scont)
 
 c<-seq(1,.1,length=10)
 hm <- vector(mode='list', length=10)
 meanErr<-rep(0,11)
-meanErr[1]<-round(angle(mean(Rs)),3)
+meanErr[1]<-round(mis.angle(mean(Rs)),3)
 
 plots <- vector(mode='list', length=10)
 plot(Rs,center=id.SO3,show_estimates='proj.mean',col=3)+
@@ -305,7 +310,7 @@ plot(Rs,center=id.SO3,show_estimates='proj.mean',col=3)+
 
 for(i in 1:10){
   hm[[i]]<-HuberMean(Rs,c[i])
-  meanErr[(i+1)]<-round(angle(hm[[i]]$Shat),3)
+  meanErr[(i+1)]<-round(mis.angle(hm[[i]]$Shat),3)
     
   print(plot(hm[[i]]$Rs,center=id.SO3,show_estimates='proj.mean',col=3)+
     labs(title=paste("c =",c[i],"; Error =",meanErr[(i+1)]))+
@@ -323,12 +328,12 @@ n<-50
 kappa<-100
 p1<-.1
 Scont<-genR(pi/2) #slippage mean
-Rs<-ruarsCont(n,rangle,kappa,p1,S=id.SO3,Scont)
+Rs<-ruarsCont(n=n,rangle=rangle,kappa1=kappa,p=p1,S=id.SO3,Scont=Scont)
 
 c<-round(seq(.9,.05,length=10),2)
 hm <- vector(mode='list', length=10)
 meanErr<-rep(0,11)
-meanErr[1]<-round(angle(mean(Rs)),3)
+meanErr[1]<-round(mis.angle(mean(Rs)),3)
 
 plots <- vector(mode='list', length=10)
 plot(Rs,center=id.SO3,show_estimates='proj.mean',col=3)+
@@ -336,7 +341,7 @@ plot(Rs,center=id.SO3,show_estimates='proj.mean',col=3)+
 
 for(i in 1:10){
   hm[[i]]<-HuberMean(Rs,c[i],influence=TRUE)
-  meanErr[(i+1)]<-round(angle(hm[[i]]$Shat),3)
+  meanErr[(i+1)]<-round(mis.angle(hm[[i]]$Shat),3)
     
   print(plot(hm[[i]]$Rs,center=id.SO3,show_estimates='proj.mean',col=3)+
     labs(title=paste("c =",c[i],"; Error =",meanErr[(i+1)]))+
@@ -561,11 +566,11 @@ cres<-dcast(mres,variable~Dist+n+kappa)
 xtable(cres,digits=2)
 @
 
-\begin{figure}
-\centering
-\includegraphics[width=.7\textwidth]{Estimator.png}
-\caption{Graphical representation of Table \ref{tab:SimResHn} faceted by sample size and distribution.}
-\end{figure}
+% \begin{figure}
+% \centering
+% \includegraphics[width=.7\textwidth]{Estimator.png}
+% \caption{Graphical representation of Table \ref{tab:SimResHn} faceted by sample size and distribution.}
+% \end{figure}
 
 
 For the Cayley (and presumably Fisher matrix) distribution, the Huber estimator and trimmed mean are close.  Trimmed mean is preferred for more concentrated data and the Huber estimator is preferred as the data become less concentrated.  This makes sense because the trimmed mean is discarding the contaminated data when the bulk of the data is highly concentrated, while the Huber estimator is trying to use all the data.  The median does really poorly, even compared to the mean.
