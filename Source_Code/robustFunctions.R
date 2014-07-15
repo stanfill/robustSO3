@@ -89,11 +89,11 @@ trimMean<-function(Qs,a,method='once',...){
     Qs<-Q4(Qs)
   
   if(nCut==0){
-    if(only){
-      return(mean(Qs,...))
-    }else{
+    #if(only){
+    #  return(mean(Qs,...))
+    #}else{
       return(list(Qs=Qs,Shat=mean(Qs,...)))
-    }
+    #}
   }
   
   method <- try(match.arg(method,c("once","en bloc","anneal")))
