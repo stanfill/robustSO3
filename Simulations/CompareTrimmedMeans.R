@@ -1,0 +1,28 @@
+B<-100
+kappa <- 100
+distj<-"Cayley"
+res<-data.frame(p=rep(c(0,.1,.2),each=100),Once=0,enBloc=0,Anneal=0,Oen=0,OA=0,eA=0)
+S21 <- genR(pi/2)
+a <- .1
+
+for(i in 1:nrow(res)){
+  Qs<-ruarsCont(n=25,rangle=rcayley,kappa1=kappa,p=res$p[i],Scont=S21,
+                S=id.SO3,kappa2=kappa,space='Q4')  
+  
+  once <- trimMean(Qs,a,method='once')
+  ann <- trimMean(Qs,a,method='anneal')  
+  enB <- trimMean(Qs,a,method='en')
+  
+  res$Once[i]<-rot.dist(once$Shat,method='intrinsic')
+  res$enBloc[i]<-rot.dist(enB$Shat,method='intrinsic')
+  res$Anneal[i]<-rot.dist(ann$Shat,method='intrinsic')
+  
+  res$Oen[i]<-as.numeric(enB$Qs==ann$Qs)
+  res$OA[i]<-as.numeric(ann$Qs==once$Qs)
+  res$eA[i]<-as.numeric(ann$Qs==enB$Qs)
+  
+}
+
+mdat<-melt(res,id.vars="p",measure.vars=c("Once","enBloc","Anneal"))
+
+qplot(value,data=mdat,facets=variable~p)

@@ -108,9 +108,9 @@ trimMean<-function(Qs,a,method='once',...){
       Qs<-Qs[-which.max(Hn),]
     }
     #if(only){
-      return(mean(Qs,...))
+    #  return(mean(Qs,...))
     #}else{
-    #  return(list(Qs=Qs,Shat=mean(Qs,...)))
+      return(list(Qs=Qs,Shat=mean(Qs,...)))
     #}
     
   }else if(method=='once'){
@@ -118,19 +118,19 @@ trimMean<-function(Qs,a,method='once',...){
     toCut<-which(order(Hn)>(n-nCut))
     tQs<-Qs[-toCut,]
     #if(only){
-      return(mean(tQs,...))
+    #  return(mean(tQs,...))
     #}else{
-    #  return(list(Qs=tQs,Shat=mean(tQs,...)))
+      return(list(Qs=tQs,Shat=mean(tQs,...)))
     #}
   }else{
     
     HnB <- HnBloc(Qs,nCut)
     iToCut <- which.max(HnB$Hn)
-    tQs <- Qs[-HnB[,iToCut],]
+    tQs <- Qs[-HnB$groups[,iToCut],]
     #if(only){
-    return(mean(tQs,...))
+    # return(mean(tQs,...))
     #}else{
-    #  return(list(Qs=tQs,Shat=mean(tQs,...)))
+      return(list(Qs=tQs,Shat=mean(tQs,...)))
     #}
     
   }
