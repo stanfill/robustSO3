@@ -8,7 +8,7 @@ B<-100
 kappa <- 100
 distj<-"Cayley"
 res<-data.frame(p=rep(c(0,.1,.2),each=100),Trim=0,Weight=0)
-S21 <- genR(pi/4)
+S21 <- genR(pi/8)
 a <- .1
 
 for(i in 1:nrow(res)){
