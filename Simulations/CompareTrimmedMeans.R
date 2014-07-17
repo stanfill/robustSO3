@@ -2,17 +2,20 @@ source('~/robustSO3/Source_Code/robustFunctions.R')
 Rcpp::sourceCpp('Source_Code/robustCpp.cpp')
 library(rotations)
 library(reshape2)
+library(plyr)
 
 B<-100
-kappa <- 100
+k1 <- 100
+k2 <- 1
 distj<-"Cayley"
 res<-data.frame(p=rep(c(0,.1,.2),each=100),Once=0,enBloc=0,Anneal=0,Oen=0,OA=0,eA=0)
-S21 <- genR(pi/4)
+#S21 <- genR(pi/4)
+S21 <- id.SO3
 a <- .1
 
 for(i in 1:nrow(res)){
-  Qs<-ruarsCont(n=25,rangle=rfisher,kappa1=kappa,p=res$p[i],Scont=S21,
-                S=id.SO3,kappa2=kappa,space='Q4')  
+  Qs<-ruarsCont(n=25,rangle=rfisher,kappa1=k1,p=res$p[i],Scont=S21,
+                S=id.SO3,kappa2=k2,space='Q4')  
   
   once <- trimMean(Qs,a,method='once')
   ann <- trimMean(Qs,a,method='anneal')  

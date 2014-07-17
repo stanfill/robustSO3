@@ -49,7 +49,7 @@ HnFun<-function(Qs,full=TRUE){
 
 HnBloc<-function(Qs,t){
   #Compute the Hn statistic when each possible set of t observations is deleted
-  
+  warning("This function does not compute the right statistic, see Figue... and Gome (2005)")
   n<-nrow(Qs)
   groups <- combn(n,t)
   
@@ -63,6 +63,18 @@ HnBloc<-function(Qs,t){
     SSRi<-sum(rot.dist(Qsi,Qhati,method='extrinsic',p=2))
     Hnia[i] <- (n-1-t)*(SSR - SSRi)/(SSRi)
   }
+  
+  return(list(groups=groups,Hn=Hnia))
+  
+}
+
+HnBlocCpp<-function(Qs,t){
+  #Compute the Hn statistic when each possible set of t observations is deleted
+  Qs<-as.Q4(Qs)
+  n<-nrow(Qs)
+  groups <- combn(n,t)
+  
+  Hnia <- HnCppBloc(Qs,groups)
   
   return(list(groups=groups,Hn=Hnia))
   
