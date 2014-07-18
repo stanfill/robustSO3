@@ -11,7 +11,7 @@ distj<-"Cayley"
 res<-data.frame(p=rep(c(0,.1,.2),each=100),Once=0,enBloc=0,Anneal=0,Oen=0,OA=0,eA=0)
 #S21 <- genR(pi/4)
 S21 <- id.SO3
-a <- .1
+a <- .05
 
 for(i in 1:nrow(res)){
   Qs<-ruarsCont(n=25,rangle=rfisher,kappa1=k1,p=res$p[i],Scont=S21,
@@ -39,6 +39,5 @@ qplot(Once,enBloc,data=res,facets=.~p)+geom_abline(intercept=0,slope=1)
 qplot(Anneal,enBloc,data=res,facets=.~p)+geom_abline(intercept=0,slope=1)
 qplot(Once,Anneal,data=res,facets=.~p)+geom_abline(intercept=0,slope=1)
 
-ddply(res,.(p),summarize,Oen=sum(Oen)/length(Oen),OA=sum(OA)/length(OA),eA=sum(eA)/length(eA))
-
-ddply(res,.(p),summarize,Annea=mean(Anneal),Once=mean(Once))
+ddply(res,.(p),summarize,Oen=sum(Oen)/length(Oen),OA=sum(OA)/length(OA),eA=sum(eA)/length(eA),
+      Annea=mean(Anneal),Once=mean(Once),enB=mean(enBloc))

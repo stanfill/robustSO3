@@ -136,7 +136,7 @@ trimMean<-function(Qs,a,method='once',...){
     #}
   }else{
     
-    HnB <- HnBloc(Qs,nCut)
+    HnB <- HnBlocCpp(Qs,nCut)
     iToCut <- which.max(HnB$Hn)
     tQs <- Qs[-HnB$groups[,iToCut],]
     #if(only){
