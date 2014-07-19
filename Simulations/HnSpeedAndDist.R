@@ -68,3 +68,53 @@ HnW<-HnBloc(QsW,t)
 xW<-seq(0,max(HnW),length=length(HnW))
 plot(ecdf(HnW))
 lines(xW,pf(xW,3,3*(length(HnW)-1-t)))
+
+###############
+#Pretty plots of Hn ECDF for various kappa
+library(rotations)
+source('~/robustSO3/Source_Code/robustFunctions.R')
+Rcpp::sourceCpp('Source_Code/robustCpp.cpp')
+
+kappa<-c(1,2,5,10,Inf)
+x<-seq(0,4,length=1000)
+resDFCay<-data.frame(Hn=x,kappa=rep(kappa,each=length(x)),ECDF=0)
+resDFMises<-data.frame(Hn=x,kappa=rep(kappa,each=length(x)),ECDF=0)
+
+
+for(i in 1:length(kappa)){
+
+  row <- (i-1)*1000+1
+  
+  if(kappa[i]<Inf){
+    Qs<-ruars(1000,rcayley,kappa=kappa[i])
+    Hn<-HnFun(Qs)
+    ecdfHN<-ecdf(Hn)
+    resDFCay$ECDF[c(row:(row+999))]<-ecdfHN(x)
+    
+    Qs<-ruars(1000,rvmises,kappa=kappa[i])
+    Hn<-HnFun(Qs)
+    ecdfHN<-ecdf(Hn)
+    resDFMises$ECDF[c(row:(row+999))]<-ecdfHN(x)
+    
+    
+  }else{
+    resDFCay$ECDF[c(row:(row+999))] <- pf(x,3,3*1000)
+    
+    resDFMises$ECDF[c(row:(row+999))] <- pf(x,1,1000)
+  }
+}
+
+resDFCay$kappa<-as.factor(resDFCay$kappa)
+resDFMises$kappa<-as.factor(resDFMises$kappa)
+
+resDFCay$kappa<-factor(resDFCay$kappa,levels=rev(levels(resDFCay$kappa)))
+resDFMises$kappa<-factor(resDFMises$kappa,levels=rev(levels(resDFMises$kappa)))
+
+qplot(Hn,ECDF,data=resDFCay,group=kappa,colour=kappa,xlab=expression(H[n]),
+  ylab=expression(F[n](x)),geom='line',lwd=I(2),main='Cayley')+theme_bw()+
+  scale_color_grey()+coord_fixed(4)
+
+qplot(Hn,ECDF,data=resDFMises,group=kappa,colour=kappa,xlab=expression(H[n]),
+  ylab=expression(F[n](x)),geom='line',lwd=I(2),main='von Mises')+theme_bw()+
+  scale_color_grey()+coord_fixed(4)
+
