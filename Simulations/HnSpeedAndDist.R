@@ -76,31 +76,32 @@ source('~/robustSO3/Source_Code/robustFunctions.R')
 Rcpp::sourceCpp('Source_Code/robustCpp.cpp')
 
 kappa<-c(1,2,5,10,Inf)
-x<-seq(0,4,length=1000)
-resDFCay<-data.frame(Hn=x,kappa=rep(kappa,each=length(x)),ECDF=0)
-resDFMises<-data.frame(Hn=x,kappa=rep(kappa,each=length(x)),ECDF=0)
+n<-1000
+x<-seq(0,4,length=n)
+resDFCay<-data.frame(Hn=x,kappa=rep(kappa,each=n,ECDF=0)
+resDFMises<-data.frame(Hn=x,kappa=rep(kappa,each=n),ECDF=0)
 
 
 for(i in 1:length(kappa)){
 
-  row <- (i-1)*1000+1
+  row <- (i-1)*n+1
   
   if(kappa[i]<Inf){
-    Qs<-ruars(1000,rcayley,kappa=kappa[i])
+    Qs<-ruars(n,rcayley,kappa=kappa[i])
     Hn<-HnFun(Qs)
     ecdfHN<-ecdf(Hn)
-    resDFCay$ECDF[c(row:(row+999))]<-ecdfHN(x)
+    resDFCay$ECDF[c(row:(row+(n-1)))]<-ecdfHN(x)
     
-    Qs<-ruars(1000,rvmises,kappa=kappa[i])
+    Qs<-ruars(n,rvmises,kappa=kappa[i])
     Hn<-HnFun(Qs)
     ecdfHN<-ecdf(Hn)
-    resDFMises$ECDF[c(row:(row+999))]<-ecdfHN(x)
+    resDFMises$ECDF[c(row:(row+(n-1)))]<-ecdfHN(x)
     
     
   }else{
-    resDFCay$ECDF[c(row:(row+999))] <- pf(x,3,3*1000)
+    resDFCay$ECDF[c(row:(row+(n-1)))] <- pf(x,3,3*(n-1))
     
-    resDFMises$ECDF[c(row:(row+999))] <- pf(x,1,1000)
+    resDFMises$ECDF[c(row:(row+(n-1)))] <- pf(x,1,(n-1))
   }
 }
 
@@ -111,10 +112,28 @@ resDFCay$kappa<-factor(resDFCay$kappa,levels=rev(levels(resDFCay$kappa)))
 resDFMises$kappa<-factor(resDFMises$kappa,levels=rev(levels(resDFMises$kappa)))
 
 qplot(Hn,ECDF,data=resDFCay,group=kappa,colour=kappa,xlab=expression(H[n]),
-  ylab=expression(F[n](x)),geom='line',lwd=I(2),main='Cayley')+theme_bw()+
+  ylab=expression(F[n](x)),geom='line',lwd=I(1.7),main='Cayley')+theme_bw()+
   scale_color_grey()+coord_fixed(4)
+#ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/CayleyHnECDF.pdf",height=5,width=5)
 
 qplot(Hn,ECDF,data=resDFMises,group=kappa,colour=kappa,xlab=expression(H[n]),
-  ylab=expression(F[n](x)),geom='line',lwd=I(2),main='von Mises')+theme_bw()+
+  ylab=expression(F[n](x)),geom='line',lwd=I(1.7),main='von Mises')+theme_bw()+
   scale_color_grey()+coord_fixed(4)
+#ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/vonMisesHnECDF.pdf",height=5,width=5)
+
+#####
+#QQPlots using the same results
+resDFCay$QQ<-pf(resDFCay$Hn,3,3*1000)
+qplot(ECDF,QQ,data=resDFCay[resDFCay$kappa!="Inf",],group=kappa,colour=kappa,ylab=expression(F(x)),
+      xlab=expression(F[n](x)),geom='point',lwd=I(1.7),main='Cayley')+theme_bw()+
+  scale_color_grey()+coord_fixed(1)+geom_abline(aes(0,1),col='red')
+#ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/CayleyHnQQ.pdf",height=5,width=5)
+
+#QQPlots using the same results
+resDFMises$QQ<-pf(resDFMises$Hn,1,1*1000)
+qplot(ECDF,QQ,data=resDFMises[resDFMises$kappa!="Inf",],group=kappa,colour=kappa,ylab=expression(F(x)),
+      xlab=expression(F[n](x)),geom='point',lwd=I(1.7),main='von Mises')+theme_bw()+
+  scale_color_grey()+coord_fixed(1)+geom_abline(aes(0,1),col='red')
+#ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/CayleyHnQQ.pdf",height=5,width=5)
+
 
