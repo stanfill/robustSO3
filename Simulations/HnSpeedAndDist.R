@@ -52,11 +52,13 @@ lines(xW,pf(xW,3,3*(length(HnW)-2)))
 
 #######
 #Distribution of Hn en blocs of size t with/without outliers
-t <- 1
+t <- 4
 
 #Without outlier (should be F with 3,3*(n-2) dfs)
-Qs<-ruars(50,rcayley,kappa=100)
+Qs<-ruars(20,rcayley,kappa=100)
 Hn<-HnBlocCpp(Qs,t)
+Hn2 <- HnBloc(Qs,t)
+plot(Hn$Hn,Hn2$Hn);abline(0,1)
 x<-seq(0,max(Hn$Hn),length=length(Hn$Hn))
 plot(ecdf(Hn$Hn))
 lines(x,pf(x,3*t,3*(length(Hn$Hn)-1-t)),col=2)

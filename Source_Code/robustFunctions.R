@@ -49,7 +49,7 @@ HnFun<-function(Qs,full=TRUE){
 
 HnBloc<-function(Qs,t){
   #Compute the Hn statistic when each possible set of t observations is deleted
-  warning("This function does not compute the right statistic, see Figue... and Gome (2005)")
+  #warning("This function does not compute the right statistic, see Figue... and Gome (2005)")
   n<-nrow(Qs)
   groups <- combn(n,t)
   
@@ -61,7 +61,7 @@ HnBloc<-function(Qs,t){
     Qsi <- Qs[-groups[,i],]
     Qhati<-mean(Qsi)
     SSRi<-sum(rot.dist(Qsi,Qhati,method='extrinsic',p=2))
-    Hnia[i] <- (n-1-t)*(SSR - SSRi)/(SSRi)
+    Hnia[i] <- ((SSR - SSRi)/t)/((SSRi)/(n-t-1))
   }
   
   return(list(groups=groups,Hn=Hnia))
@@ -215,3 +215,20 @@ trimMeanOld<-function(Qs,a,discordFun,anneal=F,...){
   }
 }
 
+require(hypergeo)
+bipolarWatson<-function(r,kappa,Haar=T){
+  
+  kernal <- exp(kappa*(cos(r)+1)/2)
+
+  const <- 2*pi*genhypergeo(z=kappa,U=0.5,L=2)
+  
+  if(Haar){
+    return(kernal/const)
+  }
+  
+  return(kernal*(1-cos(r))/(const))
+  
+}
+
+
+integrate(bipolarWatson,-pi,pi,kappa=1,Haar=F)
