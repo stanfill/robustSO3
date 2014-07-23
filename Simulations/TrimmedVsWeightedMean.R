@@ -7,48 +7,37 @@ library(plyr)
 B<-100
 k1 <- 100
 k2 <- 1
-distj<-"Cayley"
-res<-data.frame(p=rep(c(0,.1,.2),each=B),Trim=0,Weight=0)
-#S21 <- genR(pi/8)
+n<-c(10,50,100)
+p<-c(0,.1,.2)
+
+res<-data.frame(p=rep(p,each=(B*length(n))),n=rep(n,(B*length(p))),ProjMean=0,ProjMedian=0,Trimmed=0,Weighted=0)
+#S21 <- genR(pi/2)
 S21 <- id.SO3
 a <- .1
 
+
 for(i in 1:nrow(res)){
-  Qs<-ruarsCont(n=50,rangle=rcayley,kappa1=k1,p=res$p[i],Scont=S21,
+  Qs<-ruarsCont(n=res$n[i],rangle=rcayley,kappa1=k1,p=res$p[i],Scont=S21,
                 S=id.SO3,kappa2=k2,space='Q4')  
   
   trimS <- trimMean(Qs,a,method='anneal')  
   ws <- HnFun(Qs)
   weightS <- weighted.mean(Qs, w=1/sqrt(ws))
   
-  res$Trim[i]<-rot.dist(trimS$Shat,method='intrinsic')
-  res$Weight[i]<-rot.dist(weightS,method='intrinsic')
+  res$Trimmed[i]<-rot.dist(trimS$Shat,method='intrinsic')
+  res$Weighted[i]<-rot.dist(weightS,method='intrinsic')
+  res$ProjMean[i]<-rot.dist(mean(Qs),method='intrinsic')
+  res$ProjMedian[i]<-rot.dist(median(Qs),method='intrinsic')
 }
 
 
-ddply(res,.(p),summarize,Trim=mean(Trim),Weight=mean(Weight))
+(resSum<-ddply(res,.(p,n),summarize,ProjMean=mean(ProjMean),ProjMedian=mean(ProjMedian),
+      Trimmed=mean(Trimmed),Weighted=mean(Weighted)))
 
-qplot(Trim,Weight,data=res,facets=.~p)+geom_abline(intercept=0,slope=1)
+resSumM<-melt(resSum,id.vars=c('p',"n"),variable.name='Estimator')
 
-n<-length(ws)
-x<-seq(0,max(ws),length=n)
-plot(ecdf(ws))
-lines(x,pf(x,3,3*(n-2)))
+qplot(p,value,data=resSumM,colour=Estimator,geom='line',lwd=I(1.5),ylab='Bias',main='Cayley')+
+  facet_wrap(~n,scales="free_y")+theme_bw()+scale_x_continuous(breaks=c(0,.1,.2))
 
-toCut<-which(ws>qf(.95,3,3*(n-2)))
-qs<-Qs[-c(45:50),]
-ws2<-HnFun(qs)
+ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/CayleySim.pdf",height=5,width=10)
 
-n<-length(ws2)
-x<-seq(0,max(ws2),length=n)
-plot(ecdf(ws2))
-lines(x,pf(x,3,3*(n-2)))
-
-
-Qs2<-ruars(50,rcayley,kappa=10)
-Hn<-HnFun(Qs2)
-n<-length(Hn)
-
-x<-seq(0,5,length=n)
-plot(ecdf(Hn),xlim=c(0,5))
-lines(x,pf(x,3,3*(n-2)))
