@@ -77,10 +77,10 @@ library(rotations)
 source('~/robustSO3/Source_Code/robustFunctions.R')
 Rcpp::sourceCpp('Source_Code/robustCpp.cpp')
 
-kappa<-c(1,2,5,10,Inf)
-n<-1000
+kappa<-c(1,10,Inf)
+n<-20
 x<-seq(0,4,length=n)
-resDFCay<-data.frame(Hn=x,kappa=rep(kappa,each=n,ECDF=0)
+resDFCay<-data.frame(Hn=x,kappa=rep(kappa,each=n),ECDF=0)
 resDFMises<-data.frame(Hn=x,kappa=rep(kappa,each=n),ECDF=0)
 
 
@@ -92,12 +92,14 @@ for(i in 1:length(kappa)){
     Qs<-ruars(n,rcayley,kappa=kappa[i])
     Hn<-HnFun(Qs)
     ecdfHN<-ecdf(Hn)
-    resDFCay$ECDF[c(row:(row+(n-1)))]<-ecdfHN(x)
+    resDFCay$ECDF[c(row:(row+(n-1)))]<-ecdfHN(Hn)
+    resDFCay$Hn[c(row:(row+(n-1)))]<-Hn
     
     Qs<-ruars(n,rvmises,kappa=kappa[i])
     Hn<-HnFun(Qs)
     ecdfHN<-ecdf(Hn)
-    resDFMises$ECDF[c(row:(row+(n-1)))]<-ecdfHN(x)
+    resDFMises$ECDF[c(row:(row+(n-1)))]<-ecdfHN(Hn)
+    resDFMises$Hn[c(row:(row+(n-1)))]<-Hn
     
     
   }else{
@@ -125,17 +127,17 @@ qplot(Hn,ECDF,data=resDFMises,group=kappa,colour=kappa,xlab=expression(H[n]),
 
 #####
 #QQPlots using the same results
-resDFCay$QQ<-pf(resDFCay$Hn,3,3*1000)
+resDFCay$QQ<-pf(resDFCay$Hn,3,3*(n-2))
 qplot(ECDF,QQ,data=resDFCay[resDFCay$kappa!="Inf",],group=kappa,colour=kappa,ylab=expression(F(x)),
       xlab=expression(F[n](x)),geom='point',lwd=I(1.7),main='Cayley')+theme_bw()+
-  scale_color_grey()+coord_fixed(1)+geom_abline(aes(0,1),col='red')
+  scale_color_grey()+coord_fixed(1)+geom_abline(aes(0,1),col='red')+geom_line()
 #ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/CayleyHnQQ.pdf",height=5,width=5)
 
 #QQPlots using the same results
-resDFMises$QQ<-pf(resDFMises$Hn,1,1*1000)
+resDFMises$QQ<-pf(resDFMises$Hn,1,1*(n-2))
 qplot(ECDF,QQ,data=resDFMises[resDFMises$kappa!="Inf",],group=kappa,colour=kappa,ylab=expression(F(x)),
       xlab=expression(F[n](x)),geom='point',lwd=I(1.7),main='von Mises')+theme_bw()+
-  scale_color_grey()+coord_fixed(1)+geom_abline(aes(0,1),col='red')
+  scale_color_grey()+coord_fixed(1)+geom_abline(aes(0,1),col='red')+geom_line()
 #ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/CayleyHnQQ.pdf",height=5,width=5)
 
 
