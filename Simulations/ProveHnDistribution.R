@@ -20,21 +20,20 @@ for(i in 1:B){
   qsOrig<-ruars(n,rcayley,kappa=kappa,space='Q4')
   
   shat<-mean(qsOrig)
-  qs<-qsOrig-shat
-  #Ahati<-diag(1,4)-t(shat)%*%shat
+  qs<-qsOrig#-shat
+  Ahati<-diag(1,4)-t(shat)%*%shat
     
-  rshat<-rot.dist(qs,id.Q4,method='intrinsic')
+  #rshat<-rot.dist(qs,id.Q4,method='intrinsic')
   #ahat<-mean(cos(rshat/2)^2)-mean(cos(rshat/2))^2
   #ahat<-var(cos(rshat/2))
   #bhat<-mean(sin(rshat/2)^2)/3
   #bhat<-var(sin(rshat/2))/3
   #InvSigHat<-diag(c(1/sqrt(ahat),rep(1/sqrt(bhat),3)))  
-  InvSigHat<-chol(solve(var(qs)))
   
   for(j in 1:n){
     qsj<-matrix(qs[j,],4,1)
     SSE[i]<-SSE[i]+t(qsj)%*%t(InvSig)%*%A%*%InvSig%*%qsj
-    conti<-t(qsj)%*%t(InvSigHat)%*%A%*%InvSigHat%*%qsj
+    conti<-t(qsj)%*%t(InvSig)%*%Ahati%*%InvSig%*%qsj
     SSEHat[i]<-SSEHat[i]+conti
   }
 }
