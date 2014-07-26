@@ -5,30 +5,37 @@
 library(rotations)
 B<-1000
 n<-50
-kappa<-50
+kappa<-100
 SSE<-SSEHat<-rep(0,B)
 
 rs<-rcayley(1000,kappa=kappa)
-a<-mean(cos(rs/2)^2)
+a<-mean(cos(rs/2)^2)-mean(cos(rs/2))^2
+#a<-var(cos(rs/2))
 b<-mean(sin(rs/2)^2)/3
+
 InvSig<-diag(c(1/sqrt(a),rep(1/sqrt(b),3)))
 A<-diag(c(0,rep(1,3)))
 
 for(i in 1:B){
-  qs<-ruars(n,rcayley,kappa=kappa,space='Q4')
+  qsOrig<-ruars(n,rcayley,kappa=kappa,space='Q4')
   
-  shat<-mean(qs)
-  Ahati<-diag(1,4)-t(shat)%*%shat
+  shat<-mean(qsOrig)
+  qs<-qsOrig-shat
+  #Ahati<-diag(1,4)-t(shat)%*%shat
     
-  rshat<-rot.dist(qs,shat,method='intrinsic')
-  ahat<-mean(cos(rshat/2)^2)
-  bhat<-mean(sin(rshat/2)^2)/3
-  InvSigHat<-diag(c(1/sqrt(ahat),rep(1/sqrt(bhat),3)))  
+  rshat<-rot.dist(qs,id.Q4,method='intrinsic')
+  #ahat<-mean(cos(rshat/2)^2)-mean(cos(rshat/2))^2
+  #ahat<-var(cos(rshat/2))
+  #bhat<-mean(sin(rshat/2)^2)/3
+  #bhat<-var(sin(rshat/2))/3
+  #InvSigHat<-diag(c(1/sqrt(ahat),rep(1/sqrt(bhat),3)))  
+  InvSigHat<-chol(solve(var(qs)))
   
   for(j in 1:n){
     qsj<-matrix(qs[j,],4,1)
     SSE[i]<-SSE[i]+t(qsj)%*%t(InvSig)%*%A%*%InvSig%*%qsj
-    SSEHat[i]<-SSEHat[i]+t(qsj)%*%t(InvSig)%*%Ahati%*%InvSig%*%qsj
+    conti<-t(qsj)%*%t(InvSigHat)%*%A%*%InvSigHat%*%qsj
+    SSEHat[i]<-SSEHat[i]+conti
   }
 }
 
@@ -36,6 +43,7 @@ x<-seq(0,max(SSE),length=B)
 plot(ecdf(SSE))
 lines(x,pchisq(x,3*(n-1)),col=2)
 
+x<-seq(0,max(SSEHat),length=B)
 plot(ecdf(SSEHat))
 lines(x,pchisq(x,3*(n-1)),col=2)
 lines(x,pchisq(x,3*n),col=3)
