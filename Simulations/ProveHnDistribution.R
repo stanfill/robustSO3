@@ -100,14 +100,15 @@ lines(x,pf(x,3,3*(n-2)),col=2)
 Rcpp::sourceCpp('Source_Code/robustCpp.cpp')
 
 kap<-1000
+n<-50
 qs<-ruars(n,rcayley,kappa=kap,space='Q4')
 
 shat<-mean(qs)
 
 rs<-rot.dist(qs,shat,method='intrinsic')
 rs<-rcayley(1000,kappa=kap)
-a<-mean(cos(rs/2)^2)
-b<-mean(sin(rs/2)^2)/3
+a<-mean(cos(rs/2)^2)-mean(cos(rs/2))^2
+#b<-mean(sin(rs/2)^2)/3
 InvSig<-diag(c(1/sqrt(a),rep(1/sqrt(b),3)))
 
 
@@ -121,11 +122,11 @@ for(j in 1:n){
   
   shat1<-mean(qs[-j,])
   Ahatij<-diag(1,4)-t(shat1)%*%shat1
-  InvSigj<-InvSig
-  #rsj<-rot.dist(qs[-j,],shat1,method='intrinsic')
-  #aj<-mean(cos(rsj/2)^2)
-  #bj<-mean(sin(rsj/2)^2)/3
-  #InvSigj<-diag(c(1/sqrt(aj),rep(1/sqrt(bj),3)))
+  #InvSigj<-InvSig
+  rsj<-rot.dist(qs[-j,],shat1,method='intrinsic')
+  aj<-mean(cos(rsj/2)^2)-mean(cos(rsj/2))^2
+  bj<-mean(sin(rsj/2)^2)/3
+  InvSigj<-diag(c(1/sqrt(aj),rep(1/sqrt(bj),3)))
   
   cnt<-(1:n)[-j]
   
