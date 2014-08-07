@@ -1,3 +1,53 @@
+#Show the Hi statistic has the F distribution
+library(rotations)
+n<-100
+kap<-50
+Qs<-ruars(n,rvmises,kappa=kap,space='Q4')
+That<-t(Qs)%*%Qs
+lamHat<-eigen(That)$values[1]
+
+lamHati<-rep(0,n)
+Hnum<-rep(0,n)
+Hdenom<-rep(0,n)
+HdenomApprox<-rep(0,n)
+rsI2<-matrix(0,n,n-1)
+
+
+for(i in 1:n){  
+  Qi<-Qs[i,]
+  Thati<-That-Qi%*%t(Qi)
+  lamHati[i]<-eigen(Thati)$values[1]
+  
+  Qsi<-Qs[-i,]
+  shati<-mean(Qsi)
+  rsI2[i,]<-rot.dist(Qsi,shati,method='intrinsic',p=2)
+  HdenomApprox[i]<-sum(rsI2[i,])/4
+  
+}
+
+Hdenom<-(n-1-lamHati)
+plot(Hdenom,HdenomApprox);abline(0,1)
+Hdenom-HdenomApprox
+Hnum<-1+lamHati-lamHat
+
+#Does 2kr^2 have an approx chi^2_3 dist? Yes if it is Fisher, no if its Cayley.
+stat<-sort(kap*(1-cos(sqrt(rsI2[1,]))^2))
+#stat<-sort(kap*rsI2[1,])
+plot(ecdf(stat))
+lines(stat,pchisq(stat,1))
+
+#Shape of the distribution as a function of kappa
+kappa<-c(10,50,100)
+rs<-seq(-pi/4,pi/4,length=100)
+dfComp<-data.frame(r=rs,kap=rep(kappa,each=100))
+dfComp$df<-dfisher(dfComp$r,kappa=dfComp$kap)
+dfComp$kap<-as.factor(dfComp$kap)
+qplot(r,df,data=dfComp,colour=kap,group=kap,geom='line')
+
+
+#######################
+#Old method
+#######################
 #First to show that the SSE/8 of wrt Euclidean distance for a sample of n rotations
 #scaled by inverse sqrt of variance matrix has a central chi square 
 #3n distribution as kappa increases.
