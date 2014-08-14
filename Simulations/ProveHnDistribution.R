@@ -46,6 +46,49 @@ qplot(r,df,data=dfComp,colour=kap,group=kap,geom='line')
 
 
 #######################
+#Proposition 3.4 From Leon et al 
+#######################
+
+library(rotations)
+sfun<-function(Rs,S=id.SO3){
+  S<-matrix(S,3,3)
+  n<-nrow(Rs)
+  s<-matrix(0,n,3)
+  for(i in 1:n){
+    Ri<-matrix(Rs[i,],3,3)
+    inner<-S-2*solve(S+Ri)
+    s[i,]<-c(-1,1,-1)*rev(inner[upper.tri(inner)])
+  }
+  return(s)
+}
+
+
+Rs<-ruars(50,rcayley,kappa=50)
+s<-sfun(Rs-mean(Rs))
+qqnorm(s[,3]);qqline(s[,3])
+ss<-rowSums(s^2)
+rs<-rot.dist(Rs,mean(Rs),method='intrinsic',p=2)
+
+plot(ss,rs/4);abline(0,1)
+
+########################
+#LM approach again
+########################
+library(rotations)
+
+Qs<-ruars(20,rcayley,space='Q4')
+Qsi<-Qs[-1,]
+Si<-matrix(mean(Qsi),nrow=1)
+S<-matrix(mean(Qs),nrow=1)
+A<-t(Si)%*%Si-t(S)%*%S
+
+Qsq<-Qsi%*%A%*%t(Qsi)
+
+#
+rs<-rvmises(100,kappa=100)
+1-mean(cos(rs))^2
+
+#######################
 #Old method
 #######################
 #First to show that the SSE/8 of wrt Euclidean distance for a sample of n rotations

@@ -140,4 +140,39 @@ qplot(ECDF,QQ,data=resDFMises[resDFMises$kappa!="Inf",],group=kappa,colour=kappa
   scale_color_grey()+coord_fixed(1)+geom_abline(aes(0,1),col='red')+geom_line()
 #ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/CayleyHnQQ.pdf",height=5,width=5)
 
+########################
+#Intrinsic version of Hi, still F distributed?
+library(rotations)
 
+HnIntrinsic<-function(Qs){
+  #Written for Qs but will work for both parameterizations
+  n<-nrow(Qs)
+  Qhat<-mean(Qs)
+  Hnia<-rep(0,n)
+  SSR<-sum(rot.dist(Qs,Qhat,method='intrinsic',p=2))
+  for(i in 1:n){
+    
+    Qsi<-Qs[-i,]
+    Qhati<-mean(Qsi)
+    SSRi<-sum(rot.dist(Qsi,Qhati,method='intrinsic',p=2))
+    Hnia[i] <- (n-2)*(SSR - SSRi)/(SSRi)
+    
+  }
+  return(Hnia)
+}
+
+n<-20
+Qs<-ruars(n,rfisher,space='Q4',kappa=1)
+HnInt<-sort(HnIntrinsic(Qs))
+HnOrig<-sort(discord(Qs))
+
+par(mfrow=c(1,2))
+plot(ecdf(HnInt))
+lines(HnInt,pf(HnInt,3,3*(n-2)))
+
+plot(ecdf(HnOrig))
+lines(HnOrig,pf(HnOrig,3,3*(n-2)))
+
+layout(1)
+plot(HnInt,HnOrig)
+abline(0,1)
