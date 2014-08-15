@@ -75,10 +75,10 @@ lines(xW,pf(xW,3,3*(length(HnW)-1-t)))
 #Pretty plots of Hn ECDF for various kappa
 library(rotations)
 source('~/robustSO3/Source_Code/robustFunctions.R')
-Rcpp::sourceCpp('Source_Code/robustCpp.cpp')
+#Rcpp::sourceCpp('Source_Code/robustCpp.cpp')
 
-kappa<-c(1,10,Inf)
-n<-20
+kappa<-c(1,2,5,10,Inf)
+n<-1000
 x<-seq(0,4,length=n)
 resDFCay<-data.frame(Hn=x,kappa=rep(kappa,each=n),ECDF=0)
 resDFMises<-data.frame(Hn=x,kappa=rep(kappa,each=n),ECDF=0)
@@ -90,13 +90,13 @@ for(i in 1:length(kappa)){
   
   if(kappa[i]<Inf){
     Qs<-ruars(n,rcayley,kappa=kappa[i])
-    Hn<-HnFun(Qs)
+    Hn<-discord(Qs,type='extrinsic')
     ecdfHN<-ecdf(Hn)
     resDFCay$ECDF[c(row:(row+(n-1)))]<-ecdfHN(Hn)
     resDFCay$Hn[c(row:(row+(n-1)))]<-Hn
     
     Qs<-ruars(n,rvmises,kappa=kappa[i])
-    Hn<-HnFun(Qs)
+    Hn<-discord(Qs,type='extrinsic')
     ecdfHN<-ecdf(Hn)
     resDFMises$ECDF[c(row:(row+(n-1)))]<-ecdfHN(Hn)
     resDFMises$Hn[c(row:(row+(n-1)))]<-Hn
@@ -116,12 +116,12 @@ resDFCay$kappa<-factor(resDFCay$kappa,levels=rev(levels(resDFCay$kappa)))
 resDFMises$kappa<-factor(resDFMises$kappa,levels=rev(levels(resDFMises$kappa)))
 
 qplot(Hn,ECDF,data=resDFCay,group=kappa,colour=kappa,xlab=expression(H[n]),
-  ylab=expression(F[n](x)),geom='line',lwd=I(1.7),main='Cayley')+theme_bw()+
+  ylab=expression(F[n](x)),geom='line',lwd=I(1.7),main='Cayley',xlim=c(0,4))+theme_bw()+
   scale_color_grey()+coord_fixed(4)
 #ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/CayleyHnECDF.pdf",height=5,width=5)
 
 qplot(Hn,ECDF,data=resDFMises,group=kappa,colour=kappa,xlab=expression(H[n]),
-  ylab=expression(F[n](x)),geom='line',lwd=I(1.7),main='von Mises')+theme_bw()+
+  ylab=expression(F[n](x)),geom='line',lwd=I(1.7),main='von Mises',xlim=c(0,4))+theme_bw()+
   scale_color_grey()+coord_fixed(4)
 #ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/vonMisesHnECDF.pdf",height=5,width=5)
 

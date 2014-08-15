@@ -41,3 +41,10 @@ qplot(kappa,Power,data=resDF2,colour=Test,geom='line',size=I(2),xlab=expression(
   theme_bw()+scale_x_continuous(breaks=kappa)+coord_equal(20)
 
 #ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/PowerPic.pdf",width=5.5,height=4)
+
+
+##################
+#Why are some Intrinsic Hi values negative?
+
+Rs<-ruars(200,rcayley,kappa=1)
+discord(Rs,type='intrinsic')
