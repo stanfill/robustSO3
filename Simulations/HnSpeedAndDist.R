@@ -164,7 +164,10 @@ HnIntrinsic<-function(Qs){
 n<-20
 Qs<-ruars(n,rfisher,space='Q4',kappa=1)
 HnInt<-sort(HnIntrinsic(Qs))
-HnOrig<-sort(discord(Qs))
+HnOrig<-sort(discord(Qs,type='extrinsic'))
+HnCpp<-sort(discord(Qs,type='intrinsic'))
+
+plot(HnCpp,HnInt);abline(0,1)
 
 par(mfrow=c(1,2))
 plot(ecdf(HnInt))
