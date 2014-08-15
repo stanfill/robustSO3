@@ -1,11 +1,12 @@
 #Compare power of Intrinsic and Extrinsic Hi statistic
 source('~/robustSO3/Source_Code/robustFunctions.R')
 library(rotations)
+library(reshape2)
 library(plyr)
 
 kappa<-c(1,2,5,10,20)
 n<-50
-B<-1000
+B<-500
 resDF<-data.frame(kappa=rep(kappa,each=B),IID=0,ICut=0,Hi=0,EID=0,ECut=0,He=0)
 rownum<-1
 sc<-genR(pi/2)
@@ -38,4 +39,5 @@ resDF2<-melt(resDFSum,id.vars="kappa",measure.vars=c("Intrinsic","Extrinsic"),va
 
 qplot(kappa,Power,data=resDF2,colour=Test,geom='line',size=I(2),xlab=expression(kappa))+
   theme_bw()+scale_x_continuous(breaks=kappa)+coord_equal(20)
-ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/PowerPic.pdf",width=5.5,height=4)
+
+#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/PowerPic.pdf",width=5.5,height=4)

@@ -31,21 +31,21 @@ ruarsCont<-function(n,rangle,kappa1,kappa2=kappa1,p,S=id.SO3,Scont,space='SO3'){
   
 }
 
-HnFun<-function(Qs,full=TRUE){
+#HnFun<-function(Qs,full=TRUE){
   #Compute the statistic proposed by FLW(?) that is a function of the largest eigenvalue
   #when observation i was removed
   #Written for quaternions, so if SO3 is given, make them quaternions
   
-  if(class(Qs)=="SO3")
-    Qs<-as.Q4(Qs)
+  #if(class(Qs)=="SO3")
+  #  Qs<-as.Q4(Qs)
   
-  if(full){
-    Hn<- as.vector(HnCpp(Qs))
-  }else{
-    Hn<- as.vector(HnCpp(Qs))
-  }
-  return(Hn)
-}
+  #if(full){
+  #  Hn<- as.vector(HnCpp(Qs))
+  #}else{
+  #  Hn<- as.vector(HnCpp(Qs))
+  #}
+  #return(Hn)
+#}
 
 HnBloc<-function(Qs,t){
   #Compute the Hn statistic when each possible set of t observations is deleted
@@ -80,7 +80,7 @@ HnBlocCpp<-function(Qs,t){
   
 }
 
-trimMean<-function(Qs,a,method='once',...){
+trimMean<-function(Qs,a,method='once',type='intrinsic',...){
   #Trim the most extreme a% based on the HnFun results
   #Qs - the sample
   #a - percent of sample to remove
@@ -116,7 +116,7 @@ trimMean<-function(Qs,a,method='once',...){
   if(method=="anneal"){
     
     for(i in 1:nCut){
-      Hn<-HnFun(Qs)
+      Hn<-discord(Qs,type)
       Qs<-Qs[-which.max(Hn),]
     }
     #if(only){
@@ -126,7 +126,7 @@ trimMean<-function(Qs,a,method='once',...){
     #}
     
   }else if(method=='once'){
-    Hn<-HnFun(Qs)
+    Hn<-discord(Qs,type)
     toCut<-which(order(Hn)>(n-nCut))
     tQs<-Qs[-toCut,]
     #if(only){
