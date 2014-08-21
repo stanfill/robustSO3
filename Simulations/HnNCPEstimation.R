@@ -43,7 +43,7 @@ B <- 1000
 Hi <- rep(0,B)
 for(i in 1:B){
   Rs <- ruars(n,rvmises,kappa=kap)
-  Hi[i] <- discord(Rs, type='intrinsic')[n]
+  Hi[i] <- discord(Rs, type='intrinsic',obs=n)
 }
 Hi <- sort(Hi)
 plot(ecdf(Hi))
@@ -51,11 +51,11 @@ lines(Hi,pf(Hi,1,n-2),col=2)
 
 ########################
 ###Hi statistic under Ha when Ho should be rejected, diff mean alternative
-n <- 100
-kap <- 100
+n <- 50
+kap <- 5
 B <- 1000
 Hi <- denom <- num <- rep(0,B)
-rstar <- pi/4
+rstar <- pi/8
 Sstar <- genR(rstar)
 ncpstar <- kap*rstar^2
 
@@ -64,29 +64,27 @@ for(i in 1:B){
   rs <- rvmises(n,kappa=kap)
   
   Rs <- genR(rs[-n])
-  denom[i] <- sum(rot.dist(Rs,id.SO3,method='intrinsic')^2)
+  #denom[i] <- sum(rot.dist(Rs,id.SO3,method='intrinsic')^2)
   
   Outlier <- genR(rs[n],S=Sstar)
-  num[i] <- mis.angle(Outlier)
+  #num[i] <- rot.dist(Outlier,id.SO3,method='intrinsic')^2
   
-  Hi[i] <- (num[i]^2)/(denom[i]/(n-1))
+  #Hi[i] <- (num[i])/(denom[i]/(n-1))
+  Rs <- as.SO3(rbind(Rs,Outlier))
+  Hi[i] <- discord(Rs,type='i',obs=n)
   
 }
 
 #Compare numerator to non-central chi-square
 num <- sort(num)
-plot(ecdf(kap*num))
-lines(kap*num,pchisq(kap*num,1,ncp=kap*mean(num^2)),col=2)
-
-#Compare denominator to central chi-square
-denom <- sort(denom)
-plot(ecdf(kap*denom))
-lines(kap*denom,pchisq(kap*denom,n-1),col=2)
+plot(ecdf(kap*num*3))
+lines(3*kap*num,pchisq(3*kap*num,1,ncp=3*ncpstar),col=2)
 
 #Compare their ratio to non-central F
+scaler <- 1.5
 Hi <- sort(Hi)
-plot(ecdf(Hi))
-lines(Hi,pf(Hi,1,n-1,ncp=ncpstar),col=2)
+plot(ecdf(scaler*Hi))
+lines(scaler*Hi,pf(scaler*Hi,1,n-1,ncp=scaler*ncpstar),col=2)
 
 ######
 #Why doesn't numerator match theory? Too concentrated!  But why?!
@@ -126,7 +124,7 @@ for(i in 1:B){
   Rs <- genR(c(rs,out))
   #rs2 <- mis.angle(Rs)^2
   #Hi[i] <- (rs2[n])/(sum(rs2[-n])/(n-1))
-  Hi[i] <- discord(Rs, type='intrinsic')[n]
+  Hi[i] <- discord(Rs, type='intrinsic', obs=n)
   
 }
 
