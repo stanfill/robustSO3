@@ -215,20 +215,21 @@ trimMeanOld<-function(Qs,a,discordFun,anneal=F,...){
   }
 }
 
-require(hypergeo)
-bipolarWatson<-function(r,kappa,Haar=T){
-  
-  kernal <- exp(kappa*(cos(r)+1)/2)
 
-  const <- 2*pi*genhypergeo(z=kappa,U=0.5,L=2)
-  
-  if(Haar){
-    return(kernal/const)
-  }
-  
-  return(kernal*(1-cos(r))/(const))
-  
-}
+# require(hypergeo)
+# bipolarWatson<-function(r,kappa,Haar=T){
+#   
+#   kernal <- exp(kappa*(cos(r)+1)/2)
+# 
+#   const <- 2*pi*genhypergeo(z=kappa,U=0.5,L=2)
+#   
+#   if(Haar){
+#     return(kernal/const)
+#   }
+#   
+#   return(kernal*(1-cos(r))/(const))
+#   
+# }
 
 
-integrate(bipolarWatson,-pi,pi,kappa=1,Haar=F)
+#integrate(bipolarWatson,-pi,pi,kappa=1,Haar=F)
