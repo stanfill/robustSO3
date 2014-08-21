@@ -66,17 +66,17 @@ for(i in 1:B){
   Rs <- genR(rs[-n])
   denom[i] <- sum(rot.dist(Rs,id.SO3,method='intrinsic')^2)
   
-  Outlier <- genR(rs[n]+rstar)
-  num[i] <- mis.angle(Outlier)^2
+  Outlier <- genR(rs[n],S=Sstar)
+  num[i] <- mis.angle(Outlier)
   
-  Hi[i] <- (num[i])/(denom[i]/(n-1))
+  Hi[i] <- (num[i]^2)/(denom[i]/(n-1))
   
 }
 
 #Compare numerator to non-central chi-square
 num <- sort(num)
 plot(ecdf(kap*num))
-lines(kap*num,pchisq(kap*num,1,ncp=ncpstar),col=2)
+lines(kap*num,pchisq(kap*num,1,ncp=kap*mean(num^2)),col=2)
 
 #Compare denominator to central chi-square
 denom <- sort(denom)
@@ -111,24 +111,29 @@ lines(cStatSO3,pchisq(cStatSO3,1,ncp=(kap*rstar^2)),col=2)
 
 ########################
 ###Hi statistic under Ha when Ho should be rejected, diff concentration alternative
-n <- 100
+###This is correct, when the outlier has same central orientation but different concentration tau
+###then (tau/kappa)Hi~ F_1,n-1 central
+n <- 25
 kap <- 100
-tau <- 1
+tau <- 5
 B <- 1000
 Hi <- rep(0,B)
 
 for(i in 1:B){
   
-  Rs <- ruarsCont(n,rvmises,kappa1=kap,kappa2=tau,p=1/n,Scont=id.SO3)
-  rs2 <- rot.dist(Rs,id.SO3,method='intrinsic',p=2)
-  Hi[i] <- (n-1)*(rs2[n])/(sum(rs2[-n]))
+  rs <- rvmises(n-1,kap)
+  out <- rvmises(1,tau)
+  Rs <- genR(c(rs,out))
+  #rs2 <- mis.angle(Rs)^2
+  #Hi[i] <- (rs2[n])/(sum(rs2[-n])/(n-1))
+  Hi[i] <- discord(Rs, type='intrinsic')[n]
   
 }
 
 Hi <- sort(Hi)
 scaleHi <- tau*Hi/kap
 plot(ecdf(scaleHi))
-lines(scaleHi,pf(scaleHi,1,n-1),col=2)
+lines(scaleHi,pf(scaleHi,1,n-2),col=2)
 
 
 ########################
