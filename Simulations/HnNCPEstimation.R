@@ -55,7 +55,7 @@ n <- 50
 kap <- 5
 B <- 1000
 Hi <- denom <- num <- rep(0,B)
-rstar <- pi/8
+rstar <- pi/10
 Sstar <- genR(rstar)
 ncpstar <- kap*rstar^2
 
@@ -81,7 +81,7 @@ plot(ecdf(kap*num*3))
 lines(3*kap*num,pchisq(3*kap*num,1,ncp=3*ncpstar),col=2)
 
 #Compare their ratio to non-central F
-scaler <- 1.5
+scaler <- 1.25
 Hi <- sort(Hi)
 plot(ecdf(scaler*Hi))
 lines(scaler*Hi,pf(scaler*Hi,1,n-1,ncp=scaler*ncpstar),col=2)
@@ -110,17 +110,17 @@ lines(cStatSO3,pchisq(cStatSO3,1,ncp=(kap*rstar^2)),col=2)
 ########################
 ###Hi statistic under Ha when Ho should be rejected, diff concentration alternative
 ###This is correct, when the outlier has same central orientation but different concentration tau
-###then (tau/kappa)Hi~ F_1,n-1 central
+###then (tau/kappa)Hi~ F_1,n-1 central.  For Cayley, matrix Fisher(tau/kappa)Hi~ F_3,3(n-2) central
 n <- 25
 kap <- 100
-tau <- 5
+tau <- 20
 B <- 1000
 Hi <- rep(0,B)
 
 for(i in 1:B){
   
-  rs <- rvmises(n-1,kap)
-  out <- rvmises(1,tau)
+  rs <- rcayley(n-1,kap)
+  out <- rcayley(1,tau)
   Rs <- genR(c(rs,out))
   #rs2 <- mis.angle(Rs)^2
   #Hi[i] <- (rs2[n])/(sum(rs2[-n])/(n-1))
@@ -131,7 +131,7 @@ for(i in 1:B){
 Hi <- sort(Hi)
 scaleHi <- tau*Hi/kap
 plot(ecdf(scaleHi))
-lines(scaleHi,pf(scaleHi,1,n-2),col=2)
+lines(scaleHi,pf(scaleHi,3,3*(n-2)),col=2)
 
 
 ########################
