@@ -54,24 +54,60 @@ lines(Hi,pf(Hi,1,n-2),col=2)
 n <- 100
 kap <- 100
 B <- 1000
-Hi <- rep(0,B)
+Hi <- denom <- num <- rep(0,B)
 rstar <- pi/4
 Sstar <- genR(rstar)
-ncpstar <- kap*(rstar^2)
+ncpstar <- kap*rstar^2
 
 for(i in 1:B){
   
-  Rs <- ruarsCont(n,rvmises,kappa1=kap,p=1/n,Scont=Sstar)
-  rs2 <- rot.dist(Rs,id.SO3,method='intrinsic',p=2)
-  Hi[i] <- (n-1)*(rs2[n])/(sum(rs2[-n]))
+  rs <- rvmises(n,kappa=kap)
+  
+  Rs <- genR(rs[-n])
+  denom[i] <- sum(rot.dist(Rs,id.SO3,method='intrinsic')^2)
+  
+  Outlier <- genR(rs[n]+rstar)
+  num[i] <- mis.angle(Outlier)^2
+  
+  Hi[i] <- (num[i])/(denom[i]/(n-1))
   
 }
 
+#Compare numerator to non-central chi-square
+num <- sort(num)
+plot(ecdf(kap*num))
+lines(kap*num,pchisq(kap*num,1,ncp=ncpstar),col=2)
+
+#Compare denominator to central chi-square
+denom <- sort(denom)
+plot(ecdf(kap*denom))
+lines(kap*denom,pchisq(kap*denom,n-1),col=2)
+
+#Compare their ratio to non-central F
 Hi <- sort(Hi)
 plot(ecdf(Hi))
 lines(Hi,pf(Hi,1,n-1,ncp=ncpstar),col=2)
 
-#What is going wrong?
+######
+#Why doesn't numerator match theory? Too concentrated!  But why?!
+#Because angles of rotation don't add like that.  If mis.angle(R1)=pi/2
+#then mis.angle(R1,genR(pi/2))!=pi/2+pi/2=pi.  SO, just because the
+#outlier is centered around R=genR(pi/2) doesn't mean E(R)=pi/2 where
+n <- 1000
+kap <- 100
+rstar <- pi/4
+rs <- sort(rvmises(n, kap) + rstar)
+cStat <- kap*rs^2
+
+plot(ecdf(cStat))
+lines(cStat,pchisq(cStat,1,ncp=(kap*rstar^2)),col=2)
+
+#
+Rs<-genR(rs)
+rsAbs <- rot.dist(Rs,id.SO3,method='intrinsic')
+cStatSO3 <- kap*rsAbs^2
+plot(ecdf(cStatSO3))
+lines(cStatSO3,pchisq(cStatSO3,1,ncp=(kap*rstar^2)),col=2)
 
 ########################
 ###Hi statistic under Ha when Ho should be rejected, diff concentration alternative
