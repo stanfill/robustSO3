@@ -52,10 +52,10 @@ lines(Hi,pf(Hi,1,n-2),col=2)
 ########################
 ###Hi statistic under Ha when Ho should be rejected, diff mean alternative
 n <- 50
-kap <- 5
+kap <- 100
 B <- 1000
 Hi <- denom <- num <- rep(0,B)
-rstar <- pi/10
+rstar <- pi/8
 Sstar <- genR(rstar)
 ncpstar <- kap*rstar^2
 
@@ -75,16 +75,16 @@ for(i in 1:B){
   
 }
 
+#Compare their ratio to non-central F
+scaler <- 1/0.284465042974252
+Hi <- sort(Hi)
+plot(ecdf(scaler*Hi))
+lines(scaler*Hi,pf(scaler*Hi,1,n-1,ncp=scaler*ncpstar),col=2)
+
 #Compare numerator to non-central chi-square
 num <- sort(num)
 plot(ecdf(kap*num*3))
 lines(3*kap*num,pchisq(3*kap*num,1,ncp=3*ncpstar),col=2)
-
-#Compare their ratio to non-central F
-scaler <- 1.25
-Hi <- sort(Hi)
-plot(ecdf(scaler*Hi))
-lines(scaler*Hi,pf(scaler*Hi,1,n-1,ncp=scaler*ncpstar),col=2)
 
 ######
 #Why doesn't numerator match theory? Too concentrated!  But why?!
