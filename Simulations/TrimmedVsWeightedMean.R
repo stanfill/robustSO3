@@ -20,8 +20,8 @@ for(i in 1:nrow(res)){
   Qs<-ruarsCont(n=res$n[i],rangle=rcayley,kappa1=k1,p=res$p[i],Scont=S21,
                 S=id.SO3,kappa2=k2,space='SO3')  
   
-  trimS <- trimMean(Qs,a,method='anneal')  
-  ws <- discord(Qs,type='intrinsic')
+  trimS <- trimMean(Qs,a,method='anneal',type='intrinsic')  
+  ws <- discord(Qs,type='i')
   weightS <- weighted.mean(Qs, w=1/sqrt(ws))
   
   res$Trimmed[i]<-rot.dist(trimS$Shat,method='intrinsic')
