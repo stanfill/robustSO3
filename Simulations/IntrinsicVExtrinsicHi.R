@@ -5,6 +5,7 @@ library(reshape2)
 library(plyr)
 
 kappa<-c(1,2,5,10,20)
+tau <- 1
 n<-50
 B<-500
 resDF<-data.frame(kappa=rep(kappa,each=B),IID=0,ICut=0,Hi=0,EID=0,ECut=0,He=0)
@@ -14,7 +15,8 @@ sc<-genR(pi/2)
 for(j in 1:length(kappa)){
   for(i in 1:B){
   
-    Qs<-ruarsCont(n,rcayley,kappa[j],kappa2=.1,p=1/n,S=id.SO3,Scont=id.SO3,space='Q4')
+    Qs<-ruarsCont(n,rcayley,kappa[j],kappa2=tau,p=1/n,S=id.SO3,Scont=id.SO3,space='Q4')
+    
     Hne<-discord(Qs,type='extrinsic')
     Hni<-discord(Qs,type='intrinsic')
     
@@ -31,11 +33,13 @@ for(j in 1:length(kappa)){
 cut<-qf(0.95,3,3*(n-2))
 resDF$ICut<-resDF$Hi>cut
 resDF$ECut<-resDF$He>cut
+power <- 1-pf(cut*tau/kappa,3,3*(n-2))
 
 resDFSum<-ddply(resDF,.(kappa),summarize,Intrinsic=sum(ICut)/length(ICut),Extrinsic=sum(ECut)/length(ECut),
                 IID=sum(IID)/length(IID),EID=sum(EID)/length(EID))
+resDFSum$Theory <- power
 resDFSum
-resDF2<-melt(resDFSum,id.vars="kappa",measure.vars=c("Intrinsic","Extrinsic"),variable.name='Test',value.name='Power')
+resDF2<-melt(resDFSum,id.vars="kappa",measure.vars=c("Intrinsic","Extrinsic","Truth"),variable.name='Test',value.name='Power')
 
 qplot(kappa,Power,data=resDF2,colour=Test,geom='line',size=I(2),xlab=expression(kappa))+
   theme_bw()+scale_x_continuous(breaks=kappa)+coord_equal(20)
