@@ -39,10 +39,11 @@ resDFSum<-ddply(resDF,.(kappa),summarize,Intrinsic=sum(ICut)/length(ICut),Extrin
                 IID=sum(IID)/length(IID),EID=sum(EID)/length(EID))
 resDFSum$Theory <- power
 resDFSum
-resDF2<-melt(resDFSum,id.vars="kappa",measure.vars=c("Intrinsic","Extrinsic","Truth"),variable.name='Test',value.name='Power')
+resDF2<-melt(resDFSum,id.vars="kappa",measure.vars=c("Intrinsic","Extrinsic","Theory"),
+             variable.name='Test',value.name='Power')
 
 qplot(kappa,Power,data=resDF2,colour=Test,geom='line',size=I(2),xlab=expression(kappa))+
-  theme_bw()+scale_x_continuous(breaks=kappa)+coord_equal(20)
+  theme_bw()+scale_x_continuous(breaks=kappa)#+coord_equal(20)
 
 #ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/PowerPic.pdf",width=5.5,height=4)
 
