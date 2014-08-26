@@ -20,20 +20,23 @@ for(j in 1:length(kappa)){
     Hne<-discord(Qs,type='extrinsic')
     Hni<-discord(Qs,type='intrinsic')
     
-    resDF$Hi[rownum]<-Hni[n]
+    resDF$Hi[rownum]<-max(Hni)
     resDF$IID[rownum]<-(which.max(Hni)==n)
     
-    resDF$He[rownum]<-Hne[n]
+    resDF$He[rownum]<-max(Hne)
     resDF$EID[rownum]<-(which.max(Hne)==n)
     
     rownum<-rownum+1
   }
 }
 
-cut<-qf(0.95,3,3*(n-2))
+#cut<-qf(0.95,3,3*(n-2))
+cut <- qorderF(0.95,n=n,k=n,df1=3,df2=3*(n-2),ncp=0)
+
 resDF$ICut<-resDF$Hi>cut
 resDF$ECut<-resDF$He>cut
-power <- 1-pf(cut*tau/kappa,3,3*(n-2))
+#power <- 1-pf(cut*tau/kappa,3,3*(n-2))
+power <- 1-porderF(cut*tau/kappa,n=n,k=n,df1=3,df2=3*(n-2))
 
 resDFSum<-ddply(resDF,.(kappa),summarize,Intrinsic=sum(ICut)/length(ICut),Extrinsic=sum(ECut)/length(ECut),
                 IID=sum(IID)/length(IID),EID=sum(EID)/length(EID))
@@ -49,7 +52,7 @@ qplot(kappa,Power,data=resDF2,colour=Test,geom='line',size=I(2),xlab=expression(
 
 
 ##################
-#Why are some Intrinsic Hi values negative?
+#Why are some Intrinsic Hi values negative?  Because obs close to the center.
 
 Rs<-ruars(200,rcayley,kappa=1)
 discord(Rs,type='intrinsic')

@@ -230,6 +230,69 @@ trimMeanOld<-function(Qs,a,discordFun,anneal=F,...){
 #   return(kernal*(1-cos(r))/(const))
 #   
 # }
-
-
 #integrate(bipolarWatson,-pi,pi,kappa=1,Haar=F)
+
+
+##################
+#To test for outliers, want to compare the largest Hi value
+#to the distribution for the largest value, not to the F
+
+dorderF <- function(x,n,k=n,df1,df2,ncp=0){
+  #x - the value at which to evaluate the pdf
+  #n - the sample size
+  #k - the kth observation, k in {1,...,n}
+  #df1 - numerator df
+  #df2 - denominator df
+  #ncp - non-centrality parameter
+  
+  if(k<1 || k>n){
+    stop("k is not in the range 1,...,n")
+  }
+  
+  if(k==n){
+    
+    p1 <- n
+    p3 <- 1
+    
+  }else{
+    
+    p1 <- factorial(n)/(factorial(k-1)*factorial(n-k))
+    p3 <- (1-pf(x,df1,df2,ncp))^(n-k)
+    
+  }
+  
+  p2 <- pf(x,df1,df2,ncp)^(k-1)
+  p4 <- df(x,df1,df2,ncp)
+  return(p1*p2*p3*p4)
+}
+
+porderF <- function(x,n,k=n,df1,df2,ncp=0,lower.tail=TRUE){
+  #Integrate dorderF from 0 to x to estimate F(x)=P(X<=x)
+  
+  lt <- rep(0,length(x))
+  
+  for(i in 1:length(x)){
+    lt[i] <- integrate(dorderF,0,x[i],n=n,k=k,df1=df1,df2=df2,ncp=ncp)$value
+  }
+  if(lower.tail){
+    return(lt)
+  }else{
+    return(1-lt)
+  }
+  
+}
+
+helpQOF <- function(x,q,n,k=n,df1,df2,ncp=0){
+  
+  Fx <- porderF(x,n,k,df1,df2,ncp)
+  return((Fx-q)^2)
+  
+}
+
+qorderF <- function(q,n,k=n,df1,df2,ncp=0){
+  #Use optim to find the qth quantile of order F
+  
+  sol <- optimize(f=helpQOF,interval=c(0,100),q=q,n=n,k=k,df1=df1,df2=df2,ncp=ncp)
+  return(sol$minimum)
+  
+}
