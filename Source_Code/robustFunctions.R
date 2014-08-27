@@ -234,20 +234,42 @@ trimMeanOld<-function(Qs,a,discordFun,anneal=F,...){
 ##################
 #Bootstrap functions to estimate p-value for H_(n) statistics
 
-HnBoot <- function(Rs,m,type){
+HnBoot <- function(Rs,m,type,parametric=FALSE){
   #Rs - the sample
   #m - number of bootstrap replicates to compute
   #type - the type of discord function to use: "extrinsic" or "intrinsic"
   
   n <- nrow(Rs)
   Hns <- rep(0,m)
-  for(i in 1:m){
-    Rsi <- Rs[sample(1:n,replace=TRUE),]
-    Hns[i] <- max(suppressWarnings(discord(Rsi,type)))
+  if(parametric){
+    
+    kHat <- kappaHat(Rs)
+    Shat <- mean(Rs)
+    
+    for(i in 1:m){
+      Rsi <- ruars(n,rcayley,S=as.SO3(Shat),kappa=kHat)
+      Hns[i] <- max(suppressWarnings(discord(Rsi,type)))
+    }
+    
+  }else{
+    for(i in 1:m){
+      Rsi <- Rs[sample(1:n,replace=TRUE),]
+      Hns[i] <- max(suppressWarnings(discord(Rsi,type)))
+    }
   }
+  
+  
   return(Hns)
 }
 
+##################
+##Estimate kappa to use bootstrap
+kappaHat <- function(Rs){
+  Rs <- as.SO3(Rs)
+  Rbar <- matrix(colMeans(Rs),3,3)
+  lamBar <- mean(svd(Rbar)$d)
+  return(2*lamBar/(1-lamBar))
+}
 
 ##################
 #To test for outliers, want to compare the largest Hi value

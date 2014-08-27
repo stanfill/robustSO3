@@ -2,31 +2,32 @@ source('~/robustSO3/Source_Code/robustFunctions.R')
 library(rotations)
 
 ######
-#Use bootstrap to determine cut-off for H_(n)
-B <- 500
+#Use bootstrap to determine critical value for H_(n)
+B <- 250
 Hnn <- HnnOut <- pval <- pvalOut <- rep(0,B)
 kap <- 50
 n <- 20
 m <- 100
-Sc <- genR(pi/4)
+Sc <- genR(pi/2)
 
 for(i in 1:B){
   
   #No outiers
   Rs <- ruars(n,rcayley,kappa=kap)
-  Hnn[i] <- max(discord(Rs,type='ext'))
-  HnBootObs <- HnBoot(Rs,m,type='ext')
-  pval[i] <- length(which(HnBootObs>Hnn[i]))/m
+  Hnn[i] <- max(discord(Rs,type='int'))
+  HnBootObs <- HnBoot(Rs,m,type='int',parametric=TRUE)
+  pval[i] <- length(which(HnBootObs>=Hnn[i]))/m
   
   #One outlier
   RsOut <- ruarsCont(n,rcayley,kappa1=kap,p=1/n,Scont=Sc)
-  HnnOut[i] <- max(discord(RsOut,type='ext'))
-  HnBootOut <- HnBoot(RsOut,m,type='ext')
-  pvalOut[i] <- length(which(HnBootOut>HnnOut[i]))/m
+  HnnOut[i] <- max(discord(RsOut,type='int'))
+  HnBootOut <- HnBoot(RsOut,m,type='int',parametric=TRUE)
+  pvalOut[i] <- length(which(HnBootOut>=HnnOut[i]))/m
 }
 
-hist(pval,breaks=20,prob=T,main=mean(pval))
-hist(pvalOut,breaks=20,prob=T,main=mean(pvalOut))
+par(mfrow=c(1,2))
+hist(pval,breaks=20,prob=T,main=paste("FDR: ",length(which(pval<0.05))/B))
+hist(pvalOut,breaks=20,prob=T,main=paste("Power: ",length(which(pvalOut<0.05))/B))
 
 
 ######
