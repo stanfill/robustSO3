@@ -308,7 +308,7 @@ porderF <- function(x,n,k=n,df1,df2,ncp=0,lower.tail=TRUE){
   
   #Integrate dorderF from 0 to x to estimate F(x)=P(X<=x)
   if(k==n){
-    lt <- pf(x=x,df1=df1,df2=df2,ncp=ncp,lower.tail=TRUE)^n
+    lt <- pf(q=x,df1=df1,df2=df2,ncp=ncp,lower.tail=TRUE)^n
   }else{
     lt <- rep(0,length(x))
     
