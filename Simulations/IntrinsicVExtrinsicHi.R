@@ -35,8 +35,8 @@ cut <- qorderF(0.95,n=n,k=n,df1=3,df2=3*(n-2),ncp=0)
 
 resDF$ICut<-resDF$Hi>cut
 resDF$ECut<-resDF$He>cut
-#power <- 1-pf(cut*tau/kappa,3,3*(n-2))
-power <- 1-porderF(cut*tau/kappa,n=n,k=n,df1=3,df2=3*(n-2))
+power <- 1-pf(cut*tau/kappa,3,3*(n-2))
+#power <- 1-porderF(cut*tau/kappa,n=n,k=n,df1=3,df2=3*(n-2))
 
 resDFSum<-ddply(resDF,.(kappa),summarize,Intrinsic=sum(ICut)/length(ICut),Extrinsic=sum(ECut)/length(ECut),
                 IID=sum(IID)/length(IID),EID=sum(EID)/length(EID))

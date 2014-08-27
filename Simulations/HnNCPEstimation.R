@@ -52,10 +52,10 @@ lines(Hi,pf(Hi,1,n-2),col=2)
 ########################
 ###Hi statistic under Ha when Ho should be rejected, diff mean alternative
 n <- 25
-kap <- 25
+kap <- 50
 B <- 1000
 Hi <- denom <- num <- rep(0,B)
-rstar <- pi/8
+rstar <- pi/2
 Sstar <- genR(rstar)
 ncpstar <- kap*rstar^2
 
@@ -64,22 +64,23 @@ for(i in 1:B){
   rs <- rvmises(n,kappa=kap)
   
   Rs <- genR(rs[-n])
-  denom[i] <- sum(rot.dist(Rs,id.SO3,method='intrinsic')^2)
+  #denom[i] <- sum(rot.dist(Rs,id.SO3,method='intrinsic')^2)
   
   Outlier <- genR(rs[n],S=Sstar)
-  #Rs <- as.SO3(rbind(Rs,Outlier))
-  num[i] <- rot.dist(Outlier,id.SO3,method='intrinsic')^2
+  Rs <- as.SO3(rbind(Rs,Outlier))
+  #num[i] <- rot.dist(Outlier,id.SO3,method='intrinsic')^2
   
-  Hi[i] <- (num[i])/(denom[i]/(n-1))
-  #Hi[i] <- discord(Rs,type='i',obs=n)
+  #Hi[i] <- (num[i])/(denom[i]/(n-1))
+  Hi[i] <- max(discord(Rs,type='i'))
   
 }
 
 #Compare their ratio to non-central F
-scaler <- 2#1/0.284465042974252
+scaler <- 2
 Hi <- sort(Hi)
 plot(ecdf(scaler*Hi))
-lines(scaler*Hi,pf(scaler*Hi,1,n-1,ncp=scaler*ncpstar),col=2)
+#lines(scaler*Hi,pf(scaler*Hi,1,n-1,ncp=scaler*ncpstar),col=2)
+lines(scaler*Hi,porderF(scaler*Hi,n=n,df1=1,df2=n-1,ncp=ncpstar),col=2)
 
 #Compare numerator to non-central chi-square
 num <- sort(num)

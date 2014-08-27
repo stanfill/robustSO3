@@ -267,13 +267,18 @@ dorderF <- function(x,n,k=n,df1,df2,ncp=0){
 }
 
 porderF <- function(x,n,k=n,df1,df2,ncp=0,lower.tail=TRUE){
+  
   #Integrate dorderF from 0 to x to estimate F(x)=P(X<=x)
-  
-  lt <- rep(0,length(x))
-  
-  for(i in 1:length(x)){
-    lt[i] <- integrate(dorderF,0,x[i],n=n,k=k,df1=df1,df2=df2,ncp=ncp)$value
+  if(k==n){
+    lt <- pf(x=x,df1=df1,df2=df2,ncp=ncp,lower=.tail=TRUE)^n
+  }else{
+    lt <- rep(0,length(x))
+    
+    for(i in 1:length(x)){
+      lt[i] <- integrate(dorderF,0,x[i],n=n,k=k,df1=df1,df2=df2,ncp=ncp)$value
+    }
   }
+  
   if(lower.tail){
     return(lt)
   }else{
