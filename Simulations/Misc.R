@@ -52,12 +52,17 @@ plot(rstar,ratio,main=mean(ratio))
 
 ############################
 #Look at shape of dist of dorderF
+porderF2 <- function(x,n,df1,df2,ncp=0,lower.tail=TRUE){
+  return(pf(x,df1,df2,ncp)^n)
+}
+
 rs <- seq(0,10,length=100)
 plot(rs,dorderF(rs,n=20,df1=3,df2=3*(18)),type='l')
 lines(rs,df(rs,3,3*18),type='l',col=2)
 
 plot(rs,porderF(rs,n=20,df1=3,df2=3*(18)),type='l')
 lines(rs,pf(rs,3,3*18),col=2)
+lines(rs,porderF2(rs,n=20,df1=3,df2=3*18),col=3)
 
 #Make sure porderF is correct
 maxF <- rep(0,500)

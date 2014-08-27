@@ -231,6 +231,22 @@ trimMeanOld<-function(Qs,a,discordFun,anneal=F,...){
 #   
 # }
 #integrate(bipolarWatson,-pi,pi,kappa=1,Haar=F)
+##################
+#Bootstrap functions to estimate p-value for H_(n) statistics
+
+HnBoot <- function(Rs,m,type){
+  #Rs - the sample
+  #m - number of bootstrap replicates to compute
+  #type - the type of discord function to use: "extrinsic" or "intrinsic"
+  
+  n <- nrow(Rs)
+  Hns <- rep(0,m)
+  for(i in 1:m){
+    Rsi <- Rs[sample(1:n,replace=TRUE),]
+    Hns[i] <- max(suppressWarnings(discord(Rsi,type)))
+  }
+  return(Hns)
+}
 
 
 ##################
@@ -270,7 +286,7 @@ porderF <- function(x,n,k=n,df1,df2,ncp=0,lower.tail=TRUE){
   
   #Integrate dorderF from 0 to x to estimate F(x)=P(X<=x)
   if(k==n){
-    lt <- pf(x=x,df1=df1,df2=df2,ncp=ncp,lower=.tail=TRUE)^n
+    lt <- pf(x=x,df1=df1,df2=df2,ncp=ncp,lower.tail=TRUE)^n
   }else{
     lt <- rep(0,length(x))
     
