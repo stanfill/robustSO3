@@ -80,12 +80,14 @@ for(j in 1:length(tau)){
     
     #Intrinsic
     HnInt[i,j] <- max(discord(RsOut,type='int'))
-    HnBootInt <- HnBoot(RsOut,m,type='int',parametric=TRUE)
+    #HnBootInt <- HnBoot(RsOut,m,type='int',parametric=TRUE)
+    HnBootInt <- HnBootCpp(RsOut,m,1)
     pvalInt[i,j] <- length(which(HnBootInt>=HnInt[i,j]))/m
     
     #Extrinsic
     HnExt[i,j] <- max(discord(RsOut,type='ext'))
-    HnBootExt <- HnBoot(RsOut,m,type='ext',parametric=TRUE)
+    #HnBootExt <- HnBoot(RsOut,m,type='ext',parametric=TRUE)
+    HnBootExt <- HnBootCpp(RsOut,m,2)
     pvalExt[i,j] <- length(which(HnBootExt>=HnExt[i,j]))/m
   }
   
@@ -103,6 +105,20 @@ compSum <- ddply(compDF,.(Type,Tau),summarize,Power=length(which(Pval<0.05))/len
 qplot(Tau,Power,data=compSum,colour=Type,group=Type,geom='line',size=I(2))+geom_hline(yintercept=0)+
   theme_bw()
 
+######
+#Compare C++ and R version of HnBootstrap
+Rs<-ruars(100,rcayley,kappa=50)
+RHn <- HnBoot(Rs,1000,type='int',parametric=TRUE)
+CppHn <- HnBootCpp(Rs,1000)
+
+par(mfrow=c(1,2))
+hist(RHn)
+hist(CppHn)
+layout(1)
+plot(sort(RHn),sort(CppHn));abline(0,1)
+
+library(microbenchmark)
+microbenchmark(HnBoot(Rs,10,type='int',parametric=TRUE),HnBootCpp(Rs,10))
 ######
 #Compare dist of H_(n) to porderF.  Can't use this, the Hi statistics need to be
 #independent to use this formula, but they aren't

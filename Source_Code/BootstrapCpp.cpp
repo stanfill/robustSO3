@@ -40,6 +40,28 @@ arma::rowvec RdistCArma(arma::mat Q1, arma::rowvec Q2){
 	return rs;
 }
 
+arma::rowvec HnCpp(arma::mat Qs){
+  //Compute the Hn tests statistics
+  
+  int n = Qs.n_rows, i=0;
+  arma::mat T = Qs.t()*Qs;
+  arma::mat eigvec, eigvecJ;
+  arma::vec eigval, eigvalJ;
+  arma::eig_sym(eigval,eigvec,T);
+  arma::rowvec Hn(n);
+  arma::rowvec Qj;
+  arma::mat Tj;
+
+  for(i = 0;i<n; i++){
+    Qj = Qs.row(i);
+    
+    Tj = T-Qj.t()*Qj;
+    arma::eig_sym(eigvalJ,eigvecJ,Tj);
+    Hn(i)=(n-2)*(1+eigvalJ(3)-eigval(3))/(n-1-eigvalJ(3));
+    
+  }
+  return Hn;
+}
 
 // [[Rcpp::export]]
 arma::rowvec HnCppIntrinsic(arma::mat Qs){
@@ -131,8 +153,9 @@ arma::mat GenQ4Cpp(NumericVector rs){
 }
 
 // [[Rcpp::export]]
-arma::rowvec HnBootCpp(arma::mat Rs, int m){
-  
+arma::rowvec HnBootCpp(arma::mat Rs, int m, int type){
+  // if type==1 then intrinsic
+  // if type!=1 then extrinsic
   int n = Rs.n_rows, i;
   arma::mat Rbarels = mean(Rs);
 	arma::mat Rbar(3,3), Shat(3,3), Qs(n,4);
@@ -153,8 +176,13 @@ arma::rowvec HnBootCpp(arma::mat Rs, int m){
     rs = rcayleyCpp(n, kapHat);
   
     Qs = GenQ4Cpp(rs);
-  
-    Hni = HnCppIntrinsic(Qs);
+    
+    if(type==1){
+      Hni = HnCppIntrinsic(Qs);
+    }else{
+      Hni = HnCpp(Qs);
+    }
+    
     Hn(i) = max(Hni);
   }
   return Hn;
