@@ -42,7 +42,7 @@ for(j in 1:length(rstar)){
 
 }
 
-ExtM <- melt(pvalExt,variable.name="Angle",value.name="Pval")
+ExtM <- melt(pvalExt,variable.name="Angle",value.name="Pval",measure.vars=1:ncol(pvalExt))
 ExtM$Type <- "Extrinsic"
 
 IntM <- melt(pvalInt,variable.name="Angle",value.name="Pval")
@@ -51,7 +51,8 @@ IntM$Type <- "Intrinsic"
 compDF <- rbind(ExtM,IntM)
 compSum <- ddply(compDF,.(Type,Angle),summarize,Power=length(which(Pval<0.05))/length(Pval))
 
-qplot(Angle,Power,data=compSum,colour=Type,group=Type,geom='line')
+qplot(Angle,Power,data=compSum,colour=Type,group=Type,geom='line',size=I(2))+geom_hline(yintercept=0)+
+  theme_bw()
 
 ###Old Plots
 par(mfrow=c(1,2))
