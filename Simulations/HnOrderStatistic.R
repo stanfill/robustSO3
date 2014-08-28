@@ -1,4 +1,4 @@
-source('~/robustSO3/Source_Code/robustFunctions.R')
+source('Source_Code/robustFunctions.R')
 Rcpp::sourceCpp('Source_Code/BootstrapCpp.cpp')
 library(rotations)
 library(plyr)
@@ -6,13 +6,13 @@ library(reshape2)
 
 ######
 #Use bootstrap to determine critical value for H_(n), mean slippage
-B <- 200
+B <- 250
 rstar <- c(0,pi/8,pi/4,pi/2,3*pi/4)
 pvalExt <- data.frame(Zero=rep(0,B),"pi/8"=0,"pi/4"=0,"pi/2"=0,"3pi/4"=0) 
 HnInt <- HnExt <- pvalInt <- pvalExt
-kap <- 5
+kap <- 1
 n <- 20
-m <- 200
+m <- 500
 #Sc <- genR(pi/2)
 
 for(j in 1:length(rstar)){
@@ -38,7 +38,7 @@ for(j in 1:length(rstar)){
     
     #Extrinsic
     HnExt[i,j] <- max(discord(RsOut,type='ext'))
-    #HnBootExtR <- HnBoot(RsOut,m,type='ext',parametric=TRUE)
+    #HnBootExt <- HnBoot(RsOut,m,type='ext',parametric=TRUE)
     HnBootExt <- HnBootCpp(RsOut,m,2)
     pvalExt[i,j] <- length(which(HnBootExt>=HnExt[i,j]))/m
   }
@@ -112,16 +112,19 @@ qplot(Tau,Power,data=compSum,colour=Type,group=Type,geom='line',size=I(2))+geom_
 #Compare C++ and R version of HnBootstrap
 Rs<-ruars(100,rcayley,kappa=50)
 RHn <- HnBoot(Rs,1000,type='int',parametric=TRUE)
-CppHn <- HnBootCpp(Rs,1000)
+CppHn <- HnBootCpp(Rs,1000,1)
 
 par(mfrow=c(1,2))
 hist(RHn)
 hist(CppHn)
 layout(1)
-plot(sort(RHn),sort(CppHn));abline(0,1)
+lims <- c(min(RHn,CppHn),max(RHn,CppHn))
+plot(sort(RHn),sort(CppHn),xlim=lims,ylim=lims,pty='s')
+abline(0,1)
+
 
 library(microbenchmark)
-microbenchmark(HnBoot(Rs,10,type='int',parametric=TRUE),HnBootCpp(Rs,10))
+microbenchmark(HnBoot(Rs,10,type='int',parametric=TRUE),HnBootCpp(Rs,10,1))
 ######
 #Compare dist of H_(n) to porderF.  Can't use this, the Hi statistics need to be
 #independent to use this formula, but they aren't

@@ -1,5 +1,7 @@
 #include <RcppArmadillo.h>   
-#include "/Users/stanfill/Documents/rotationsC/rotations/inst/include/rotations.h"
+//#include "/Users/stanfill/Documents/rotationsC/rotations/inst/include/rotations.h"
+#include "C:/Users/Sta36z/Documents/rotationsC/rotations/inst/include/rotations.h"
+
 
 using namespace Rcpp;
 
@@ -132,19 +134,24 @@ NumericVector rcayleyCpp(int n, double kappa){
 
 // [[Rcpp::export]]
 arma::mat GenQ4Cpp(NumericVector rs){
-  int n = rs.size();
   RNGScope scope;
+  int n = rs.size();
   arma::mat Qs(n,4);
-  NumericVector theta, phi;
-  theta = runif(n,-1,1);
+  NumericVector theta(n), phi(n), costheta(n);
+  double sinr2, sthetai;
+  
+  //Used to generate the axis of rotation
+  costheta = runif(n,-1,1);
   phi = runif(n,-M_PI,M_PI);
-  double sinr2;
   
   for(int i=0; i<n; i++){
+    theta[i] = acos(costheta[i]);
     sinr2 = sin(rs[i]/2);
+    sthetai = sin(theta[i]);
+    
     Qs(i,0) = cos(rs[i]/2);
-    Qs(i,1) = sin(theta[i])*cos(phi[i])*sinr2;
-    Qs(i,2) = sin(theta[i])*sin(phi[i])*sinr2;
+    Qs(i,1) = sthetai*cos(phi[i])*sinr2;
+    Qs(i,2) = sthetai*sin(phi[i])*sinr2;
     Qs(i,3) = cos(theta[i])*sinr2;
   }
   
@@ -152,13 +159,16 @@ arma::mat GenQ4Cpp(NumericVector rs){
   
 }
 
+
 // [[Rcpp::export]]
 arma::rowvec HnBootCpp(arma::mat Rs, int m, int type){
+  
   // if type==1 then intrinsic
   // if type!=1 then extrinsic
+  
   int n = Rs.n_rows, i;
   arma::mat Rbarels = mean(Rs);
-	arma::mat Rbar(3,3), Shat(3,3), Qs(n,4);
+  arma::mat Rbar(3,3), Qs(n,4);
 	double kapHat=0.0;
   arma::rowvec Hni(n), Hn(m);
   NumericVector rs(n);
@@ -167,54 +177,33 @@ arma::rowvec HnBootCpp(arma::mat Rs, int m, int type){
 			Rbar[i] = Rbarels[i];
 	}
   
-  //Estimate the mean and concentration based on the given rotation matrices
-  Shat = rotations::projectSO3C(Rbar);
+  /*Estimate the mean and concentration based on the given rotation matrices
+  I don't think where the data are centered matters, just the concentration
+  Therefore I'll omit Shat and just center the data as id.SO3 (implicitly)*/
+  
+  //arma::mat Shat = rotations::projectSO3C(Rbar);
   kapHat = kappaHatCpp(Rbar);
   
-  //Generate angles then quaternions based on fitted distribution
-  for(i=0;i<m;i++){
-    rs = rcayleyCpp(n, kapHat);
+  /*Generate angles then quaternions based on fitted distribution
+  Test for type before jumping into the bootstrap loop, marginally faster then testing
+  within the bootstrap loop*/
   
-    Qs = GenQ4Cpp(rs);
-    
-    if(type==1){
+  if(type==1){
+    for(i=0;i<m;i++){
+      rs = rcayleyCpp(n, kapHat);
+      Qs = GenQ4Cpp(rs);
       Hni = HnCppIntrinsic(Qs);
-    }else{
-      Hni = HnCpp(Qs);
+      Hn(i)= max(Hni);
     }
-    
-    Hn(i) = max(Hni);
+  }else{
+    for(i=0;i<m;i++){
+      rs = rcayleyCpp(n, kapHat);
+      Qs = GenQ4Cpp(rs);
+      Hni = HnCpp(Qs);
+      Hn(i)= max(Hni);
+    } 
   }
   return Hn;
   
 }
-
-//HnBoot <- function(Rs,m,type,parametric=FALSE){
-//  #Rs - the sample
-//  #m - number of bootstrap replicates to compute
-//  #type - the type of discord function to use: "extrinsic" or "intrinsic"
-//  
-//  n <- nrow(Rs)
-//  Hns <- rep(0,m)
-//  if(parametric){
-//    
-//    kHat <- kappaHat(Rs)
-//    Shat <- mean(Rs)
-//    
-//    for(i in 1:m){
-//      Rsi <- ruars(n,rcayley,S=as.SO3(Shat),kappa=kHat)
-//      Hns[i] <- max(suppressWarnings(discord(Rsi,type)))
-//    }
-//    
-//  }else{
-//    for(i in 1:m){
-//      Rsi <- Rs[sample(1:n,replace=TRUE),]
-//      Hns[i] <- max(suppressWarnings(discord(Rsi,type)))
-//    }
-//  }
-//  
-//  
-//  return(Hns)
-//}
-
 
