@@ -60,12 +60,12 @@ qplot(Angle,Power,data=compSum,colour=Type,group=Type,geom='line',size=I(2))+
 ######
 #Use bootstrap to determine critical value for H_(n), concentration slippage
 B <- 250
-tau <- c(1,5,25,50)
-pvalExt <- data.frame("1"=rep(0,B),"5"=0,"25"=0,"50"=0) 
+tau <- c(0.5,1,2,5)
+pvalExt <- data.frame("0.5"=rep(0,B),"1"=0,"2"=0,"5"=0) 
 HnInt <- HnExt <- pvalInt <- pvalExt
-kap <- 50
+kap <- 5
 n <- 20
-m <- 200
+m <- 500
 
 
 for(j in 1:length(tau)){
@@ -105,7 +105,7 @@ IntM$Type <- "Intrinsic"
 compDF <- rbind(ExtM,IntM)
 compSum <- ddply(compDF,.(Type,Tau),summarize,Power=length(which(Pval<0.05))/length(Pval))
 
-qplot(Tau,Power,data=compSum,colour=Type,group=Type,geom='line',size=I(2))+geom_hline(yintercept=0)+
+qplot(Tau,Power,data=compSum,colour=Type,group=Type,geom='line',size=I(2))+geom_hline(yintercept=c(0,0.05))+
   theme_bw()
 
 ######
