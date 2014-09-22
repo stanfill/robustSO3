@@ -6,13 +6,15 @@ library(reshape2)
 
 ######
 #Use bootstrap to determine critical value for H_(n), mean slippage
-B <- 250
+B <- 200
 rstar <- c(0,pi/8,pi/4,pi/2,3*pi/4)
 pvalExt <- data.frame(Zero=rep(0,B),"pi/8"=0,"pi/4"=0,"pi/2"=0,"3pi/4"=0) 
 HnInt <- HnExt <- pvalInt <- pvalExt
 kap <- 1
 n <- 20
 m <- 500
+distribution <- 1
+rangle <- rvmises
 #Sc <- genR(pi/2)
 
 for(j in 1:length(rstar)){
@@ -28,18 +30,18 @@ for(j in 1:length(rstar)){
     #pval[i] <- length(which(HnBootObs>=Hnn[i]))/m
     
     #One outlier
-    RsOut <- ruarsCont(n,rcayley,kappa1=kap,p=1/n,Scont=Sc)
+    RsOut <- ruarsCont(n,rangle,kappa1=kap,p=1/n,Scont=Sc)
     
     #Intrinsic
     HnInt[i,j] <- max(discord(RsOut,type='int'))
     #HnBootInt <- HnBoot(RsOut,m,type='int',parametric=TRUE)
-    HnBootInt <- HnBootCpp(RsOut,m,1)
+    HnBootInt <- HnBootCpp(RsOut,m,1,rangle)
     pvalInt[i,j] <- length(which(HnBootInt>=HnInt[i,j]))/m
     
     #Extrinsic
     HnExt[i,j] <- max(discord(RsOut,type='ext'))
     #HnBootExt <- HnBoot(RsOut,m,type='ext',parametric=TRUE)
-    HnBootExt <- HnBootCpp(RsOut,m,2)
+    HnBootExt <- HnBootCpp(RsOut,m,2,rangle)
     pvalExt[i,j] <- length(which(HnBootExt>=HnExt[i,j]))/m
   }
 
@@ -52,7 +54,7 @@ IntM <- melt(pvalInt,variable.name="Angle",value.name="Pval",measure.vars=1:ncol
 IntM$Type <- "Intrinsic"
 
 compDF <- rbind(ExtM,IntM)
-compSum <- ddply(compDF,.(Type,Angle),summarize,Power=length(which(Pval<0.05))/length(Pval))
+compSum <- ddply(compDF,.(Type,Angle),summarize,Power=length(which(Pval<=0.05))/length(Pval))
 
 qplot(Angle,Power,data=compSum,colour=Type,group=Type,geom='line',size=I(2))+
   geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()

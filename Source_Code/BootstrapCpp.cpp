@@ -54,7 +54,8 @@ arma::mat GenQ4Cpp(NumericVector rs){
 
 
 // [[Rcpp::export]]
-arma::rowvec HnBootCpp(arma::mat Rs, int m, int type){
+arma::rowvec HnBootCpp(arma::mat Rs, int m, int type, Function rangle){
+  /*rangle is the function used to generate the misorientation angles*/
   
   // if type==1 then intrinsic
   // if type!=1 then extrinsic
@@ -83,14 +84,14 @@ arma::rowvec HnBootCpp(arma::mat Rs, int m, int type){
   
   if(type==1){
     for(i=0;i<m;i++){
-      rs = rotations::rcayleyCpp(n, kapHat);
+      rs = rangle(n, kapHat);
       Qs = GenQ4Cpp(rs);
       Hni = rotations::HnCppIntrinsic(Qs);
       Hn(i)= max(Hni);
     }
   }else{
     for(i=0;i<m;i++){
-      rs = rotations::rcayleyCpp(n, kapHat);
+      rs = rangle(n, kapHat);
       Qs = GenQ4Cpp(rs);
       Hni = rotations::HnCpp(Qs);
       Hn(i)= max(Hni);
