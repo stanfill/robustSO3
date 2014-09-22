@@ -10,7 +10,7 @@ B <- 200
 rstar <- c(0,pi/8,pi/4,pi/2,3*pi/4)
 pvalExt <- data.frame(Zero=rep(0,B),"pi/8"=0,"pi/4"=0,"pi/2"=0,"3pi/4"=0) 
 HnInt <- HnExt <- pvalInt <- pvalExt
-kap <- 1
+kap <- 5
 n <- 20
 m <- 500
 distribution <- 1
