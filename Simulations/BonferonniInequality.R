@@ -47,8 +47,13 @@ IntM$Type <- "Intrinsic"
 compDF <- rbind(ExtM,IntM)
 compSum <- ddply(compDF,.(Type,Angle),summarize,Power=length(which(Pval<=0.05))/length(Pval))
 
-qplot(Angle,Power,data=compSum,colour=Type,group=Type,geom='line',size=I(2))+
-  geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()+ylab(expression(Pr(Reject~H[0])))
+#compSum50 <- compSum
+#compSum50$Kappa <- "50"
+#compSum <- rbind(compSum5,compSum50)
+
+qplot(Angle,Power,data=compSum,colour=Type,group=Type,geom='line',size=I(1.5))+
+  geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()+ylab(expression(Pr(Reject~H[0])))+
+  scale_x_discrete(labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))
 
 
 ######
