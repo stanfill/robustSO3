@@ -4,7 +4,7 @@
 #Not sure it is worth coding the F test version in C++
 
 source('~/robustSO3/Source_Code/robustFunctions.R')
-Rcpp::sourceCpp('Source_Code/robustCpp.cpp')
+Rcpp::sourceCpp('~/robustSO3/Source_Code/robustCpp.cpp')
 library(rotations)
 library(microbenchmark)
 
