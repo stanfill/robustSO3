@@ -58,19 +58,19 @@ for(k in 1:length(kap)){
 
 ExtMBon <- melt(pvalExtBon,id=c("Kappa","Angle"),value.name="Pval")
 ExtMBon$Type <- "Extrinsic"
-ExtMBon$Method <- "Bon"
+ExtMBon$Method <- "Bonferonni"
 
 IntMBon <- melt(pvalIntBon,id=c("Kappa","Angle"),value.name="Pval")
 IntMBon$Type <- "Intrinsic"
-IntMBon$Method <- "Bon"
+IntMBon$Method <- "Bonferonni"
 
 ExtMBoot <- melt(pvalExtBoot,id=c("Kappa","Angle"),value.name="Pval")
 ExtMBoot$Type <- "Extrinsic"
-ExtMBoot$Method <- "Boot"
+ExtMBoot$Method <- "Bootstrap"
 
 IntMBoot <- melt(pvalIntBoot,id=c("Kappa","Angle"),value.name="Pval")
 IntMBoot$Type <- "Intrinsic"
-IntMBoot$Method <- "Boot"
+IntMBoot$Method <- "Bootstrap"
 
 compDF <- rbind(ExtMBon,IntMBon,ExtMBoot,IntMBoot)
 compSum <- ddply(compDF,.(Type,Method,Kappa,Angle),summarize,Power=length(which(Pval<=0.05))/length(Pval))

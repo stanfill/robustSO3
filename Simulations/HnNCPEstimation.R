@@ -38,16 +38,16 @@ lines(testStat,pchisq(testStat,n,ncp=ncp),col=2)
 ########################
 ###Hi statistic under Ho when its true
 n <- 20
-kap <- 25
+kap <- 5
 B <- 1000
 Hi <- rep(0,B)
 for(i in 1:B){
-  Rs <- ruars(n,rvmises,kappa=kap)
+  Rs <- ruars(n,rcayley,kappa=kap)
   Hi[i] <- discord(Rs, type='intrinsic',obs=n)
 }
 Hi <- sort(Hi)
 plot(ecdf(Hi))
-lines(Hi,pf(Hi,1,n-2),col=2)
+lines(Hi,pf(Hi,3,3*(n-2)),col=2)
 
 ########################
 ###Hi statistic under Ha when Ho should be rejected, diff mean alternative
@@ -112,11 +112,11 @@ lines(cStatSO3,pchisq(cStatSO3,1,ncp=(kap*rstar^2)),col=2)
 ###Hi statistic under Ha when Ho should be rejected, diff concentration alternative
 ###This is correct, when the outlier has same central orientation but different concentration tau
 ###then (tau/kappa)Hi~ F_1,n-1 central.  For Cayley, matrix Fisher(tau/kappa)Hi~ F_3,3(n-2) central
-n <- 25
+n <- 100
 kap <- 100
-tau <- 20
+tau <- 50
 B <- 1000
-Hi <- rep(0,B)
+H1 <- Hn <- rep(0,B)
 
 for(i in 1:B){
   
@@ -125,15 +125,38 @@ for(i in 1:B){
   Rs <- genR(c(rs,out))
   #rs2 <- mis.angle(Rs)^2
   #Hi[i] <- (rs2[n])/(sum(rs2[-n])/(n-1))
-  Hi[i] <- discord(Rs, type='intrinsic', obs=n)
+  Hiall <- discord(Rs, type='intrinsic')
+  Hn[i] <- Hiall[n]
+  H1[i] <- Hiall[1]
   
 }
 
+#Hn (the discordant value) should have a scaled F distribution
+Hn <- sort(Hn)
+scaleHn <- tau*Hn/kap
+plot(ecdf(scaleHn))
+lines(scaleHn,pf(scaleHn,3,3*(n-2)),col=2)
+
+#H1 (or any non-discordant value) should have a weird F-type distribution
+H1 <- sort(H1)
+Dist <- (n-2)*rchisq(1000,1)/(rchisq(1000,n-2)+kap*rchisq(1000,1)/tau)
+plot(ecdf(H1))
+lines(ecdf(Dist),col=2)
+
+######
+#What is the sample distribution of Hi though?
+n <- 25
+kap <- 100
+tau <- 20
+B <- 1000
+rs <- rcayley(n-1,kap)
+out <- rcayley(1,tau)
+Rs <- genR(c(rs,out))
+Hi <- discord(Rs, type='intrinsic')
 Hi <- sort(Hi)
 scaleHi <- tau*Hi/kap
 plot(ecdf(scaleHi))
 lines(scaleHi,pf(scaleHi,3,3*(n-2)),col=2)
-
 
 ########################
 ###See if non-central chi^2 and F statistics work like I think they do
