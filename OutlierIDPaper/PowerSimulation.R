@@ -10,15 +10,15 @@ library(reshape2)
 rstar <- c(0,pi/8,pi/4,pi/2,3*pi/4) #discordant value misorientation angle
 kap <- c(1,5,25,50)
 n <- c(10,50)
-B <- 20 #number of simulations to run per rstar/kappa combination
+B <- 1000 #number of simulations to run per rstar/kappa combination
 
 Vals <- matrix(0,nrow=length(rstar)*length(kap)*length(n),ncol=B)
-pvalExtBon <- cbind(data.frame(N=rep(n,each=length(kap)*length(rstar)),Kappa=rep(kap,each=length(rstar)),Angle=rstar),Vals)
+pvalExtBon <- cbind(data.frame(n=rep(n,each=length(kap)*length(rstar)),Kappa=rep(kap,each=length(rstar)),Angle=rstar),Vals)
 HnIntBon <- HnExtBon <- pvalIntBon <- pvalExtBon
 HnIntBoot <- HnExtBoot <- pvalIntBoot <- pvalExtBoot <- pvalExtBon
 
 
-m <- 50 #number of samples to use in parametric bootstrap
+mEx <- 250 #number of samples to use in parametric bootstrap
 rangle <- rvmises
 rownum <- 0
 #Sc <- genR(pi/2)
@@ -33,59 +33,59 @@ for(l in 1:length(n)){
       for(i in 1:B){
         
         #One outlier
-        RsOut <- ruarsCont(n[l],rangle,kappa1=kap[k],p=1/n[l],Scont=Sc)
+        RsOut <- ruarsCont(n[l],rangle,kappa1=kap[k],p=(1/n[l]),Scont=Sc)
         
         #Intrinsic Bonferonni
-        HnIntBon[rownum,(i+2)] <- max(discord(RsOut,type='int'))
-        pvalIntBon[rownum,(i+2)] <- n*pf(HnIntBon[rownum,(i+2)],1,1*(n[l]-2),lower.tail=FALSE)
+        HnIntBon[rownum,(i+3)] <- HnIntBoot[rownum,(i+3)] <- max(discord(RsOut,type='int'))
+        pvalIntBon[rownum,(i+3)] <- n[l]*pf(HnIntBon[rownum,(i+3)],1,1*(n[l]-2),lower.tail=FALSE)
         
         #Extrinsic Bonferonni
-        HnExtBon[rownum,(i+2)] <- max(discord(RsOut,type='ext'))
-        pvalExtBon[rownum,(i+2)] <- n*pf(HnExtBon[rownum,(i+2)],1,1*(n[l]-2),lower.tail=FALSE)
+        HnExtBon[rownum,(i+3)] <- HnExtBoot[rownum,(i+3)] <- max(discord(RsOut,type='ext'))
+        pvalExtBon[rownum,(i+3)] <- n[l]*pf(HnExtBon[rownum,(i+3)],1,1*(n[l]-2),lower.tail=FALSE)
         
         #Intrinsic Bootstrap
-        HnIntBoot[rownum,(i+2)] <- max(discord(RsOut,type='int'))
-        HnBootInt <- HnBootCpp(RsOut,m,1,rangle)
-        pvalIntBoot[rownum,(i+2)] <- length(which(HnBootInt>=HnIntBoot[rownum,(i+2)]))/m
+        HnBootInt <- HnBootCpp(RsOut,mEx,1,rangle)
+        pvalIntBoot[rownum,(i+3)] <- length(which(HnBootInt>=HnIntBoot[rownum,(i+3)]))/mEx
         
         #Extrinsic Bootstrap
-        HnExtBoot[rownum,(i+2)] <- max(discord(RsOut,type='ext'))
-        HnBootExt <- HnBootCpp(RsOut,m,2,rangle)
-        pvalExtBoot[rownum,(i+2)] <- length(which(HnBootExt>=HnExtBoot[rownum,(i+2)]))/m
+        HnBootExt <- HnBootCpp(RsOut,mEx,2,rangle)
+        pvalExtBoot[rownum,(i+3)] <- length(which(HnBootExt>=HnExtBoot[rownum,(i+3)]))/mEx
         
       }    
     }
   }
 }
-ExtMBon <- melt(pvalExtBon,id=c("Kappa","Angle"),value.name="Pval")
+
+ExtMBon <- melt(pvalExtBon,id=c("n","Kappa","Angle"),value.name="Pval")
 ExtMBon$Type <- "Extrinsic"
 ExtMBon$Method <- "Bonferonni"
 
-IntMBon <- melt(pvalIntBon,id=c("Kappa","Angle"),value.name="Pval")
+IntMBon <- melt(pvalIntBon,id=c("n","Kappa","Angle"),value.name="Pval")
 IntMBon$Type <- "Intrinsic"
 IntMBon$Method <- "Bonferonni"
 
-ExtMBoot <- melt(pvalExtBoot,id=c("Kappa","Angle"),value.name="Pval")
+ExtMBoot <- melt(pvalExtBoot,id=c("n","Kappa","Angle"),value.name="Pval")
 ExtMBoot$Type <- "Extrinsic"
 ExtMBoot$Method <- "Bootstrap"
 
-IntMBoot <- melt(pvalIntBoot,id=c("Kappa","Angle"),value.name="Pval")
+IntMBoot <- melt(pvalIntBoot,id=c("n","Kappa","Angle"),value.name="Pval")
 IntMBoot$Type <- "Intrinsic"
 IntMBoot$Method <- "Bootstrap"
 
 compDF <- rbind(ExtMBon,IntMBon,ExtMBoot,IntMBoot)
-compSum <- ddply(compDF,.(Type,Method,Kappa,Angle),summarize,Power=length(which(Pval<=0.05))/length(Pval))
+compSum <- ddply(compDF,.(Type,Method,n,Kappa,Angle),summarize,Power=length(which(Pval<=0.05))/length(Pval))
 compSum$TMethod <- paste(compSum$Type,compSum$Method)
 
 #compSum50 <- compSum
 #compSum50$Kappa <- "50"
 #compSum <- rbind(compSum5,compSum50)
 compSum$KappaF <- factor(compSum$Kappa,labels=c("kappa==1","kappa==5","kappa==25","kappa==50"))
+compSum$nF <- factor(compSum$n,labels=c("n==10","n==50"))
 
 qplot(Angle,Power,data=compSum,colour=TMethod,group=TMethod,geom='line',size=I(1.5))+
   geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()+ylab(expression(Pr(Reject~H[0])))+
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
-  scale_colour_discrete(name="")+facet_grid(~KappaF,labeller=label_parsed)+theme(legend.position='top')
+  scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
 
 
 #qplot(Angle,Power,data=compSum,colour=Type,group=Type,geom='line',size=I(2),facets=.~Method)+
