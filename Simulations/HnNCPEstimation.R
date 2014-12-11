@@ -116,7 +116,7 @@ n <- 100
 kap <- 100
 tau <- 50
 B <- 1000
-H1 <- Hn <- rep(0,B)
+H1 <- Hn <- H1denom <- rep(0,B)
 
 for(i in 1:B){
   
@@ -129,6 +129,10 @@ for(i in 1:B){
   Hn[i] <- Hiall[n]
   H1[i] <- Hiall[1]
   
+  Rs1 <- Rs[-1,]
+  shat1 <- mean(Rs1)
+  H1denom[i] <- sum(rot.dist(Rs1,shat1,method="i")^2)
+  
 }
 
 #Hn (the discordant value) should have a scaled F distribution
@@ -137,11 +141,17 @@ scaleHn <- tau*Hn/kap
 plot(ecdf(scaleHn))
 lines(scaleHn,pf(scaleHn,3,3*(n-2)),col=2)
 
-#H1 (or any non-discordant value) should have a weird F-type distribution
+#H1 (or any non-discordant value) should have a weird F-type distribution (Not right)
 H1 <- sort(H1)
 Dist <- (n-2)*rchisq(1000,1)/(rchisq(1000,n-2)+kap*rchisq(1000,1)/tau)
 plot(ecdf(H1))
 lines(ecdf(Dist),col=2)
+
+#H1 denominator (or any non-discordant value) should have sum of chi-squares (Way off)
+H1denom <- sort(H1denom)
+DistDenom <- rchisq(1000,n-2)+kap*rchisq(1000,1)/tau
+plot(ecdf(H1denom))
+lines(ecdf(DistDenom),col=2)
 
 ######
 #What is the sample distribution of Hi though?
