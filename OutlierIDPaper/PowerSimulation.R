@@ -3,7 +3,7 @@ Rcpp::sourceCpp('Source_Code/BootstrapCpp.cpp')
 library(rotations)
 library(plyr)
 library(reshape2)
-
+date()
 #########################
 ######
 #Compare Bonferonni cut off to using parametric bootstrap to estimate critical value
@@ -82,11 +82,13 @@ compSum$TMethod <- paste(compSum$Type,compSum$Method)
 compSum$KappaF <- factor(compSum$Kappa,labels=c("kappa==1","kappa==5","kappa==25","kappa==50"))
 compSum$nF <- factor(compSum$n,labels=c("n==10","n==50"))
 
-qplot(Angle,Power,data=compSum,colour=TMethod,group=TMethod,geom='line',size=I(1.5))+
+qplot(Angle,Power,data=compSum,colour=TMethod,group=TMethod,geom='line',size=I(1))+
   geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()+ylab(expression(Pr(Reject~H[0])))+
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
   scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
+ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/vonMisesPower_n10_50.pdf",width=9,height=4.5)
 
+date()
 
 #qplot(Angle,Power,data=compSum,colour=Type,group=Type,geom='line',size=I(2),facets=.~Method)+
   #geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()+ylab(expression(Pr(Reject~H[0])))
