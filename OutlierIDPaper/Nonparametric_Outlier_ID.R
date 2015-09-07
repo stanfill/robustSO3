@@ -14,8 +14,11 @@ n <- c(10,50)
 B <- 1000 #number of simulations to run per rstar/kappa combination
 
 Vals <- matrix(0,nrow=length(rstar)*length(kap)*length(n),ncol=B)
-nonParaPvalInt <- cbind(data.frame(n=rep(n,each=length(kap)*length(rstar)),Kappa=rep(kap,each=length(rstar)),Angle=rstar),Vals)
-
+nonParaPvalInt <- cbind(data.frame(Type='Intrinsic',Method='Nonparametric',
+                                   n=rep(n,each=length(kap)*length(rstar)),
+                                   Kappa=rep(kap,each=length(rstar)),Angle=rstar),Vals)
+nonParaPvalExt <- nonParaPvalInt
+nonParaPvalExt$Type <- "Extrinsic"
 
 rangle <- rcayley
 rownum <- 0
@@ -34,14 +37,14 @@ for(l in 1:length(n)){
         QsOut <- ruarsCont(n[l],rangle,kappa1=kap[k],p=1/n[l],Scont=Sc,space='Q4')
         
         #Intrinsic Nonparametric
-        nonParaPvalInt[rownum,(i+3)] <- max(discord(QsOut,type='int'))
+        nonParaPvalInt[rownum,(i+5)] <- max(discord(QsOut,type='int'))
         Hsstar <- HnNonParaBootCpp(QsOut,m=100,type=1)
-        nonParaPvalInt[rownum,(i+3)] <- dip.test(Hsstar)$p.value
+        nonParaPvalInt[rownum,(i+5)] <- dip.test(Hsstar)$p.value
         
         #Extrinsic Nonparametric
-        nonParaPvalInt[rownum,(i+3)] <- max(discord(QsOut,type='ext'))
-        Hsstar <- HnNonParaBootCpp(QsOut,m=100,type=2)
-        nonParaPvalInt[rownum,(i+3)] <- dip.test(Hsstar)$p.value
+        nonParaPvalExt[rownum,(i+5)] <- max(discord(QsOut,type='ext'))
+        HsstarExt <- HnNonParaBootCpp(QsOut,m=100,type=2)
+        nonParaPvalExt[rownum,(i+5)] <- dip.test(HsstarExt)$p.value
         
       }    
     }
@@ -49,21 +52,31 @@ for(l in 1:length(n)){
 }
 
 
-res <- melt(nonParaPval,id=c("n","Kappa","Angle"),value.name="Pval")
+nonParaPval <- rbind(nonParaPvalExt,nonParaPvalInt)
+res <- melt(nonParaPval,id=c("n","Kappa","Angle","Type","Method"),value.name="Pval")
 
-sumRes <- res%>%group_by(n,Kappa,Angle)%>%summarize(Power=length(which(Pval<0.05))/length(Pval))
+sumRes <- res%>%group_by(n,Kappa,Angle,Type,Method)%>%summarize(Power=length(which(Pval<0.05))/length(Pval))
 
-qplot(Angle,Power,data=sumRes,facets=n~Kappa,geom='line')+theme_bw()
+qplot(Angle,Power,data=sumRes,facets=n~Kappa,geom='line',colour=Type,group=Type)+theme_bw()
 
-sumRes$Type <- "Extrinsic"
-sumRes$Method <- "NonParametric"
+
 sumRes$TMethod <- paste(sumRes$Type,sumRes$Method)
 sumRes$KappaF <- factor(sumRes$Kappa,labels=c("kappa==1","kappa==5","kappa==25","kappa==50"))
 sumRes$nF <- factor(sumRes$n,labels=c("n==10","n==50"))
 
 #############
-#Incorporate parametric results
+#Incorporate parametric results when correct distributional assumption is made
 load("~/robustSO3/OutlierIDPaper/Results/CayleyResults_12_12_14.RData")
+
+allRes <- rbind(compSum,sumRes)
+qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1))+
+  geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()+ylab(expression(Pr(Reject~H[0])))+
+  scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
+  scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
+
+#############
+#Incorporate parametric results when incorrect distributional assumption is made
+load("~/robustSO3/OutlierIDPaper/Results/CayleyResultsIncorrectAss_8_9_15.RData")
 
 allRes <- rbind(compSum,sumRes)
 qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1))+
