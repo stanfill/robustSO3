@@ -1,6 +1,6 @@
-source("PrepareDataSet.R")
+source("PrepareEBSDDataSet.R")
 
-#Grain map based on median off all 14 scans
+#Grain map based on median of all 14 scans
 possibles<-which(loc.stats$extp<(0.01/nrow(loc.stats)))
 d <- ggplot(loc.stats, aes(xpos, ypos, color=intp))
 d2 <- d + geom_point(size=4) + scale_colour_gradient(expression(P(Reject~H[0])), low="grey99", high="grey10", limits=c(0, 0.05)) + 

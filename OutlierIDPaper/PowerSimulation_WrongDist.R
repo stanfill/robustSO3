@@ -7,7 +7,8 @@ library(xtable)
 
 #########################
 ######
-#Compare Bonferonni cut off to using parametric bootstrap to estimate critical value
+#How do the tests perform is the wrong distributional assumpition is used to 
+#determine the p-value
 rstar <- c(0,pi/8,pi/4,pi/2,3*pi/4) #discordant value misorientation angle
 kap <- c(1,5,25,50)
 n <- c(10,50)
@@ -20,7 +21,13 @@ HnIntBoot <- HnExtBoot <- pvalIntBoot <- pvalExtBoot <- pvalExtBon
 
 
 mEx <- 250 #number of samples to use in parametric bootstrap
-rangle <- rfisher
+
+#Generate the data from the cayley distribution
+rangle <- rcayley
+
+#Use the vmises distribution to generate bootstrap data and use it's limiting distribution
+#in the Bonferonni approximation
+rangleWrong <- rvmises
 rownum <- 0
 
 date()
@@ -38,18 +45,18 @@ for(l in 1:length(n)){
         
         #Intrinsic Bonferonni
         HnIntBon[rownum,(i+3)] <- HnIntBoot[rownum,(i+3)] <- max(discord(RsOut,type='int'))
-        pvalIntBon[rownum,(i+3)] <- n[l]*pf(HnIntBon[rownum,(i+3)],3,3*(n[l]-2),lower.tail=FALSE)
+        pvalIntBon[rownum,(i+3)] <- n[l]*pf(HnIntBon[rownum,(i+3)],1,(n[l]-2),lower.tail=FALSE)
         
         #Extrinsic Bonferonni
         HnExtBon[rownum,(i+3)] <- HnExtBoot[rownum,(i+3)] <- max(discord(RsOut,type='ext'))
-        pvalExtBon[rownum,(i+3)] <- n[l]*pf(HnExtBon[rownum,(i+3)],3,3*(n[l]-2),lower.tail=FALSE)
+        pvalExtBon[rownum,(i+3)] <- n[l]*pf(HnExtBon[rownum,(i+3)],1,(n[l]-2),lower.tail=FALSE)
         
         #Intrinsic Bootstrap
-        HnBootInt <- HnBootCpp(RsOut,mEx,1,rangle)
+        HnBootInt <- HnBootCpp(RsOut,mEx,1,rangleWrong)
         pvalIntBoot[rownum,(i+3)] <- length(which(HnBootInt>=HnIntBoot[rownum,(i+3)]))/mEx
         
         #Extrinsic Bootstrap
-        HnBootExt <- HnBootCpp(RsOut,mEx,2,rangle)
+        HnBootExt <- HnBootCpp(RsOut,mEx,2,rangleWrong)
         pvalExtBoot[rownum,(i+3)] <- length(which(HnBootExt>=HnExtBoot[rownum,(i+3)]))/mEx
         
       }    
@@ -88,7 +95,7 @@ qplot(Angle,Power,data=compSum,colour=TMethod,group=TMethod,geom='line',size=I(1
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
   scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
 
-#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/MatrixFisherPower_n10_50.pdf",width=9,height=4.5)
+#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/WrongDistPower_n10_50.pdf",width=9,height=4.5)
 date()
 
 
