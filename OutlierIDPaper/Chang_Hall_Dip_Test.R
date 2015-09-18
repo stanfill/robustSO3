@@ -43,12 +43,21 @@ fhat2nd <- kdde(Hsstar[1,], h=h2Opt, deriv.order=2, eval.points=fhat$eval.points
 #4 - Compute dhat
 dhat <- abs(fhat2nd$estimate[fhatMode])/(fhat$estimate[fhatMode]^3)
 
-#5 - Estimate beta from gamma^{-1}(dhat)
-betaRes <- optimize(f=inv_gamma_betaDist,interval=c(1.001,100),dhat=dhat)
-betaHat <- betaRes$minimum
+#5 - Estimate beta from gamma^{-1}(dhat) and generate Xstar
+if(dhat<2*pi){
+  #Sample from beta distribution
+  betaRes <- optimize(f=inv_gamma_betaDist,interval=c(1.001,254),dhat=dhat)
+  betaHat <- betaRes$minimum
+  Xstar <- matrix(rbeta(500*length(Hsstar),betaHat,betaHat),nrow=500)
+}else{
+  #Sample from rescaled t-distribution
+  betaRes <- optimize(f=inv_gamma_scaledtDist,interval=c(0.05,100),dhat=dhat)
+  betaHat <- betaRes$minimum
+  eta <- 2*betaHat-1
+  Xstar <- matrix((1/sqrt(eta))*rt(500*length(Hsstar),df=eta),nrow=500)
+}
 
 #6 - Generate bootstrap distribution of delta based on Xstar
-Xstar <- matrix(rbeta(500*length(Hsstar),betaHat,betaHat),nrow=500)
 deltaStar <- apply(Xstar,1,dip)
 
 #7 - Reject H0?
@@ -80,16 +89,15 @@ calib_dip.test <- function(Hsstar,m=500,type=1,alpha=0.05){
   #4 - Compute dhat
   dhat <- abs(fhat2nd$estimate[fhatMode])/(fhat$estimate[fhatMode]^3)
   
-  #5 - Estimate beta from gamma^{-1}(dhat)
-  
+  #5 - Estimate beta from gamma^{-1}(dhat) and generate from correct dist
   if(dhat<2*pi){
     #Sample from beta distribution
-    betaRes <- optimize(f=inv_gamma_betaDist,interval=c(1.001,100),dhat=dhat)
+    betaRes <- optimize(f=inv_gamma_betaDist,interval=c(1.001,254),dhat=dhat)
     betaHat <- betaRes$minimum
     Xstar <- matrix(rbeta(500*length(Hsstar),betaHat,betaHat),nrow=500)
   }else{
     #Sample from rescaled t-distribution
-    betaRes <- optimize(f=inv_gamma_scaledtDist,interval=c(0.05,100),dhat=dhat)
+    betaRes <- optimize(f=inv_gamma_scaledtDist,interval=c(0.5001,1000),dhat=dhat)
     betaHat <- betaRes$minimum
     eta <- 2*betaHat-1
     Xstar <- matrix((1/sqrt(eta))*rt(500*length(Hsstar),df=eta),nrow=500)
@@ -107,31 +115,31 @@ calib_dip.test <- function(Hsstar,m=500,type=1,alpha=0.05){
 #################
 #Compare calibrated and uncalibrated dip test
 
-rstar <- 0
+rstar <- c(0,pi/8,pi/4,pi/2)
 kap <- 50
 n <- 50
 rangle <- rcayley
-B <- 100
-calib <- rep(0,B)
-uncalib <- rep(0,B)
-alpha <- 0.05
+B <- 250
+calib <- uncalib <- matrix(0,B,4)
+alpha <- 0.1
 
-for(i in 1:B){
-  
-  #Generate data with/without outlier
-  QsOut <- ruarsCont(n,rangle,kappa1=kap,p=1/n,Scont=genR(rstar),space='Q4')
-  
-  #Bootstrap data to get distribution of Hn
-  Hsstar <- HnNonParaBootCpp(QsOut,m=1000,type=1)
-  
-  calib[i] <- calib_dip.test(Hsstar,alpha=alpha)
-  uncalib[i] <- dip.test(Hsstar)$p.value<alpha
-  
+for(j in 1:4){
+  for(i in 1:B){
+    
+    #Generate data with/without outlier
+    QsOut <- ruarsCont(n,rangle,kappa1=kap,p=1/n,Scont=genR(rstar[j]),space='Q4')
+    
+    #Bootstrap data to get distribution of Hn
+    Hsstar <- HnNonParaBootCpp(QsOut,m=500,type=1)
+    
+    calib[i,j] <- calib_dip.test(Hsstar,alpha=alpha)
+    uncalib[i,j] <- dip.test(Hsstar)$p.value<alpha
+    
+  }
 }
-
 #Estimated P(Reject H0)
-sum(calib)/B
-sum(uncalib)/B
+colSums(calib)/B
+colSums(uncalib)/B
 
 
 
