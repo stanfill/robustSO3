@@ -12,10 +12,11 @@ arma::mat QsBootstrap(arma::mat Qs){
   RNGScope scope;
   
   int n = Qs.n_rows;
-  arma::mat QsBoot(n,4);
-  NumericVector rows=runif(n,0,n);
+  int m = Qs.n_cols;
+  arma::mat QsBoot(n,m);
+  NumericVector rows = runif(n,0,n);
   rows = floor(rows);
-  
+
   for(int i=0;i<n;i++){
     QsBoot.row(i) = Qs.row(rows(i));
   }

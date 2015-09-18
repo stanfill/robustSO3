@@ -83,3 +83,19 @@ qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1)
   geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()+ylab(expression(Pr(Reject~H[0])))+
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
   scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
+
+
+#####################
+#Distribution of bootstrap statistic?
+rstar <- 0
+kap <- 5
+n <- 10
+rangle <- rcayley
+QsOut <- ruarsCont(n,rangle,kappa1=kap,p=1/n,Scont=genR(rstar),space='Q4')
+
+Hsstar <- HnNonParaBootCpp(QsOut,m=1000,type=1)
+
+hist(Hsstar,breaks=50)
+mean(Hsstar);var(Hsstar[1,])
+
+qqnorm(Hsstar);qqline(Hsstar)
