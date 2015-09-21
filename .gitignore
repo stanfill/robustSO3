@@ -18,3 +18,5 @@ robustSO3.Rproj
 *.blg
 
 *.png
+
+*.RData

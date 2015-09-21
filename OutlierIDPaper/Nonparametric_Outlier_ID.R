@@ -74,6 +74,9 @@ qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1)
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
   scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
 
+#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/CayleyWithNonparametric.pdf",width=9,height=4.5)
+
+#save.image("~/robustSO3/OutlierIDPaper/Results/CayleyResultsWithNonpara_7_9_15")
 #############
 #Incorporate parametric results when incorrect distributional assumption is made
 load("~/robustSO3/OutlierIDPaper/Results/CayleyResultsIncorrectAss_8_9_15.RData")
@@ -84,6 +87,7 @@ qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1)
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
   scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
 
+#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/CayleyWrongAssWithNonparametric.pdf",width=9,height=4.5)
 
 #####################
 #Distribution of bootstrap statistic?
