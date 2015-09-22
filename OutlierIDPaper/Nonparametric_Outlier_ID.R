@@ -20,7 +20,7 @@ nonParaPvalInt <- cbind(data.frame(Type='Intrinsic',Method='Nonparametric',
 nonParaPvalExt <- nonParaPvalInt
 nonParaPvalExt$Type <- "Extrinsic"
 
-rangle <- rcayley
+rangle <- rvmises
 rownum <- 0
 #Sc <- genR(pi/2)
 
@@ -38,12 +38,23 @@ for(l in 1:length(n)){
         
         #Intrinsic Nonparametric
         nonParaPvalInt[rownum,(i+5)] <- max(discord(QsOut,type='int'))
-        Hsstar <- HnNonParaBootCpp(QsOut,m=100,type=1)
+        Hsstar <- HnNonParaBootCpp(QsOut,m=250,type=1)[1,]
+        
+        while(any(is.infinite(Hsstar))||any(is.nan(Hsstar))){
+          Hsstar <- HnNonParaBootCpp(QsOut,m=250,type=1)[1,]
+          print("Inf or NAN detected in Int")
+        }
         nonParaPvalInt[rownum,(i+5)] <- dip.test(Hsstar)$p.value
         
         #Extrinsic Nonparametric
         nonParaPvalExt[rownum,(i+5)] <- max(discord(QsOut,type='ext'))
-        HsstarExt <- HnNonParaBootCpp(QsOut,m=100,type=2)
+        HsstarExt <- HnNonParaBootCpp(QsOut,m=250,type=2)[1,]
+        
+        while(any(is.infinite(HsstarExt))||any(is.nan(HsstarExt))){
+          HsstarExt <- HnNonParaBootCpp(QsOut,m=250,type=2)[1,]
+          print("Inf or NAN detected in Ext")
+        }
+        
         nonParaPvalExt[rownum,(i+5)] <- dip.test(HsstarExt)$p.value
         
       }    
@@ -66,7 +77,7 @@ sumRes$nF <- factor(sumRes$n,labels=c("n==10","n==50"))
 
 #############
 #Incorporate parametric results when correct distributional assumption is made
-load("~/robustSO3/OutlierIDPaper/Results/CayleyResults_12_12_14.RData")
+load("~/robustSO3/OutlierIDPaper/Results/vonMisesResults_12_12_14.RData")
 
 allRes <- rbind(compSum,sumRes)
 qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1))+
@@ -74,9 +85,9 @@ qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1)
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
   scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
 
-#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/CayleyWithNonparametric.pdf",width=9,height=4.5)
+#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/VonMisesWithNonparametric.pdf",width=9,height=4.5)
 
-#save.image("~/robustSO3/OutlierIDPaper/Results/CayleyResultsWithNonpara_7_9_15")
+#save.image("~/robustSO3/OutlierIDPaper/Results/vonMisesResultsWithNonpara_22_9_15.RData")
 #############
 #Incorporate parametric results when incorrect distributional assumption is made
 load("~/robustSO3/OutlierIDPaper/Results/CayleyResultsIncorrectAss_8_9_15.RData")

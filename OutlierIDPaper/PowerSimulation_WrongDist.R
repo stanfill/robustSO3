@@ -23,11 +23,11 @@ HnIntBoot <- HnExtBoot <- pvalIntBoot <- pvalExtBoot <- pvalExtBon
 mEx <- 250 #number of samples to use in parametric bootstrap
 
 #Generate the data from the cayley distribution
-rangle <- rcayley
+rangle <- rvmises
 
 #Use the vmises distribution to generate bootstrap data and use it's limiting distribution
 #in the Bonferonni approximation
-rangleWrong <- rvmises
+rangleWrong <- rcayley
 rownum <- 0
 
 date()
@@ -95,7 +95,7 @@ qplot(Angle,Power,data=compSum,colour=TMethod,group=TMethod,geom='line',size=I(1
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
   scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
 
-#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/WrongDistPower_n10_50.pdf",width=9,height=4.5)
+#save.image("~/robustSO3/OutlierIDPaper/Results/vMisesResultsIncorrectAss_22_9_15.RData")
 date()
 
 
