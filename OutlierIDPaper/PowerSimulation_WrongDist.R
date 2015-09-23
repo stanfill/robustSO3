@@ -45,11 +45,11 @@ for(l in 1:length(n)){
         
         #Intrinsic Bonferonni
         HnIntBon[rownum,(i+3)] <- HnIntBoot[rownum,(i+3)] <- max(discord(RsOut,type='int'))
-        pvalIntBon[rownum,(i+3)] <- n[l]*pf(HnIntBon[rownum,(i+3)],1,(n[l]-2),lower.tail=FALSE)
+        pvalIntBon[rownum,(i+3)] <- n[l]*pf(HnIntBon[rownum,(i+3)],3,3*(n[l]-2),lower.tail=FALSE)
         
         #Extrinsic Bonferonni
         HnExtBon[rownum,(i+3)] <- HnExtBoot[rownum,(i+3)] <- max(discord(RsOut,type='ext'))
-        pvalExtBon[rownum,(i+3)] <- n[l]*pf(HnExtBon[rownum,(i+3)],1,(n[l]-2),lower.tail=FALSE)
+        pvalExtBon[rownum,(i+3)] <- n[l]*pf(HnExtBon[rownum,(i+3)],3,3*(n[l]-2),lower.tail=FALSE)
         
         #Intrinsic Bootstrap
         HnBootInt <- HnBootCpp(RsOut,mEx,1,rangleWrong)
@@ -58,6 +58,10 @@ for(l in 1:length(n)){
         #Extrinsic Bootstrap
         HnBootExt <- HnBootCpp(RsOut,mEx,2,rangleWrong)
         pvalExtBoot[rownum,(i+3)] <- length(which(HnBootExt>=HnExtBoot[rownum,(i+3)]))/mEx
+        
+        if(i%%250==0){
+          print(paste0("l=",l,", k=",k,", j=",j,", i=",i))
+        }
         
       }    
     }
@@ -95,7 +99,7 @@ qplot(Angle,Power,data=compSum,colour=TMethod,group=TMethod,geom='line',size=I(1
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
   scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
 
-#save.image("~/robustSO3/OutlierIDPaper/Results/vMisesResultsIncorrectAss_22_9_15.RData")
+#save.image("~/robustSO3/OutlierIDPaper/Results/vMisesResultsIncorrectAss_23_9_15.RData")
 date()
 
 

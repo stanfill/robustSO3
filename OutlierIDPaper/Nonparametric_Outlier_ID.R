@@ -77,7 +77,7 @@ sumRes$nF <- factor(sumRes$n,labels=c("n==10","n==50"))
 
 #############
 #Incorporate parametric results when correct distributional assumption is made
-load("~/robustSO3/OutlierIDPaper/Results/vonMisesResults_12_12_14.RData")
+load("~/robustSO3/OutlierIDPaper/Results/CayleyResults_12_12_14.RData")
 
 allRes <- rbind(compSum,sumRes)
 qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1))+
@@ -85,7 +85,7 @@ qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1)
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
   scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
 
-#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/VonMisesWithNonparametric.pdf",width=9,height=4.5)
+#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/CayleyWithNonparametric.pdf",width=9,height=4.5)
 
 #save.image("~/robustSO3/OutlierIDPaper/Results/vonMisesResultsWithNonpara_22_9_15.RData")
 #############
