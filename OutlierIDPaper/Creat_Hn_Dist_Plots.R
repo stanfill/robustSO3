@@ -1,11 +1,11 @@
 #This code creates the plots of the Hn distribution with the theoretical 
 #F limiting distribution
 library(rotations)
-kappa<-c(1,2,5,10,Inf)
+kappa<-c(.2,.5,1,5,Inf)
 n<-2500
 HnSeq <- seq(0,4,length=n)
-Caylabs <- expression(F["3,3(n-2)"],kappa==10,kappa==5,kappa==2,kappa==1)
-vMiseslabs <- expression(F["1,1(n-2)"],kappa==10,kappa==5,kappa==2,kappa==1)
+Caylabs <- expression(F["3,3(n-2)"],kappa=="5.0",kappa=="1.0",kappa==0.5,kappa==0.2)
+vMiseslabs <- expression(F["1,1(n-2)"],kappa=="5.0",kappa=="1.0",kappa==0.5,kappa==0.2)
 
 
 #Intrinsic test statistic
