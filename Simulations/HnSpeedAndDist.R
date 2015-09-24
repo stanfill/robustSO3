@@ -36,11 +36,13 @@ microbenchmark(HnFun(Rs),HnApprox(Rs))
 #Distribution of Hn with/without outliers
 
 #Without outlier (should be F with 3,3*(n-2) dfs)
-Qs<-ruars(50,rcayley,kappa=50)
-Hn<-HnFun(Qs)
-x<-seq(0,max(Hn),length=length(Hn))
-plot(ecdf(Hn))
-lines(x,pf(x,3,3*(length(Hn)-2)))
+Qs<-ruars(1000,rcayley,kappa=1)
+HnI<-discord(Qs,type='i')
+HnE<-discord(Qs,type='e')
+x<-seq(0,max(c(HnE,HnI)),length=length(Hn))
+plot(ecdf(HnI))
+lines(ecdf(HnE),col=2)
+lines(x,pf(x,3,3*(length(Hn)-2)),col=3)
 
 #With outliers
 QsW<-ruarsCont(n=25,rangle=rcayley,kappa1=100,p=res$p[i],Scont=id.SO3,
@@ -82,7 +84,7 @@ n<-1000
 x<-seq(0,4,length=n)
 resDFCay<-data.frame(Hn=x,kappa=rep(kappa,each=n),ECDF=0)
 resDFMises<-data.frame(Hn=x,kappa=rep(kappa,each=n),ECDF=0)
-
+HnSeq <- seq(0,4,length=1000)
 
 for(i in 1:length(kappa)){
 
@@ -90,16 +92,16 @@ for(i in 1:length(kappa)){
   
   if(kappa[i]<Inf){
     Qs<-ruars(n,rcayley,kappa=kappa[i])
-    Hn<-discord(Qs,type='extrinsic')
+    Hn<-discord(Qs,type='e')
     ecdfHN<-ecdf(Hn)
-    resDFCay$ECDF[c(row:(row+(n-1)))]<-ecdfHN(Hn)
-    resDFCay$Hn[c(row:(row+(n-1)))]<-Hn
+    resDFCay$ECDF[c(row:(row+(n-1)))]<-ecdfHN(HnSeq)
+    resDFCay$Hn[c(row:(row+(n-1)))]<-HnSeq
     
     Qs<-ruars(n,rvmises,kappa=kappa[i])
-    Hn<-discord(Qs,type='extrinsic')
+    Hn<-discord(Qs,type='e')
     ecdfHN<-ecdf(Hn)
-    resDFMises$ECDF[c(row:(row+(n-1)))]<-ecdfHN(Hn)
-    resDFMises$Hn[c(row:(row+(n-1)))]<-Hn
+    resDFMises$ECDF[c(row:(row+(n-1)))]<-ecdfHN(HnSeq)
+    resDFMises$Hn[c(row:(row+(n-1)))]<-HnSeq
     
     
   }else{
@@ -118,12 +120,12 @@ resDFMises$kappa<-factor(resDFMises$kappa,levels=rev(levels(resDFMises$kappa)))
 qplot(Hn,ECDF,data=resDFCay,group=kappa,colour=kappa,xlab=expression(H[n]),
   ylab=expression(F[n](x)),geom='line',lwd=I(1.7),main='Cayley',xlim=c(0,4))+theme_bw()+
   scale_color_grey()+coord_fixed(4)
-#ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/CayleyHnECDF.pdf",height=5,width=5)
+#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/CayleyHnECDF.pdf",height=5,width=5)
 
 qplot(Hn,ECDF,data=resDFMises,group=kappa,colour=kappa,xlab=expression(H[n]),
   ylab=expression(F[n](x)),geom='line',lwd=I(1.7),main='von Mises',xlim=c(0,4))+theme_bw()+
   scale_color_grey()+coord_fixed(4)
-#ggsave("C:/Users/sta36z/Dropbox/SO3_Papers/OutlierIDAcc/Figures/vonMisesHnECDF.pdf",height=5,width=5)
+#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/vonMisesHnECDF.pdf",height=5,width=5)
 
 #####
 #QQPlots using the same results
