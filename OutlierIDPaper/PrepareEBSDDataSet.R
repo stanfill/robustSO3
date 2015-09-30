@@ -31,7 +31,7 @@ checks <- adply(dat.out, .margins=1, function(x) {
   is.SO3(unlist(x[3:11]))
 })
 dat.out$check <- checks$V1
-dat.out<-dat.out[dat.out$check==T,]
+#dat.out<-dat.out[dat.out$check==T,]
 
 ## compute the intrinsic and extrinsic test-statistic at each location
 dat.discord <- dlply(dat.out, .(location), function(x) {
@@ -41,16 +41,17 @@ dat.discord <- dlply(dat.out, .(location), function(x) {
   n <- nrow(res) 
   int <- ext  <- NULL
   if (n <= 2) {
-    int <- ext  <- 0
+    int <- ext <- dR  <- 0
   } else if (n > 0) {
     rots <- as.SO3(as.matrix(res[,3:11]))
     #print(rots)
     int <- max(discord(rots,type='i'))
     ext <- max(discord(rots,type='e'))
+    dR <- mis.angle(mean(rots))
   }
   
   location <- as.numeric(as.character(unique(x$location)))
-  return(list(location=location, n=n, int = int, ext = ext))
+  return(list(location=location, n=n, int = int, ext = ext, dR = dR))
 })
 
 ## find distances between estimators and angles to identity for each
@@ -58,7 +59,7 @@ loc.stats <- ldply(dat.discord, function(x) {
   location <- as.numeric(as.character(unique(x$location)))
   if (x$n > 2)
     data.frame(location=x$location, n=x$n, 
-               int=x$int, ext=x$ext,
+               int=x$int, ext=x$ext, dR=x$dR,
                intp = min(1,x$n*pf(x$int,3,3*(x$n-2),lower.tail=F)), 
                extp = min(1,x$n*pf(x$ext,3,3*(x$n-2),lower.tail=F)))
 })

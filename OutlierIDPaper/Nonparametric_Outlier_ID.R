@@ -77,7 +77,7 @@ sumRes$nF <- factor(sumRes$n,labels=c("n==10","n==50"))
 
 #############
 #Incorporate parametric results when correct distributional assumption is made
-load("~/robustSO3/OutlierIDPaper/Results/CayleyResults_12_12_14.RData")
+load("~/robustSO3/OutlierIDPaper/Results/vonMisesResultsWithNonpara_22_9_15.RData")
 
 allRes <- rbind(compSum,sumRes)
 qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1))+
@@ -87,16 +87,36 @@ qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1)
 
 #ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/CayleyWithNonparametric.pdf",width=9,height=4.5)
 
+#New plot without kappa=1 or r^*=pi/8
+notallRes <- subset(allRes,Kappa>1&Angle!=pi/8)
+qplot(Angle,Power,data=notallRes,colour=TMethod,group=TMethod,geom='line',size=I(1))+
+  geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()+ylab(expression(Pr(Reject~H[0])))+
+  scale_x_continuous(breaks=rstar[-2],labels=expression(0,pi/4,pi/2,3~pi/4))+
+  scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
+
+#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/CayleyWithNonparametricRed.pdf",width=9,height=4.5)
+
+
 #save.image("~/robustSO3/OutlierIDPaper/Results/vonMisesResultsWithNonpara_22_9_15.RData")
 #############
 #Incorporate parametric results when incorrect distributional assumption is made
-load("~/robustSO3/OutlierIDPaper/Results/CayleyResultsIncorrectAss_8_9_15.RData")
+load("~/robustSO3/OutlierIDPaper/Results/vMisesResultsIncorrectAss_23_9_15.RData")
 
 allRes <- rbind(compSum,sumRes)
 qplot(Angle,Power,data=allRes,colour=TMethod,group=TMethod,geom='line',size=I(1))+
   geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()+ylab(expression(Pr(Reject~H[0])))+
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+
   scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
+
+#New plot without kappa=1 or r^*=pi/8
+notallRes <- subset(allRes,Kappa>1&Angle!=pi/8)
+qplot(Angle,Power,data=notallRes,colour=TMethod,group=TMethod,geom='line',size=I(1))+
+  geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()+ylab(expression(Pr(Reject~H[0])))+
+  scale_x_continuous(breaks=rstar[-2],labels=expression(0,pi/4,pi/2,3~pi/4))+
+  scale_colour_discrete(name="")+facet_grid(nF~KappaF,labeller=label_parsed)+theme(legend.position='top')
+
+#ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/vMisesWrongAssWithNonparametricRed.pdf",width=9,height=4.5)
+
 
 #ggsave("C:/Users/Sta36z/Dropbox/SO3_Papers/OutlierID/Figures/CayleyWrongAssWithNonparametric.pdf",width=9,height=4.5)
 
