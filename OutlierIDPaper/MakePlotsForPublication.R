@@ -57,9 +57,12 @@ print(xtable(vmTableDF,caption="Simulation results for the von Mises distributio
 ##################################
 #########Cayley results
 #Incorporate parametric results when correct distributional assumption is made
-load("~/robustSO3/OutlierIDPaper/Results/CayleyResultsWithNonpara_22_9_15.RData")
+#load("~/Documents/Rotations/robustSO3/OutlierIDPaper/Results/CayleyResultsWithNonpara_5_31_17.RData")
+load("~/Documents/Rotations/robustSO3/OutlierIDPaper/Results/CompleteCayleyResultsForPlotting_5_31_17.RData")
 
-allResCay <- rbind(compSum,sumRes)
+#allResCay <- rbind(compSum,sumRes)
+allResCay <- allRes
+
 qplot(Angle,Power,data=allResCay,colour=TMethod,group=TMethod,geom='line',size=I(1))+
   geom_hline(yintercept=c(0,0.05),colour="gray50")+theme_bw()+ylab(expression(Pr(Reject~H[0])))+
   scale_x_continuous(breaks=rstar,labels=expression(0,pi/8,pi/4,pi/2,3~pi/4))+

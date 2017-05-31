@@ -1,6 +1,7 @@
 #include <RcppArmadillo.h>   
+#include "/Users/stan070/Documents/Rotations/rotationsC/rotations/inst/include/rotations.h"
 //#include "/Users/stanfill/Documents/rotationsC/rotations/inst/include/rotations.h"
-#include "C:/Users/Sta36z/Documents/rotationsC/rotations/inst/include/rotations.h"
+//#include "C:/Users/Sta36z/Documents/rotationsC/rotations/inst/include/rotations.h"
 
 
 using namespace Rcpp;

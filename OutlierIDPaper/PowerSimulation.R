@@ -20,7 +20,7 @@ HnIntBoot <- HnExtBoot <- pvalIntBoot <- pvalExtBoot <- pvalExtBon
 
 
 mEx <- 250 #number of samples to use in parametric bootstrap
-rangle <- rfisher
+rangle <- rvmises
 rownum <- 0
 
 date()
@@ -54,16 +54,18 @@ for(l in 1:length(n)){
         
       }    
     }
+    cat("k is ",k," of ",length(kap),"\n")
   }
+  cat("l is ",l," of ",length(n),"\n")
 }
 
 ExtMBon <- melt(pvalExtBon,id=c("n","Kappa","Angle"),value.name="Pval")
 ExtMBon$Type <- "Extrinsic"
-ExtMBon$Method <- "Bonferonni"
+ExtMBon$Method <- "Bonferroni"
 
 IntMBon <- melt(pvalIntBon,id=c("n","Kappa","Angle"),value.name="Pval")
 IntMBon$Type <- "Intrinsic"
-IntMBon$Method <- "Bonferonni"
+IntMBon$Method <- "Bonferroni"
 
 ExtMBoot <- melt(pvalExtBoot,id=c("n","Kappa","Angle"),value.name="Pval")
 ExtMBoot$Type <- "Extrinsic"

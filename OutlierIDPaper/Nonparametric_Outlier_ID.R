@@ -59,7 +59,9 @@ for(l in 1:length(n)){
         
       }    
     }
+    cat("k is ",k," of ",length(kap),"\n")
   }
+  cat("l is ",l," of ",length(n),"\n")
 }
 
 
